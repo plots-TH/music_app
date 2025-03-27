@@ -1,0 +1,21 @@
+.song-category-page {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.category-card {
+  width: 28%;
+  text-align: center;
+  text-decoration: none;
+  color: black;
+}
+
+.category-card img {
+  width: 200px;
+}
+
+.category-card-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
