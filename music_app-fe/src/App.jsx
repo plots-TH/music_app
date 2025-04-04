@@ -24,6 +24,14 @@ function App() {
   // widgets are an example slice ^^^^
 
   const [userToken, setUserToken] = useState(null);
+  useEffect(() => {
+    const localToken = localStorage.getItem("token"); // we localStorage.setItem(token) to data.data.userToken in Register.jsx. Now we localStorage.getItem(token).
+
+    if (localToken) {
+      //  if the token doesn't exist, it is set to null. If it already exists in the browser's local storage, we setUserToken to the value of the token in localStorage. this keeps the user logged in with their token even if the page refreshes.
+      setUserToken(localToken);
+    }
+  }, []);
 
   return (
     <>
@@ -33,11 +41,11 @@ function App() {
       ))} */}
 
       <h1>MUSIC APP</h1>
-      <p>{userToken}</p>
+
       <Navigations></Navigations>
       <Routes>
         <Route path="/" element={<Songs />}></Route>
-        {/* create a prop called setToken and pass in the "setToken" function */}
+        {/* create a prop called setUserToken and pass in the "setUserToken" function */}
         <Route
           path="/login"
           element={<Login setUserToken={setUserToken} />}

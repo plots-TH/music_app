@@ -18,6 +18,7 @@ function Login({ setUserToken }) {
           console.log("Login successful!", res.data.userToken);
           console.log(res.data.userToken);
           setUserToken(res.data.userToken);
+          localStorage.setItem("token", res.data.userToken);
         })
         .catch((err) => {
           console.error("Login error:", err.response?.data || err.message);

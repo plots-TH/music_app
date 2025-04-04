@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 
 // pass setToken prop name inside the Register function/component
-function Register({ setToken }) {
+function Register({ setUserToken }) {
   const [newUserData, setNewUserData] = useState({});
 
   const handleSubmit = (event) => {
@@ -13,9 +13,10 @@ function Register({ setToken }) {
           `${import.meta.env.VITE_BACKEND_API_BASE_URL}/users/register`,
           newUserData
         )
-        .then((data) => {
-          console.log("new user data:", data);
-          setToken(data.data.userToken);
+        .then((res) => {
+          console.log("new user data:", res);
+          setUserToken(res.data.userToken);
+          localStorage.setItem("token", res.data.userToken); // localStorage is an object built-into the browser's javascript. (browser object methods) it is accessable with javascript, without any libraries.
         })
         .catch((err) => {
           console.log(err);
