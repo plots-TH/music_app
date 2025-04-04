@@ -8,6 +8,7 @@ import SingleSong from "./components/SingleSong";
 import Songs from "./components/Songs";
 import CategoryPlaylist from "./components/CategoryPlaylist";
 import axios from "axios";
+import SinglePlaylist from "./components/SinglePlaylist";
 
 function App() {
   // widgets are an example slice
@@ -22,6 +23,8 @@ function App() {
   //}, []);
   // widgets are an example slice ^^^^
 
+  const [userToken, setUserToken] = useState(null);
+
   return (
     <>
       {/* <h2>Warm Welcome to Wonderful Widgets!</h2>
@@ -30,13 +33,22 @@ function App() {
       ))} */}
 
       <h1>MUSIC APP</h1>
+      <p>{userToken}</p>
       <Navigations></Navigations>
       <Routes>
         <Route path="/" element={<Songs />}></Route>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/register" element={<Register />}></Route>
+        {/* create a prop called setToken and pass in the "setToken" function */}
+        <Route
+          path="/login"
+          element={<Login setUserToken={setUserToken} />}
+        ></Route>
+        <Route
+          path="/register"
+          element={<Register setUserToken={setUserToken} />}
+        ></Route>
         <Route path="/category/:id" element={<CategoryPlaylist />}></Route>
-        <Route path="/song" element={<SingleSong />}></Route>
+        <Route path="/playlist" element={<SinglePlaylist />}></Route>
+        <Route path="/track/:id" element={<SingleSong />}></Route>
         <Route path="/account" element={<Account />}></Route>
         {/* create a "select all path" using "*" to redirect the user to the home page if no url match is found */}
         <Route path="*" element={<Songs />}></Route>

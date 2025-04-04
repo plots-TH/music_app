@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react"; // useEffect will fetch playlist with provided ID, and useState will hold the playlist in a variable and display it when the variable updates
-import { useParams, useLocation } from "react-router-dom"; // useParams allows us to extract playlist ID from the url path
+import React, { useEffect, useState } from "react"; // useEffect will fetch playlist with provided ID found in URL, and useState will hold the playlist in a variable / display it when the variable updates
+import { useParams, useLocation, Link } from "react-router-dom"; // useParams allows us to extract playlist ID from the url path
+import CategoryPlaylistCardList from "./CategoryPlaylistCardList";
 import axios from "axios";
 
 function CategoryPlaylist() {
   const { id } = useParams();
   const location = useLocation();
   const categoryName = location.state?.name || id; // fallback to id if name not provided
-  const accessToken =
-    "BQCoEroDGyNbIlyN6u3G75orT2bs7MS5-1qrOu6ghik8zPRFB0MsgIv72CG3zHvAlFQVHG9uIf8mv31TUyeFR459_LAZH2LDoBDtVUKB9VZWYLBv9-MOf_nAi4hPYkuOmdcNIPMYhBA";
+  const accessToken = import.meta.env.VITE_SPOTIFY_TOKEN;
   const [playlists, setPlaylists] = useState([]);
 
   useEffect(() => {
@@ -16,6 +16,7 @@ function CategoryPlaylist() {
         `${
           import.meta.env.VITE_API_BASE_URL
         }/v1/search?q=playlist:${encodeURIComponent(
+          // use encodeURIComponent to properly format/insert category names into the URL
           categoryName
         )}&type=playlist&market=US`,
         {
@@ -24,14 +25,15 @@ function CategoryPlaylist() {
           },
         }
       )
+
       .then((res) => {
-        console.log("Full response data:", res.data);
+        // console.log("Full response data:", res.data);
         if (res.data.playlists && res.data.playlists.items) {
           const validPlaylists = res.data.playlists.items.filter(
             (item) => item !== null
-          );
+          ); // if the playlist exists and contains .items, validPlaylists = all playlists filtered by those which contain .item
           setPlaylists(validPlaylists);
-          console.log(validPlaylists);
+          // console.log(validPlaylists);
         } else {
           console.error("No playlists data found in response:", res.data);
         }
@@ -42,14 +44,10 @@ function CategoryPlaylist() {
       });
   }, [categoryName]);
   return (
-    <div>
+    // passes "playlists" to CategoryPlaylistCardList
+    <div className="category-playlists-page">
       <h2>Playlists for: {categoryName}</h2>
-      {playlists.map((playlist) => (
-        <div key={playlist.id}>
-          <h3>{playlist.name}</h3>
-          <img src={playlist.images[0]?.url} alt={playlist.name} width={200} />
-        </div>
-      ))}
+      <CategoryPlaylistCardList playlists={playlists} />
     </div>
   );
 }

@@ -6,6 +6,7 @@ function Navigations() {
     <nav>
       <Link to="/">Explore All Music</Link>
       <Link to="/login">Login</Link>
+      <Link to="/register">Register</Link>
     </nav>
   );
 }

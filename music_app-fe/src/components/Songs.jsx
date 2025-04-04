@@ -6,8 +6,7 @@ import CategoryCardList from "./CategoryCardList";
 
 function Songs() {
   // must update access token every hour
-  const accessToken =
-    "BQCoEroDGyNbIlyN6u3G75orT2bs7MS5-1qrOu6ghik8zPRFB0MsgIv72CG3zHvAlFQVHG9uIf8mv31TUyeFR459_LAZH2LDoBDtVUKB9VZWYLBv9-MOf_nAi4hPYkuOmdcNIPMYhBA";
+  const accessToken = import.meta.env.VITE_SPOTIFY_TOKEN;
 
   const [songCategories, setSongCategories] = useState([]);
 
@@ -37,4 +36,4 @@ function Songs() {
 
 export default Songs;
 
-// this is where I want to display all the songs
+// this is where I want to display all the music categories

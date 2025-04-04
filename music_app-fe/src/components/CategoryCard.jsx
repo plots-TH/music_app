@@ -8,7 +8,7 @@ function CategoryCard({ category }) {
       state={{ name: category.name }}
       className="category-card"
     >
-      <h2>{category.name}</h2>
+      <span>{category.name}</span>
       <img src={category.icons[0].url} alt={category.name} />
     </Link>
   );

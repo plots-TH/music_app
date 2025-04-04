@@ -3,19 +3,86 @@
   margin: 0 auto;
 }
 
-.category-card {
-  width: 28%;
-  text-align: center;
-  text-decoration: none;
-  color: black;
-}
-
-.category-card img {
-  width: 200px;
-}
-
-.category-card-list {
+/* Common card-list style (tracks, categories, playlists) */
+.track-list,
+.category-card-list,
+.category-playlist-card-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  width: 90%;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Common individual card style */
+.track-list li,
+.category-card,
+.category-playlist-card {
+  width: 15%;
+  text-align: center;
+  text-decoration: none;
+  color: black;
+  border: 1px solid black;
+  border-radius: 8px;
+  margin: 5px auto;
+  padding-bottom: 10px;
+  list-style: none;
+}
+
+/* Common image style */
+.track-list img,
+.category-card img,
+.category-playlist-card img {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  padding: 10px; /* adds space INSIDE the card around the image */
+  box-sizing: border-box; /* ensures padding doesn't break layout */
+}
+
+/* Common span (text) style under images */
+.track-list span,
+.category-card span,
+.category-playlist-card span {
+  display: block;
+  padding-top: 5px;
+  font-size: 1rem;
+  white-space: normal; /* allow line wrapping */
+  word-wrap: break-word; /* break long words */
+  overflow-wrap: break-word; /* newer standard */
+  text-align: center;
+  width: 100%;
+}
+
+/* ----------- register styles ---------------- */
+.register-container {
+  width: 50%;
+  margin: 0 auto;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+
+.register-container h2 {
+  text-align: center;
+}
+
+.register-container label,
+.register-container input {
+  display: block;
+}
+
+.register-container form {
+  padding: 0 20%;
+}
+
+.register-container input {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.register-container input,
+.register-container button {
+  margin-top: 15px;
 }

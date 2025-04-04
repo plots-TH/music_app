@@ -1,1 +1,7 @@
-module.exports = { ...require("./users.js"), ...require("./widgets.js") };
+const pool = require("./pool");
+const users = require("./users.js");
+
+module.exports = {
+  pool,
+  ...users,
+};

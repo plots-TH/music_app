@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 require("dotenv").config();
 
-const { client } = require("./server/db/widgets.js");
+const pool = require("./server/db/pool.js");
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,8 +14,8 @@ app.use("/api", require("./server/api")); // for any request to an endpoint that
 
 const init = async () => {
   try {
-    await client.connect();
-    console.log(client);
+    await pool.connect();
+    console.log(pool);
     app.listen(PORT, () => {
       console.log(`Server alive on port ${PORT}`);
     });
