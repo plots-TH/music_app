@@ -1,32 +1,26 @@
-import React, { useEffect, useState } from "react"; // useEffect to make the api call
-import axios from "axios"; // useState to store results of the api call and display them from the state variable
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import CategoryCardList from "./CategoryCardList";
 
-// VITE_API_BASE_URL=https://api.spotify.com
+// VITE_API_BASE_URL should now point to Deezer's API in your .env file:
+// e.g., VITE_API_BASE_URL=https://api.deezer.com
 
 function Songs() {
-  // must update access token every hour
-  const accessToken = import.meta.env.VITE_SPOTIFY_TOKEN;
-
   const [songCategories, setSongCategories] = useState([]);
 
   useEffect(() => {
-    axios(
-      `${import.meta.env.VITE_API_BASE_URL}/v1/browse/categories?country=US`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    )
+    // Using Deezer's endpoint to fetch genres (which we'll use as categories)
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_API_BASE_URL}/deezer/genre`)
       .then((res) => {
-        setSongCategories(res.data.categories.items);
+        // Deezer returns an object with a "data" property that holds the genres
+        setSongCategories(res.data.data);
       })
       .catch((err) => {
-        console.error("Error response:", err.response);
-        console.log("Token used:", accessToken);
+        console.error("Error fetching genres:", err);
       });
-  }, []); // empty dependancy array so this is only called when component mounts
+  }, []); // empty dependency array so this is only called on component mount
+
   return (
     <div className="song-category-page">
       <CategoryCardList categories={songCategories} />
@@ -35,5 +29,3 @@ function Songs() {
 }
 
 export default Songs;
-
-// this is where I want to display all the music categories

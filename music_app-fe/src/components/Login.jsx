@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 //In your Login.jsx file, update your handleSubmit to send the email and password to the login endpoint.
-function Login({ setUserToken }) {
+function Login({ setUserToken, userToken }) {
   const [userData, setUserData] = useState({});
+  // useNavigate lets us programmatically send the user to a different route with react router dom
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -21,7 +23,7 @@ function Login({ setUserToken }) {
           localStorage.setItem("token", res.data.userToken);
         })
         .catch((err) => {
-          console.error("Login error:", err.response?.data || err.message);
+          console.error("Login error:", err);
         });
     }
   };
@@ -30,6 +32,13 @@ function Login({ setUserToken }) {
     setUserData({ ...userData, [event.target.name]: event.target.value }); // setNewUserData to a new object that spreads in any existing user data,
     // then sets any new input selected (by name) to the value of whatever is typed
   };
+
+  // wrap useNavigate logic in a useEffect so the logic doesnt run immediately during render
+  useEffect(() => {
+    if (userToken) {
+      navigate("/account"); // if the user is logged in, redirect to /account (don't allow a logged in user to access the "log in page")
+    }
+  }, [userToken, navigate]);
 
   return (
     <div className="register-container">

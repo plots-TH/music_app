@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // pass setToken prop name inside the Register function/component
-function Register({ setUserToken }) {
+function Register({ setUserToken, userToken }) {
   const [newUserData, setNewUserData] = useState({});
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -28,6 +30,12 @@ function Register({ setUserToken }) {
     setNewUserData({ ...newUserData, [event.target.name]: event.target.value }); // setNewUserData to a new object that spreads in any existing user data,
     // then sets any new input selected (by name) to the value of whatever is typed
   };
+
+  useEffect(() => {
+    if (userToken) {
+      navigate("/account");
+    }
+  }, [userToken, navigate]);
 
   return (
     <div className="register-container">

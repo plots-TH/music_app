@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 function CategoryPlaylistCard({ playlist }) {
-  // receives a playlist from parent: CategoryPlaylistCardList
   console.log("Playlist:", playlist);
   return (
     <Link
@@ -10,8 +9,12 @@ function CategoryPlaylistCard({ playlist }) {
       state={{ playlist }}
       className="category-playlist-card"
     >
-      <span>{playlist.name}</span>
-      <img src={playlist.images[0].url} alt={playlist.name} />
+      <span>{playlist.title}</span>
+      {/* Use playlist.picture_medium or playlist.picture if available */}
+      <img
+        src={playlist.picture_medium || playlist.picture}
+        alt={playlist.title}
+      />
     </Link>
   );
 }

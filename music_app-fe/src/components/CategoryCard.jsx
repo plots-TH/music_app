@@ -9,7 +9,8 @@ function CategoryCard({ category }) {
       className="category-card"
     >
       <span>{category.name}</span>
-      <img src={category.icons[0].url} alt={category.name} />
+      {/* For Deezer genres, use category.picture */}
+      <img src={category.picture} alt={category.name} />
     </Link>
   );
 }

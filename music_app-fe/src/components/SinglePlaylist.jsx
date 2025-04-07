@@ -6,35 +6,48 @@ function SinglePlaylist() {
   const location = useLocation();
   const { playlist } = location.state; // get the playlist passed through state from parent: CategoryPlaylistCard
   const [tracks, setTracks] = useState([]);
-  const accessToken = import.meta.env.VITE_SPOTIFY_TOKEN;
 
   useEffect(() => {
-    axios(
-      `${import.meta.env.VITE_API_BASE_URL}/v1/playlists/${playlist.id}/tracks`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    )
+    // For Deezer, the endpoint to get playlist details (including tracks) is:
+    // GET https://api.deezer.com/playlist/{playlist_id}
+    // We proxy this request through our backend to avoid CORS issues:
+    axios
+      .get(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/deezer/playlist/${
+          playlist.id
+        }`
+      )
       .then((res) => {
-        setTracks(res.data.items);
+        // Deezer returns tracks data inside res.data.tracks.data
+        if (res.data && res.data.tracks && res.data.tracks.data) {
+          setTracks(res.data.tracks.data);
+        } else {
+          console.error("No tracks data found in response:", res.data);
+        }
       })
       .catch((err) => {
         console.error("Error fetching tracks:", err);
       });
-  }, [playlist.id, accessToken]);
+  }, [playlist.id]);
+
+  // For Deezer, each track has a 'preview' field for the 30-second clip.
+  // Filter to only include tracks that have a preview.
+  const tracksWithPreviews = tracks.filter((track) => track.preview);
 
   return (
     <div>
-      <h2>{playlist.name}</h2>
+      <h2>{playlist.title || playlist.name}</h2>
       <ul className="track-list">
-        {tracks.map(({ track }) => (
+        {tracksWithPreviews.map((track) => (
           <li key={track.id}>
             <Link to={`/track/${track.id}`} state={{ track }}>
-              <img src={track.album.images[0]?.url} alt={track.name} />
+              {/* Deezer's album cover can be accessed via track.album.cover or cover_medium */}
+              <img
+                src={track.album?.cover_medium || track.album?.cover}
+                alt={track.title}
+              />
               <span>
-                {track.name} - {track.artists.map((a) => a.name).join(", ")}
+                {track.title} - {track.artist?.name}
               </span>
             </Link>
           </li>

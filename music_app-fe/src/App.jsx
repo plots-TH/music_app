@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, Router } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Account from "./components/Account";
 import Login from "./components/Login";
 import Navigations from "./components/Navigations";
@@ -42,17 +42,22 @@ function App() {
 
       <h1>MUSIC APP</h1>
 
-      <Navigations></Navigations>
+      <Navigations
+        userToken={userToken}
+        setUserToken={setUserToken}
+      ></Navigations>
       <Routes>
         <Route path="/" element={<Songs />}></Route>
-        {/* create a prop called setUserToken and pass in the "setUserToken" function */}
+        {/* create a prop called setUserToken and pass in the "setUserToken" function to the authentication routes (register and signup) */}
         <Route
           path="/login"
-          element={<Login setUserToken={setUserToken} />}
+          element={<Login setUserToken={setUserToken} userToken={userToken} />}
         ></Route>
         <Route
           path="/register"
-          element={<Register setUserToken={setUserToken} />}
+          element={
+            <Register setUserToken={setUserToken} userToken={userToken} />
+          }
         ></Route>
         <Route path="/category/:id" element={<CategoryPlaylist />}></Route>
         <Route path="/playlist" element={<SinglePlaylist />}></Route>
