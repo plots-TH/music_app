@@ -61,8 +61,14 @@ function App() {
         ></Route>
         <Route path="/category/:id" element={<CategoryPlaylist />}></Route>
         <Route path="/playlist" element={<SinglePlaylist />}></Route>
-        <Route path="/track/:id" element={<SingleSong />}></Route>
-        <Route path="/account" element={<Account />}></Route>
+        <Route
+          path="/track/:id"
+          element={<SingleSong userToken={userToken} />}
+        ></Route>
+        <Route
+          path="/account"
+          element={<Account userToken={userToken} />}
+        ></Route>
         {/* create a "select all path" using "*" to redirect the user to the home page if no url match is found */}
         <Route path="*" element={<Songs />}></Route>
       </Routes>
