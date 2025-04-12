@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import PersonalPlaylistCardList from "./PersonalPlaylistCardList";
 
 function Account({ userToken }) {
   const [personalPlaylists, setPersonalPlaylists] = useState([]);
@@ -16,6 +17,7 @@ function Account({ userToken }) {
         })
         .then((res) => {
           // Assume the response format is { personalPlaylists: [...] }
+          console.log("GET /personalPlaylists response:", res.data);
           setPersonalPlaylists(res.data.personalPlaylists);
           setLoading(false);
         })
@@ -62,11 +64,7 @@ function Account({ userToken }) {
       {loading && <p>Loading your playlists...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
       {personalPlaylists && personalPlaylists.length > 0 ? (
-        <ul>
-          {personalPlaylists.map((pl) => (
-            <li key={pl.id}>{pl.title}</li>
-          ))}
-        </ul>
+        <PersonalPlaylistCardList personalPlaylists={personalPlaylists} />
       ) : (
         <p>You don't have any personal playlists yet.</p>
       )}

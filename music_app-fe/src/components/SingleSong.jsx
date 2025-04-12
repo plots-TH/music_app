@@ -106,7 +106,7 @@ function SingleSong({ userToken }) {
           headers: { Authorization: `Bearer ${userToken}` },
         })
         .then((res) => {
-          setPersonalPlaylists(res.data.personalPlaylists);
+          setPersonalPlaylists(res.data.tracks);
           setLoadingPlaylists(false);
         })
         .catch((err) => {
@@ -126,7 +126,7 @@ function SingleSong({ userToken }) {
         `${
           import.meta.env.VITE_BACKEND_API_BASE_URL
         }/personalPlaylists/${playlistId}/tracks`,
-        { trackId: track.id },
+        { trackId: track.id, trackTitle: track.title },
         { headers: { Authorization: `Bearer ${userToken}` } }
       )
       .then((res) => {
