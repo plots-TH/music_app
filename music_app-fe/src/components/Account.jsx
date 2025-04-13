@@ -57,6 +57,8 @@ function Account({ userToken }) {
     }
   };
 
+  // console.log(personalPlaylists[1].tracks[0].track_title);
+
   return (
     <div>
       <h2>My Personal Playlists:</h2>

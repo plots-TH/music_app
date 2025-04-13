@@ -1,9 +1,18 @@
 import React from "react";
 
+// console.log(personalPlaylists[1].tracks[0].track_title);
+
 function PersonalPlaylistCard({ personalPlaylist }) {
+  console.log(personalPlaylist.tracks?.[0]?.track_title);
+
   return (
     <div className="category-playlist-card">
       <span>{personalPlaylist.title}</span>
+      <div>
+        {personalPlaylist.tracks.map((track) => (
+          <p>{track?.track_title}</p>
+        ))}
+      </div>
     </div>
   );
 }

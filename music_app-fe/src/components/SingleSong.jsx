@@ -106,7 +106,7 @@ function SingleSong({ userToken }) {
           headers: { Authorization: `Bearer ${userToken}` },
         })
         .then((res) => {
-          setPersonalPlaylists(res.data.tracks);
+          setPersonalPlaylists(res.data.personalPlaylists);
           setLoadingPlaylists(false);
         })
         .catch((err) => {
