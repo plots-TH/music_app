@@ -42,10 +42,12 @@ function SinglePlaylist() {
           <li key={track.id}>
             <Link to={`/track/${track.id}`} state={{ track }}>
               {/* Deezer's album cover can be accessed via track.album.cover or cover_medium */}
-              <img
-                src={track.album?.cover_medium || track.album?.cover}
-                alt={track.title}
-              />
+              {album.cover_medium && (
+                <img
+                  src={track.album?.cover_medium || track.album?.cover}
+                  alt={track.title}
+                />
+              )}
               <span>
                 {track.title} - {track.artist?.name}
               </span>

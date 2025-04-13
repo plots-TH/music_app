@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
+// Helper: Format duration (seconds to minutes:seconds)
 function formatDuration(seconds) {
   const minutes = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60)
@@ -79,14 +80,19 @@ function AddToPersonalPlaylistModal({
 }
 
 function SingleSong({ userToken }) {
+  // Get the track id from the URL parameter.
   const { id } = useParams();
+
   const [track, setTrack] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Additional states and functions for modal and playlists are here...
-  // (Omitted for brevity—you already have this functionality.)
+  // State for modal & personal playlists.
+  const [showModal, setShowModal] = useState(false);
+  const [personalPlaylists, setPersonalPlaylists] = useState([]);
+  const [loadingPlaylists, setLoadingPlaylists] = useState(false);
 
+  // Always fetch the full track details when the component mounts.
   useEffect(() => {
     if (id) {
       axios
@@ -103,16 +109,82 @@ function SingleSong({ userToken }) {
     }
   }, [id]);
 
-  // Render logic...
-  if (loading) return <p>Loading track details...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!track)
+  // Fetch personal playlists when the modal opens.
+  useEffect(() => {
+    if (showModal && userToken) {
+      setLoadingPlaylists(true);
+      axios
+        .get(`${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists`, {
+          headers: { Authorization: `Bearer ${userToken}` },
+        })
+        .then((res) => {
+          setPersonalPlaylists(res.data.personalPlaylists);
+          setLoadingPlaylists(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching personal playlists:", err);
+          setError(
+            "Could not load personal playlists. Please try again later."
+          );
+          setLoadingPlaylists(false);
+        });
+    }
+  }, [showModal, userToken]);
+
+  // Function to add the current track to a personal playlist.
+  const handleAddToPlaylist = (playlistId) => {
+    axios
+      .post(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/personalPlaylists/${playlistId}/tracks`,
+        { trackId: track.id, trackTitle: track.title },
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      )
+      .then((res) => {
+        console.log("Track added to playlist:", res.data);
+        setShowModal(false);
+      })
+      .catch((err) => {
+        console.error("Error adding track to playlist:", err);
+      });
+  };
+
+  // Function to create a new personal playlist and add the track to it.
+  const handleCreatePlaylistAndAddTrack = () => {
+    const title = prompt("Enter a title for your new playlist:");
+    if (title) {
+      axios
+        .post(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists`,
+          { title },
+          { headers: { Authorization: `Bearer ${userToken}` } }
+        )
+        .then((res) => {
+          console.log("Personal playlist created:", res.data);
+          const newPlaylistId = res.data.personalPlaylist.id;
+          handleAddToPlaylist(newPlaylistId);
+        })
+        .catch((err) => {
+          console.error("Error creating new playlist:", err);
+        });
+    }
+  };
+
+  if (loading) {
+    return <p>Loading track details...</p>;
+  }
+  if (error) {
+    return <p style={{ color: "red" }}>{error}</p>;
+  }
+  if (!track) {
     return (
       <div>
         <p>No track data available.</p>
         <p>Please go back and select a track.</p>
       </div>
     );
+  }
 
   return (
     <div>
@@ -150,7 +222,22 @@ function SingleSong({ userToken }) {
       ) : (
         <span>Album link not available</span>
       )}
-      {/* Modal and playlist functions go here */}
+      <br />
+      {/* The Add to personal playlist button */}
+      <button onClick={() => setShowModal(true)}>
+        Add to personal playlist
+      </button>
+
+      {showModal && (
+        <AddToPersonalPlaylistModal
+          playlists={personalPlaylists}
+          onClose={() => setShowModal(false)}
+          onAddTrack={handleAddToPlaylist}
+          onCreatePlaylist={handleCreatePlaylistAndAddTrack}
+        />
+      )}
+
+      {loadingPlaylists && <p>Loading your playlists...</p>}
     </div>
   );
 }
