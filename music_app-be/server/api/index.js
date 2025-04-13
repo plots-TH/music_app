@@ -7,6 +7,7 @@ const router = express.Router();
 router.use("/users", require("./userRoutes.js"));
 router.use("/deezer", require("./deezerProxy.js")); // mount the proxy
 router.use("/personalPlaylists", require("./personalPlaylistRoutes.js"));
+router.use("/track", require("./trackRoutes"));
 
 // this is localhost:3000/api
 router.get("/", (req, res) => {

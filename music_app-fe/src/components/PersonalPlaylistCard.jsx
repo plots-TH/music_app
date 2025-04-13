@@ -1,17 +1,17 @@
 import React from "react";
-
-// console.log(personalPlaylists[1].tracks[0].track_title);
+import { Link } from "react-router-dom";
 
 function PersonalPlaylistCard({ personalPlaylist }) {
-  console.log(personalPlaylist.tracks?.[0]?.track_title);
-
   return (
     <div className="category-playlist-card">
-      <span>{personalPlaylist.title}</span>
+      <h3>{personalPlaylist.title}</h3>
       <div>
-        {personalPlaylist.tracks.map((track) => (
-          <p>{track?.track_title}</p>
-        ))}
+        {personalPlaylist.tracks &&
+          personalPlaylist.tracks.map((track) => (
+            <div key={track.track_id}>
+              <Link to={`/track/${track.track_id}`}>{track.track_title}</Link>
+            </div>
+          ))}
       </div>
     </div>
   );
