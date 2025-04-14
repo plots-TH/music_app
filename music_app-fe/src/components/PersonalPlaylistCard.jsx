@@ -1,12 +1,64 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+// Edit personal playlist modal component --------------------------------------
+function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
+  if (!isModalOpen) {
+    return null;
+  }
+
+  return (
+    <div
+      className="modal-overlay" // same overlay styling as in SingleSong
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}
+    >
+      <div
+        className="modal" // same inner modal styling as in SingleSong
+        style={{
+          background: "#fff",
+          padding: "1rem",
+          borderRadius: "4px",
+          width: "90%",
+          maxWidth: "400px",
+        }}
+      >
+        <button onClick={onClose} style={{ float: "right" }}>
+          Close
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+}
+// -----------------------------------------------------------------------------
 
 function PersonalPlaylistCard({ personalPlaylist }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // declare const navigate to use useNavigate for the "Add to this playlist" button
   const handleClick = () => {
+    // function to redirect to the "Explore all music" page - onClick for the "Add to this playlist" button
     navigate("/");
   };
+
+  const [showModal, setShowModal] = useState(false); // use useState hook to manage modal visibility
+
+  const openEditPlaylistModal = () => {
+    setShowModal(true);
+  }; // function to set modal visibility to "true" (show modal)
+
+  const closeEditPlaylistModal = () => {
+    setShowModal(false);
+  }; // function to set modal visibility to "false" (hide modal)
 
   return (
     <div className="category-playlist-card">
@@ -19,7 +71,15 @@ function PersonalPlaylistCard({ personalPlaylist }) {
             </div>
           ))}
       </div>
-      <button onClick={handleClick}>Add to this playlist</button>
+      <button onClick={handleClick}>Add to this Playlist</button>
+      <button onClick={openEditPlaylistModal}>Edit Playlist</button>
+      <EditPersonalPlaylistModal
+        isModalOpen={showModal}
+        onClose={closeEditPlaylistModal}
+      >
+        <h2>Edit This Playlist</h2>
+        <p>This is the modal content. add buttons later</p>
+      </EditPersonalPlaylistModal>
     </div>
   );
 }

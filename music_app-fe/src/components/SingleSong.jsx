@@ -58,7 +58,7 @@ function AddToPersonalPlaylistModal({
         </button>
         <h3>Add to Personal Playlist</h3>
         <button onClick={onCreatePlaylist} style={{ marginBottom: "1rem" }}>
-          Create New Playlist
+          Create New Playlist + Add This Track
         </button>
         {playlists && playlists.length > 0 ? (
           <ul>
