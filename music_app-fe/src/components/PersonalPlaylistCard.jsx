@@ -1,7 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function PersonalPlaylistCard({ personalPlaylist }) {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate("/");
+  };
+
   return (
     <div className="category-playlist-card">
       <h3>{personalPlaylist.title}</h3>
@@ -13,6 +19,7 @@ function PersonalPlaylistCard({ personalPlaylist }) {
             </div>
           ))}
       </div>
+      <button onClick={handleClick}>Add to this playlist</button>
     </div>
   );
 }

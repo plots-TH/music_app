@@ -225,7 +225,7 @@ function SingleSong({ userToken }) {
       <br />
       {/* The Add to personal playlist button */}
       <button onClick={() => setShowModal(true)}>
-        Add to personal playlist
+        Add track to personal playlist
       </button>
 
       {showModal && (
