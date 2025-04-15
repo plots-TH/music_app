@@ -78,7 +78,7 @@ function PersonalPlaylistCard({ personalPlaylist }) {
 
   // ---- Edit Playlist title form functions ^^^ --------------------------
   return (
-    <div className="category-playlist-card">
+    <div className="personal-playlist-card">
       <h3>{personalPlaylist.title}</h3>
       <div>
         {personalPlaylist.tracks &&
