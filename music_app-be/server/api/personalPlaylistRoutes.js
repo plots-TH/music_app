@@ -40,7 +40,7 @@ router.get("/", authenticate, async (req, res) => {
   try {
     const playlists = await getTracksByPersonalPlaylist(userId); // Make sure to implement this in the database functions.
     console.log("Playlists returned:", playlists);
-    res.json({ personalPlaylists: playlists }); // change "tracks" to "personalPlaylist" and find the corresponding "tracks" to change to personalPlaylist
+    res.json({ personalPlaylists: playlists });
   } catch (err) {
     console.error("Error fetching playlist tracks:", err);
     res.status(500).json({ error: "Could not retrieve playlist tracks" });
@@ -51,7 +51,7 @@ router.get("/", authenticate, async (req, res) => {
 // Add a track to a specific personal playlist.
 router.post("/:playlistId/tracks", authenticate, async (req, res) => {
   const { playlistId } = req.params;
-  const { trackId, trackTitle } = req.body;
+  const { trackId, trackTitle, trackArtist } = req.body;
   if (!trackId) {
     return res.status(400).json({ error: "trackId is required" });
   }
@@ -59,7 +59,8 @@ router.post("/:playlistId/tracks", authenticate, async (req, res) => {
     const result = await addTrackToPersonalPlaylist(
       playlistId,
       trackId,
-      trackTitle
+      trackTitle,
+      trackArtist
     );
     res.status(201).json({ message: "Track added successfully", result });
   } catch (err) {

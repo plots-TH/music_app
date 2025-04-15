@@ -16,7 +16,7 @@ router.get("/genre", async (req, res) => {
   }
 });
 
-// the route above retrieves genre data by proxying the "genre" endpoint. this route proxies the "search/playlist" endpoint
+// the route above retrieves genre data by proxying the "genre" endpoint. this route proxies the "search/playlist" endpoint (used once a genre is clicked)
 router.get("/search/playlist", async (req, res) => {
   const { q } = req.query; // get query parameter
   try {

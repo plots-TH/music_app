@@ -46,6 +46,7 @@ const createTables = async () => {
   personal_playlist_id UUID NOT NULL REFERENCES personal_playlists(id) ON DELETE CASCADE,
   track_id VARCHAR(20) NOT NULL,
   track_title VARCHAR(255),
+  track_artist VARCHAR(255),
   added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (personal_playlist_id, track_id)
 );

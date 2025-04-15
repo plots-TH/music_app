@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-// Edit personal playlist modal component --------------------------------------
+// ----Edit personal playlist modal component BELOW --------------------------------------
 function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
   if (!isModalOpen) {
     return null;
@@ -41,15 +41,18 @@ function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
     </div>
   );
 }
-// -----------------------------------------------------------------------------
+// ----Edit personal playlist modal component^^^^-----------------------------------------------------------------------------
 
 function PersonalPlaylistCard({ personalPlaylist }) {
+  // ----Add to this playlist button functions BELOW----------------------------------------------------------------------------
   const navigate = useNavigate(); // declare const navigate to use useNavigate for the "Add to this playlist" button
   const handleClick = () => {
     // function to redirect to the "Explore all music" page - onClick for the "Add to this playlist" button
     navigate("/");
   };
+  // ----Add to this playlist button functions^^^----------------------------------------------------------------------------
 
+  // ----Edit playlist modal functions BELOW---------------------------------------------------------------------------------
   const [showModal, setShowModal] = useState(false); // use useState hook to manage modal visibility
 
   const openEditPlaylistModal = () => {
@@ -59,7 +62,21 @@ function PersonalPlaylistCard({ personalPlaylist }) {
   const closeEditPlaylistModal = () => {
     setShowModal(false);
   }; // function to set modal visibility to "false" (hide modal)
+  // ----Edit playlist modal functions ^^^ -------------------------------------------------------------------------------------
 
+  // ---- Edit Playlist title form functions below --------------------------
+  const [showEditPlaylistTitleForm, setShowEditPlaylistTitleForm] =
+    useState(false);
+
+  const handleEditTitleClick = () => {
+    setShowEditPlaylistTitleForm(!showEditPlaylistTitleForm);
+  };
+
+  const [editedPlaylistTitle, setEditedPlaylistTitle] = useState(
+    personalPlaylist.title
+  );
+
+  // ---- Edit Playlist title form functions ^^^ --------------------------
   return (
     <div className="category-playlist-card">
       <h3>{personalPlaylist.title}</h3>
@@ -67,19 +84,43 @@ function PersonalPlaylistCard({ personalPlaylist }) {
         {personalPlaylist.tracks &&
           personalPlaylist.tracks.map((track) => (
             <div key={track.track_id}>
-              <Link to={`/track/${track.track_id}`}>{track.track_title}</Link>
+              <Link to={`/track/${track.track_id}`}>
+                {track.track_title} by {track.track_artist}
+              </Link>
             </div>
           ))}
       </div>
-      <button onClick={handleClick}>Add to this Playlist</button>
-      <button onClick={openEditPlaylistModal}>Edit Playlist</button>
-      <EditPersonalPlaylistModal
-        isModalOpen={showModal}
-        onClose={closeEditPlaylistModal}
-      >
-        <h2>Edit This Playlist</h2>
-        <p>This is the modal content. add buttons later</p>
-      </EditPersonalPlaylistModal>
+      <div>
+        <button onClick={handleClick}>Add to this Playlist</button>
+        <button onClick={openEditPlaylistModal}>Edit Playlist</button>
+        <EditPersonalPlaylistModal
+          isModalOpen={showModal}
+          onClose={closeEditPlaylistModal}
+        >
+          <div>
+            <h2>
+              Playlist Title: {personalPlaylist.title}
+              <button onClick={handleEditTitleClick}>
+                {showEditPlaylistTitleForm ? "Cancel" : "Edit Playlist Title"}
+              </button>
+            </h2>
+            {showEditPlaylistTitleForm && (
+              <form>
+                <label>
+                  Playlist Title:
+                  <input
+                    type="text"
+                    value={editedPlaylistTitle}
+                    onChange={(e) => setEditedPlaylistTitle(e.target.value)}
+                  />
+                </label>
+                <button type="submit">Submit</button>
+              </form>
+            )}
+          </div>
+          <p>This is the modal content. add buttons later</p>
+        </EditPersonalPlaylistModal>
+      </div>
     </div>
   );
 }

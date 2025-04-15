@@ -26,13 +26,23 @@ const getUserPersonalPlaylists = async (userId) => {
 };
 
 // Adds a track (using the track_id from Deezer) to a specific personal playlist.
-const addTrackToPersonalPlaylist = async (playlistId, trackId, trackTitle) => {
+const addTrackToPersonalPlaylist = async (
+  playlistId,
+  trackId,
+  trackTitle,
+  trackArtist
+) => {
   const SQL = `
-    INSERT INTO personal_playlist_tracks (personal_playlist_id, track_id, track_title)
-    VALUES ($1, $2, $3)
+    INSERT INTO personal_playlist_tracks (personal_playlist_id, track_id, track_title, track_artist)
+    VALUES ($1, $2, $3, $4)
     RETURNING *;
   `;
-  const { rows } = await pool.query(SQL, [playlistId, trackId, trackTitle]);
+  const { rows } = await pool.query(SQL, [
+    playlistId,
+    trackId,
+    trackTitle,
+    trackArtist,
+  ]);
   return rows[0];
 };
 
@@ -45,6 +55,7 @@ SELECT
   personal_playlists.created_at,
   personal_playlist_tracks.track_id,
   personal_playlist_tracks.track_title,
+  personal_playlist_tracks.track_artist,
   personal_playlist_tracks.added_at
 FROM personal_playlists
 LEFT JOIN personal_playlist_tracks 
@@ -72,6 +83,7 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
       grouped[row.id].tracks.push({
         track_id: row.track_id,
         track_title: row.track_title,
+        track_artist: row.track_artist,
         added_at: row.added_at,
       });
     }

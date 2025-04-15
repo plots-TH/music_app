@@ -138,7 +138,11 @@ function SingleSong({ userToken }) {
         `${
           import.meta.env.VITE_BACKEND_API_BASE_URL
         }/personalPlaylists/${playlistId}/tracks`,
-        { trackId: track.id, trackTitle: track.title },
+        {
+          trackId: track.id,
+          trackTitle: track.title,
+          trackArtist: track.artist.name,
+        },
         { headers: { Authorization: `Bearer ${userToken}` } }
       )
       .then((res) => {
