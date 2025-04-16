@@ -93,9 +93,18 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
   return Object.values(grouped);
 };
 
+//
+const editPersonalPlaylistTitle = async (playlistId, newplaylistTitle) => {
+  const SQL = `UPDATE personal_playlists SET title = $2 WHERE id = $1 RETURNING *;
+  `;
+  const { rows } = await pool.query(SQL, [playlistId, newplaylistTitle]);
+  return rows[0];
+};
+
 module.exports = {
   createPersonalPlaylist,
   getUserPersonalPlaylists,
   addTrackToPersonalPlaylist,
   getTracksByPersonalPlaylist,
+  editPersonalPlaylistTitle,
 };

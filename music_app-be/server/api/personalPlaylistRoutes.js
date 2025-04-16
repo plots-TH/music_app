@@ -8,6 +8,7 @@ const {
   getUserPersonalPlaylists,
   addTrackToPersonalPlaylist,
   getTracksByPersonalPlaylist,
+  editPersonalPlaylistTitle,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
@@ -66,6 +67,26 @@ router.post("/:playlistId/tracks", authenticate, async (req, res) => {
   } catch (err) {
     console.error("Error adding track to personal playlist:", err);
     res.status(500).json({ error: "Could not add track to personal playlist" });
+  }
+});
+
+// PATCH /api/personalPlaylists/:playlistId
+router.patch("/:playlistId", authenticate, async (req, res) => {
+  const { playlistId } = req.params;
+  const { playlistTitle } = req.body;
+  try {
+    const result = await editPersonalPlaylistTitle(playlistId, playlistTitle);
+    if (!result) {
+      return res.status(404).json({ error: "Playlist not found" });
+    }
+    res
+      .status(201)
+      .json({ message: "Playlist title updated successfully", result });
+  } catch (err) {
+    console.error("Error updating title of personal playlist", err);
+    res
+      .status(500)
+      .json({ error: "Could not update title of personal playlist" });
   }
 });
 

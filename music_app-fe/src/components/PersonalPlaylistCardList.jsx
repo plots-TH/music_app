@@ -1,13 +1,14 @@
 import React from "react";
 import PersonalPlaylistCard from "./PersonalPlaylistCard";
 
-function PersonalPlaylistCardList({ personalPlaylists }) {
+function PersonalPlaylistCardList({ personalPlaylists, userToken }) {
   return (
     <div className="category-playlist-card-list">
       {personalPlaylists.map((personalPlaylist) => (
         <PersonalPlaylistCard
           key={personalPlaylist.id}
           personalPlaylist={personalPlaylist}
+          userToken={userToken}
         />
       ))}
     </div>

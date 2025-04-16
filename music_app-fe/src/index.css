@@ -128,4 +128,5 @@
 .personal-playlist-card a:hover {
   color: darkblue;
   text-decoration: none;
+  background-color: rgb(231, 231, 231);
 }

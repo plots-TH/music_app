@@ -66,7 +66,10 @@ function Account({ userToken }) {
       {loading && <p>Loading your playlists...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
       {personalPlaylists && personalPlaylists.length > 0 ? (
-        <PersonalPlaylistCardList personalPlaylists={personalPlaylists} />
+        <PersonalPlaylistCardList
+          personalPlaylists={personalPlaylists}
+          userToken={userToken}
+        />
       ) : (
         <p>You don't have any personal playlists yet.</p>
       )}

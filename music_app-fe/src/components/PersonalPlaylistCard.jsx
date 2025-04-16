@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-// ----Edit personal playlist modal component BELOW --------------------------------------
+// ----EDIT PERSONAL PLAYLIST MODAL COMPONENT BELOW --------------------------------------
 function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
   if (!isModalOpen) {
     return null;
@@ -41,18 +42,23 @@ function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
     </div>
   );
 }
-// ----Edit personal playlist modal component^^^^-----------------------------------------------------------------------------
+// ----EDIT PERSONAL PLAYLIST MODAL COMPONENT^^^^-----------------------------------------------------------------------------
+//
+//
 
-function PersonalPlaylistCard({ personalPlaylist }) {
-  // ----Add to this playlist button functions BELOW----------------------------------------------------------------------------
+function PersonalPlaylistCard({ personalPlaylist, userToken }) {
+  // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS BELOW----------------------------------------------------------------------------
   const navigate = useNavigate(); // declare const navigate to use useNavigate for the "Add to this playlist" button
   const handleClick = () => {
-    // function to redirect to the "Explore all music" page - onClick for the "Add to this playlist" button
+    // function to redirect to the "Explore all music" page - used inside onClick for the "Add to this playlist" button
     navigate("/");
   };
-  // ----Add to this playlist button functions^^^----------------------------------------------------------------------------
+  // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS^^^----------------------------------------------------------------------------
 
-  // ----Edit playlist modal functions BELOW---------------------------------------------------------------------------------
+  //
+  //
+  //
+  // ----EDIT PLAYLIST MODAL FUNCTIONS BELOW---------------------------------------------------------------------------------
   const [showModal, setShowModal] = useState(false); // use useState hook to manage modal visibility
 
   const openEditPlaylistModal = () => {
@@ -62,30 +68,54 @@ function PersonalPlaylistCard({ personalPlaylist }) {
   const closeEditPlaylistModal = () => {
     setShowModal(false);
   }; // function to set modal visibility to "false" (hide modal)
-  // ----Edit playlist modal functions ^^^ -------------------------------------------------------------------------------------
+  // ----EDIT PLAYLIST MODAL FUNCTIONS ^^^ -------------------------------------------------------------------------------------
+  //
+  //
+  //
 
-  // ---- Edit Playlist title form functions below --------------------------
+  // ---- EDIT PLAYLIST TITLE FORM FUNCTIONS BELOW --------------------------
+  // the "edit playlist title" form starts off as hidden aka (false)
   const [showEditPlaylistTitleForm, setShowEditPlaylistTitleForm] =
     useState(false);
 
+  // function used inside onClick for "edit title" button, to either show or hide the edit playlist title form
   const handleEditTitleClick = () => {
     setShowEditPlaylistTitleForm(!showEditPlaylistTitleForm);
   };
 
+  // store the newly edited playlist title in a state variable
   const [editedPlaylistTitle, setEditedPlaylistTitle] = useState(
     personalPlaylist.title
   );
 
-  // ---- Edit Playlist title form functions ^^^ --------------------------
+  // submit handler function used inside onSubmit for "submit" button on edit playlist title form
+  const handleSubmit = async () => {
+    console.log(editedPlaylistTitle);
+    try {
+      const res = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
+          personalPlaylist.id
+        }`,
+        { playlistTitle: editedPlaylistTitle }, // "playlistTitle" key name matches what server is expecting in req.body from PATCH /api/personalPlaylists/:playlistId in personalPlaylistRoutes.js
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      );
+    } catch (err) {
+      console.error("Error updating playlist title:", err);
+    }
+  };
+  // ---- EDIT PLAYLIST TITLE FORM FUNCTIONS ^^^ --------------------------
+  //
+  //
+
   return (
     <div className="personal-playlist-card">
-      <h3>{personalPlaylist.title}</h3>
+      <h2>{personalPlaylist.title}</h2>
       <div>
         {personalPlaylist.tracks &&
           personalPlaylist.tracks.map((track) => (
             <div key={track.track_id}>
               <Link to={`/track/${track.track_id}`}>
-                {track.track_title} by {track.track_artist}
+                <strong>{track.track_title}</strong> by {track.track_artist}
               </Link>
             </div>
           ))}
@@ -101,11 +131,11 @@ function PersonalPlaylistCard({ personalPlaylist }) {
             <h2>
               Playlist Title: {personalPlaylist.title}
               <button onClick={handleEditTitleClick}>
-                {showEditPlaylistTitleForm ? "Cancel" : "Edit Playlist Title"}
+                {showEditPlaylistTitleForm ? "Cancel" : "Edit Title"}
               </button>
             </h2>
             {showEditPlaylistTitleForm && (
-              <form>
+              <form onSubmit={handleSubmit}>
                 <label>
                   Playlist Title:
                   <input
