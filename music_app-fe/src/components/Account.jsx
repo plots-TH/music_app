@@ -57,6 +57,15 @@ function Account({ userToken }) {
     }
   };
 
+  // when a playlist's title is updated, instead of refreshing the whole page to "fetch" the updated title, this handler reflects that update in-place
+  const handleUpdateTitle = (playlistId, newTitle) => {
+    setPersonalPlaylists((prev) =>
+      prev.map((playlist) =>
+        playlist.id === playlistId ? { ...playlist, title: newTitle } : playlist
+      )
+    );
+  };
+
   // console.log(personalPlaylists[1].tracks[0].track_title);
 
   return (
@@ -69,6 +78,7 @@ function Account({ userToken }) {
         <PersonalPlaylistCardList
           personalPlaylists={personalPlaylists}
           userToken={userToken}
+          onUpdateTitle={handleUpdateTitle}
         />
       ) : (
         <p>You don't have any personal playlists yet.</p>

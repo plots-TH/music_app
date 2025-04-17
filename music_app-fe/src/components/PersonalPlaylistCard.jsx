@@ -46,7 +46,7 @@ function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
 //
 //
 
-function PersonalPlaylistCard({ personalPlaylist, userToken }) {
+function PersonalPlaylistCard({ personalPlaylist, userToken, onUpdateTitle }) {
   // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS BELOW----------------------------------------------------------------------------
   const navigate = useNavigate(); // declare const navigate to use useNavigate for the "Add to this playlist" button
   const handleClick = () => {
@@ -89,8 +89,10 @@ function PersonalPlaylistCard({ personalPlaylist, userToken }) {
   );
 
   // submit handler function used inside onSubmit for "submit" button on edit playlist title form
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     console.log(editedPlaylistTitle);
+
     try {
       const res = await axios.patch(
         `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
@@ -99,6 +101,10 @@ function PersonalPlaylistCard({ personalPlaylist, userToken }) {
         { playlistTitle: editedPlaylistTitle }, // "playlistTitle" key name matches what server is expecting in req.body from PATCH /api/personalPlaylists/:playlistId in personalPlaylistRoutes.js
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
+
+      // Optimistic update: update the parent’s state in place so the entire page doesnt need to refresh to reflect the changes
+      onUpdateTitle(personalPlaylist.id, editedPlaylistTitle);
+      setShowModal(false);
     } catch (err) {
       console.error("Error updating playlist title:", err);
     }

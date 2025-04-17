@@ -1,7 +1,11 @@
 import React from "react";
 import PersonalPlaylistCard from "./PersonalPlaylistCard";
 
-function PersonalPlaylistCardList({ personalPlaylists, userToken }) {
+function PersonalPlaylistCardList({
+  personalPlaylists,
+  userToken,
+  onUpdateTitle,
+}) {
   return (
     <div className="category-playlist-card-list">
       {personalPlaylists.map((personalPlaylist) => (
@@ -9,6 +13,7 @@ function PersonalPlaylistCardList({ personalPlaylists, userToken }) {
           key={personalPlaylist.id}
           personalPlaylist={personalPlaylist}
           userToken={userToken}
+          onUpdateTitle={onUpdateTitle}
         />
       ))}
     </div>
