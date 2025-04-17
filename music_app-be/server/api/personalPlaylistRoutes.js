@@ -9,6 +9,7 @@ const {
   addTrackToPersonalPlaylist,
   getTracksByPersonalPlaylist,
   editPersonalPlaylistTitle,
+  removeTrackFromPersonalPlaylist,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
@@ -70,7 +71,36 @@ router.post("/:playlistId/tracks", authenticate, async (req, res) => {
   }
 });
 
-// PATCH /api/personalPlaylists/:playlistId
+// DELETE /api/personalPlaylists/:playlistId/tracks/:trackId - remove a track from a personal playlist
+// EXPRESS LAYER - ROUTE DECLARATION:
+router.delete(
+  "/:playlistId/tracks/:trackId",
+  authenticate,
+  // ROUTE HANDLER or CONTROLLER ACTION:
+  async (req, res) => {
+    const { playlistId, trackId } = req.params;
+
+    try {
+      const deletedTrack = await removeTrackFromPersonalPlaylist(
+        playlistId,
+        trackId
+      );
+
+      if (!deletedTrack) {
+        return res.status(404).json({ error: "Track not found" });
+      }
+
+      console.log("Track removed:", deletedTrack);
+      // RESPONSE BACK TO FRONTEND:
+      res.json({ message: "Track removed", deletedTrack });
+    } catch (err) {
+      console.error("Track removal error:", err);
+      res.status(500).json({ error: "Could not remove track" });
+    }
+  }
+);
+
+// PATCH /api/personalPlaylists/:playlistId - created to edit the title of a personal playlist
 router.patch("/:playlistId", authenticate, async (req, res) => {
   const { playlistId } = req.params;
   const { playlistTitle } = req.body;

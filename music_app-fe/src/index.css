@@ -126,7 +126,20 @@
 }
 
 .personal-playlist-card a:hover {
-  color: darkblue;
+  color: rgb(255, 255, 255);
   text-decoration: none;
-  background-color: rgb(231, 231, 231);
+  background-color: rgb(105, 105, 105);
+}
+
+.track-non-link {
+  display: block;
+  width: calc(100% - 20px); /* 100% width minus 20px (10px on each side) */
+  margin: 10px auto; /* Auto side margins for centering */
+  box-sizing: border-box; /* Include padding and border in the width calculation */
+  color: black;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 4px 8px;
+  border: 1px solid black;
+  border-radius: 8px;
 }

@@ -46,6 +46,18 @@ const addTrackToPersonalPlaylist = async (
   return rows[0];
 };
 
+// remove track from personal playlist - DATA ACCESS LAYER
+const removeTrackFromPersonalPlaylist = async (playlistId, trackId) => {
+  const SQL = `
+    DELETE FROM personal_playlist_tracks 
+    WHERE personal_playlist_id = $1 
+    AND track_id = $2 
+    RETURNING *;
+  `;
+  const { rows } = await pool.query(SQL, [playlistId, trackId]);
+  return rows[0];
+};
+
 // Optionally, fetch tracks associated with a particular personal playlist.
 const getTracksByPersonalPlaylist = async (userId) => {
   const SQL = `
@@ -107,4 +119,5 @@ module.exports = {
   addTrackToPersonalPlaylist,
   getTracksByPersonalPlaylist,
   editPersonalPlaylistTitle,
+  removeTrackFromPersonalPlaylist,
 };

@@ -3,7 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // ----EDIT PERSONAL PLAYLIST MODAL COMPONENT BELOW --------------------------------------
-function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
+function EditPersonalPlaylistModal({
+  isModalOpen,
+  onClose,
+  personalPlaylist,
+  children,
+}) {
   if (!isModalOpen) {
     return null;
   }
@@ -46,7 +51,12 @@ function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
 //
 //
 
-function PersonalPlaylistCard({ personalPlaylist, userToken, onUpdateTitle }) {
+function PersonalPlaylistCard({
+  personalPlaylist,
+  userToken,
+  onUpdateTitle,
+  onRemoveTrack,
+}) {
   // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS BELOW----------------------------------------------------------------------------
   const navigate = useNavigate(); // declare const navigate to use useNavigate for the "Add to this playlist" button
   const handleClick = () => {
@@ -109,6 +119,31 @@ function PersonalPlaylistCard({ personalPlaylist, userToken, onUpdateTitle }) {
       console.error("Error updating playlist title:", err);
     }
   };
+
+  // EVENT HANDLER: remove track from playlist button
+  const handleClickRemoveTrack = async (trackId) => {
+    console.log(personalPlaylist.title);
+    try {
+      // API CLIENT CALL
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
+          personalPlaylist.id
+        }/tracks/${trackId}`,
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      );
+
+      // log the response payload:
+      console.log("DELETE response:", res.data);
+      // Specifically log the deleted track object:
+      console.log("Deleted track record:", res.data.deletedTrack);
+
+      // update UI after backend confirms deletion with optimistic update
+      onRemoveTrack(personalPlaylist.id, trackId);
+    } catch (err) {
+      console.error("Error removing track from playlist:", err);
+    }
+  };
+
   // ---- EDIT PLAYLIST TITLE FORM FUNCTIONS ^^^ --------------------------
   //
   //
@@ -153,6 +188,21 @@ function PersonalPlaylistCard({ personalPlaylist, userToken, onUpdateTitle }) {
                 <button type="submit">Submit</button>
               </form>
             )}
+
+            {/* display track list here */}
+            <h3>Playlist Tracks:</h3>
+            <div style={{ textAlign: "left" }}>
+              {personalPlaylist.tracks.map((track) => (
+                <li key={track.track_id} className="track-non-link">
+                  {track.track_title} by {track.track_artist}
+                  <button
+                    onClick={() => handleClickRemoveTrack(track.track_id)}
+                  >
+                    remove
+                  </button>
+                </li>
+              ))}
+            </div>
           </div>
           <p>This is the modal content. add buttons later</p>
         </EditPersonalPlaylistModal>

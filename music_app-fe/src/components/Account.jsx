@@ -66,6 +66,22 @@ function Account({ userToken }) {
     );
   };
 
+  // this callback function will be passed down to personalPlaylistCard so children can update the list in-place optimistically, avoiding a page refresh
+  const handleRemoveTrack = (playlistId, trackId) => {
+    setPersonalPlaylists((prev) =>
+      prev.map((playlist) =>
+        playlist.id !== playlistId
+          ? playlist
+          : {
+              ...playlist,
+              tracks: playlist.tracks.filter(
+                (track) => track.track_id !== trackId
+              ),
+            }
+      )
+    );
+  };
+
   // console.log(personalPlaylists[1].tracks[0].track_title);
 
   return (
@@ -79,6 +95,7 @@ function Account({ userToken }) {
           personalPlaylists={personalPlaylists}
           userToken={userToken}
           onUpdateTitle={handleUpdateTitle}
+          onRemoveTrack={handleRemoveTrack}
         />
       ) : (
         <p>You don't have any personal playlists yet.</p>
