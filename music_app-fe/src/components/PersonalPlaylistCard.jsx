@@ -34,10 +34,10 @@ function ConfirmDeleteModal({ isOpen, onConfirm, onCancel }) {
       >
         <p>Are you sure you want to delete this playlist?</p>
         <div style={{ marginTop: "1rem" }}>
+          <button onClick={onCancel}>Cancel</button>
           <button onClick={onConfirm} style={{ marginRight: "0.5rem" }}>
             Confirm
           </button>
-          <button onClick={onCancel}>Cancel</button>
         </div>
       </div>
     </div>
