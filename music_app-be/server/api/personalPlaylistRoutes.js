@@ -10,6 +10,7 @@ const {
   getTracksByPersonalPlaylist,
   editPersonalPlaylistTitle,
   removeTrackFromPersonalPlaylist,
+  deletePersonalPlaylist,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
@@ -71,7 +72,28 @@ router.post("/:playlistId/tracks", authenticate, async (req, res) => {
   }
 });
 
-// DELETE /api/personalPlaylists/:playlistId/tracks/:trackId - remove a track from a personal playlist
+// DELETE /api/personalPlaylists + /:playlistId EXPRESS LAYER - delete a personal playlist
+router.delete("/:playlistId", authenticate, async (req, res) => {
+  const { playlistId } = req.params;
+  const userId = req.user.id; // req.user is recieved from authenticate JWT middleware
+
+  try {
+    const deletedPlaylist = await deletePersonalPlaylist(playlistId, userId);
+
+    if (!deletedPlaylist) {
+      return res.status(404).json({ error: "Personal playlist not found" });
+    }
+
+    console.log("playlist deleted:", deletedPlaylist);
+    // RESPONSE BACK TO FRONTEND:
+    res.json({ message: "Playlist deleted", deletedPlaylist });
+  } catch (err) {
+    console.error("Playlist deletion error:", err);
+    res.status(500).json({ error: "Could not remove personal Playlist" });
+  }
+});
+
+// DELETE /api/personalPlaylists + /:playlistId/tracks/:trackId - remove a track from a personal playlist
 // EXPRESS LAYER - ROUTE DECLARATION:
 router.delete(
   "/:playlistId/tracks/:trackId",

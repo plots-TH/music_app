@@ -2,13 +2,51 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// ----EDIT PERSONAL PLAYLIST MODAL COMPONENT BELOW --------------------------------------
-function EditPersonalPlaylistModal({
-  isModalOpen,
-  onClose,
-  personalPlaylist,
-  children,
-}) {
+// ----CONFIRM DELETE MODAL COMPONENT--------------------------------------
+function ConfirmDeleteModal({ isOpen, onConfirm, onCancel }) {
+  if (!isOpen) return null;
+  return (
+    <div
+      className="modal-overlay"
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1100,
+      }}
+    >
+      <div
+        className="modal"
+        style={{
+          background: "#fff",
+          padding: "1rem",
+          borderRadius: "4px",
+          width: "80%",
+          maxWidth: "350px",
+          textAlign: "center",
+        }}
+      >
+        <p>Are you sure you want to delete this playlist?</p>
+        <div style={{ marginTop: "1rem" }}>
+          <button onClick={onConfirm} style={{ marginRight: "0.5rem" }}>
+            Confirm
+          </button>
+          <button onClick={onCancel}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+// ----CONFIRM DELETE MODAL COMPONENT^^^^-----------------------------------------------------------------------------
+
+// ----EDIT PERSONAL PLAYLIST MODAL COMPONENT BELOW--------------------------------------
+function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
   if (!isModalOpen) {
     return null;
   }
@@ -48,14 +86,13 @@ function EditPersonalPlaylistModal({
   );
 }
 // ----EDIT PERSONAL PLAYLIST MODAL COMPONENT^^^^-----------------------------------------------------------------------------
-//
-//
 
 function PersonalPlaylistCard({
   personalPlaylist,
   userToken,
   onUpdateTitle,
   onRemoveTrack,
+  onDeletePlaylist,
 }) {
   // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS BELOW----------------------------------------------------------------------------
   const navigate = useNavigate(); // declare const navigate to use useNavigate for the "Add to this playlist" button
@@ -65,11 +102,9 @@ function PersonalPlaylistCard({
   };
   // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS^^^----------------------------------------------------------------------------
 
-  //
-  //
-  //
   // ----EDIT PLAYLIST MODAL FUNCTIONS BELOW---------------------------------------------------------------------------------
   const [showModal, setShowModal] = useState(false); // use useState hook to manage modal visibility
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // manage delete confirm modal
 
   const openEditPlaylistModal = () => {
     setShowModal(true);
@@ -77,76 +112,81 @@ function PersonalPlaylistCard({
 
   const closeEditPlaylistModal = () => {
     setShowModal(false);
+    setShowDeleteConfirm(false);
   }; // function to set modal visibility to "false" (hide modal)
   // ----EDIT PLAYLIST MODAL FUNCTIONS ^^^ -------------------------------------------------------------------------------------
-  //
-  //
-  //
 
   // ---- EDIT PLAYLIST TITLE FORM FUNCTIONS BELOW --------------------------
-  // the "edit playlist title" form starts off as hidden aka (false)
   const [showEditPlaylistTitleForm, setShowEditPlaylistTitleForm] =
-    useState(false);
+    useState(false); // the "edit playlist title" form starts off as hidden aka (false)
 
-  // function used inside onClick for "edit title" button, to either show or hide the edit playlist title form
   const handleEditTitleClick = () => {
     setShowEditPlaylistTitleForm(!showEditPlaylistTitleForm);
-  };
+  }; // toggle edit title form
 
-  // store the newly edited playlist title in a state variable
   const [editedPlaylistTitle, setEditedPlaylistTitle] = useState(
     personalPlaylist.title
-  );
+  ); // store the newly edited playlist title
 
-  // submit handler function used inside onSubmit for "submit" button on edit playlist title form
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log(editedPlaylistTitle);
 
     try {
-      const res = await axios.patch(
+      await axios.patch(
         `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
           personalPlaylist.id
         }`,
-        { playlistTitle: editedPlaylistTitle }, // "playlistTitle" key name matches what server is expecting in req.body from PATCH /api/personalPlaylists/:playlistId in personalPlaylistRoutes.js
+        { playlistTitle: editedPlaylistTitle }, // matches what server expects
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
-
-      // Optimistic update: update the parent’s state in place so the entire page doesnt need to refresh to reflect the changes
-      onUpdateTitle(personalPlaylist.id, editedPlaylistTitle);
-      setShowModal(false);
+      onUpdateTitle(personalPlaylist.id, editedPlaylistTitle); // optimistic UI
+      closeEditPlaylistModal();
     } catch (err) {
       console.error("Error updating playlist title:", err);
     }
   };
+  // ---- EDIT PLAYLIST TITLE FORM FUNCTIONS ^^^ --------------------------
 
-  // EVENT HANDLER: remove track from playlist button
+  // ---- EVENT HANDLER: remove track from playlist button ------------------------------------------------------------------
   const handleClickRemoveTrack = async (trackId) => {
     console.log(personalPlaylist.title);
     try {
-      // API CLIENT CALL
       const res = await axios.delete(
         `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
           personalPlaylist.id
         }/tracks/${trackId}`,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
-
-      // log the response payload:
-      console.log("DELETE response:", res.data);
-      // Specifically log the deleted track object:
+      console.log("DELETE response:", res.data); // log response
       console.log("Deleted track record:", res.data.deletedTrack);
-
-      // update UI after backend confirms deletion with optimistic update
-      onRemoveTrack(personalPlaylist.id, trackId);
+      onRemoveTrack(personalPlaylist.id, trackId); // optimistic UI
     } catch (err) {
       console.error("Error removing track from playlist:", err);
     }
   };
+  // ---- EVENT HANDLER ^^^ --------------------------------------------------------------------------------------------------
 
-  // ---- EDIT PLAYLIST TITLE FORM FUNCTIONS ^^^ --------------------------
-  //
-  //
+  // ---- DELETE PLAYLIST FUNCTIONS BELOW ------------------
+  const handleClickDeletePlaylist = () => {
+    setShowDeleteConfirm(true); // show confirmation
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
+          personalPlaylist.id
+        }`,
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      );
+      onDeletePlaylist(personalPlaylist.id); // optimistic UI
+      closeEditPlaylistModal();
+    } catch (err) {
+      console.error("Error deleting playlist:", err);
+    }
+  };
+  // ---- DELETE PLAYLIST FUNCTIONS ^^^ ------------------
 
   return (
     <div className="personal-playlist-card">
@@ -164,6 +204,7 @@ function PersonalPlaylistCard({
       <div>
         <button onClick={handleClick}>Add to this Playlist</button>
         <button onClick={openEditPlaylistModal}>Edit Playlist</button>
+
         <EditPersonalPlaylistModal
           isModalOpen={showModal}
           onClose={closeEditPlaylistModal}
@@ -173,6 +214,13 @@ function PersonalPlaylistCard({
               Playlist Title: {personalPlaylist.title}
               <button onClick={handleEditTitleClick}>
                 {showEditPlaylistTitleForm ? "Cancel" : "Edit Title"}
+              </button>
+              <br />
+              <button
+                onClick={handleClickDeletePlaylist}
+                style={{ color: "red" }}
+              >
+                Delete Playlist
               </button>
             </h2>
             {showEditPlaylistTitleForm && (
@@ -203,6 +251,13 @@ function PersonalPlaylistCard({
                 </li>
               ))}
             </div>
+
+            {/* Confirmation nested modal */}
+            <ConfirmDeleteModal
+              isOpen={showDeleteConfirm}
+              onConfirm={handleConfirmDelete}
+              onCancel={() => setShowDeleteConfirm(false)}
+            />
           </div>
           <p>This is the modal content. add buttons later</p>
         </EditPersonalPlaylistModal>

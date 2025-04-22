@@ -82,6 +82,14 @@ function Account({ userToken }) {
     );
   };
 
+  // callback function for deleting a personal playlist
+  const handleDeletePlaylist = (playlistId) => {
+    setPersonalPlaylists((prev) =>
+      // SET the personalPlaylists state variable to a new version that consists ONLY of playlists that do NOT match the playlist ID of the passed in parameter(playlistId)
+      prev.filter((playlist) => playlist.id !== playlistId)
+    );
+  };
+
   // console.log(personalPlaylists[1].tracks[0].track_title);
 
   return (
@@ -96,6 +104,7 @@ function Account({ userToken }) {
           userToken={userToken}
           onUpdateTitle={handleUpdateTitle}
           onRemoveTrack={handleRemoveTrack}
+          onDeletePlaylist={handleDeletePlaylist}
         />
       ) : (
         <p>You don't have any personal playlists yet.</p>

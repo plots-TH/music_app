@@ -6,6 +6,7 @@ function PersonalPlaylistCardList({
   userToken,
   onUpdateTitle,
   onRemoveTrack,
+  onDeletePlaylist,
 }) {
   return (
     <div className="category-playlist-card-list">
@@ -16,6 +17,7 @@ function PersonalPlaylistCardList({
           userToken={userToken}
           onUpdateTitle={onUpdateTitle}
           onRemoveTrack={onRemoveTrack}
+          onDeletePlaylist={onDeletePlaylist}
         />
       ))}
     </div>

@@ -113,6 +113,18 @@ const editPersonalPlaylistTitle = async (playlistId, newplaylistTitle) => {
   return rows[0];
 };
 
+// delete personal playlist - DATA ACCESS LAYER
+const deletePersonalPlaylist = async (playlistId, userId) => {
+  const SQL = `
+  DELETE FROM personal_playlists
+  WHERE id = $1
+  AND user_id = $2
+  RETURNING *;
+    `;
+  const { rows } = await pool.query(SQL, [playlistId, userId]);
+  return rows[0];
+};
+
 module.exports = {
   createPersonalPlaylist,
   getUserPersonalPlaylists,
@@ -120,4 +132,5 @@ module.exports = {
   getTracksByPersonalPlaylist,
   editPersonalPlaylistTitle,
   removeTrackFromPersonalPlaylist,
+  deletePersonalPlaylist,
 };
