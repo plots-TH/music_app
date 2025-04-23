@@ -4,6 +4,7 @@ import PersonalPlaylistCardList from "./PersonalPlaylistCardList";
 
 function Account({ userToken }) {
   const [personalPlaylists, setPersonalPlaylists] = useState([]);
+  const [displayedPlaylists, setDisplayedPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,6 +20,7 @@ function Account({ userToken }) {
           // Assume the response format is { personalPlaylists: [...] }
           console.log("GET /personalPlaylists response:", res.data);
           setPersonalPlaylists(res.data.personalPlaylists);
+          setDisplayedPlaylists(res.data.personalPlaylists);
           setLoading(false);
         })
         .catch((err) => {
@@ -64,6 +66,12 @@ function Account({ userToken }) {
         playlist.id === playlistId ? { ...playlist, title: newTitle } : playlist
       )
     );
+
+    setDisplayedPlaylists((prev) =>
+      prev.map((playlist) =>
+        playlist.id === playlistId ? { ...playlist, title: newTitle } : playlist
+      )
+    );
   };
 
   // this callback function will be passed down to personalPlaylistCard so children can update the list in-place optimistically, avoiding a page refresh
@@ -80,27 +88,55 @@ function Account({ userToken }) {
             }
       )
     );
+
+    setDisplayedPlaylists((prev) =>
+      prev.map((playlist) =>
+        playlist.id !== playlistId
+          ? playlist
+          : {
+              ...playlist,
+              tracks: playlist.tracks.filter(
+                (track) => track.track_id !== trackId
+              ),
+            }
+      )
+    );
   };
 
-  // callback function for deleting a personal playlist
+  // callback function for deleting an entire personal playlist
   const handleDeletePlaylist = (playlistId) => {
     setPersonalPlaylists((prev) =>
       // SET the personalPlaylists state variable to a new version that consists ONLY of playlists that do NOT match the playlist ID of the passed in parameter(playlistId)
       prev.filter((playlist) => playlist.id !== playlistId)
     );
+
+    setDisplayedPlaylists((prev) =>
+      prev.filter((playlist) => playlist.id !== playlistId)
+    );
   };
 
-  // console.log(personalPlaylists[1].tracks[0].track_title);
+  // handler function "function expression" to filter displayed playlist titles based on the value within searchbar input field:
+  const handlePersonalPlaylistSearch = (event) => {
+    const searchInput = event.target.value.toLowerCase();
+    const searchResults = personalPlaylists.filter((playlist) =>
+      playlist.title.toLowerCase().includes(searchInput)
+    );
+    setDisplayedPlaylists(searchResults);
+  };
 
   return (
     <div>
       <h2>My Personal Playlists:</h2>
+      <div>
+        Search your playlists:{" "}
+        <input type="text" onChange={handlePersonalPlaylistSearch} />
+      </div>
       <button onClick={handleCreatePlaylist}>Create New Playlist</button>
       {loading && <p>Loading your playlists...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {personalPlaylists && personalPlaylists.length > 0 ? (
+      {displayedPlaylists && displayedPlaylists.length > 0 ? (
         <PersonalPlaylistCardList
-          personalPlaylists={personalPlaylists}
+          personalPlaylists={displayedPlaylists}
           userToken={userToken}
           onUpdateTitle={handleUpdateTitle}
           onRemoveTrack={handleRemoveTrack}
