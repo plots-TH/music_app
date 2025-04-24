@@ -3,11 +3,13 @@ import { useParams, useLocation } from "react-router-dom"; // useParams extracts
 import CategoryPlaylistCardList from "./CategoryPlaylistCardList";
 import axios from "axios";
 
+// Route path="/category/:id"
 function CategoryPlaylist() {
   const { id } = useParams();
   const { state } = useLocation(); // ← grab the router state once
   const categoryName = state?.name || `category ID: ${id}`; // fallback to id if name is not provided
   const addToPlaylistId = state?.addToPlaylistId; // ← and get your playlistId
+  const addToPlaylistTitle = state?.addToPlaylistTitle;
 
   const [playlists, setPlaylists] = useState([]);
 
@@ -39,6 +41,7 @@ function CategoryPlaylist() {
       <CategoryPlaylistCardList
         playlists={playlists}
         addToPlaylistId={addToPlaylistId}
+        addToPlaylistTitle={addToPlaylistTitle}
       />
     </div>
   );

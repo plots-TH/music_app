@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import PersonalPlaylistCardList from "./PersonalPlaylistCardList";
 
+// Route path="/account"
 function Account({ userToken }) {
   const [personalPlaylists, setPersonalPlaylists] = useState([]);
   const [displayedPlaylists, setDisplayedPlaylists] = useState([]);

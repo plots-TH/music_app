@@ -79,11 +79,13 @@ function AddToPersonalPlaylistModal({
   );
 }
 
+// Route path="/track/:id"
 function SingleSong({ userToken }) {
   // Get the track id from the URL parameter.
   const { id } = useParams();
   const location = useLocation();
   const addToPlaylistId = location.state?.addToPlaylistId;
+  const addToPlaylistTitle = location.state?.addToPlaylistTitle;
 
   const [track, setTrack] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -242,17 +244,9 @@ function SingleSong({ userToken }) {
       <br />
 
       {/* single button that either adds immediately, or pops up the modal */}
-      <button
-        onClick={() => {
-          if (addToPlaylistId) {
-            handleAddToPlaylist(addToPlaylistId);
-          } else {
-            setShowModal(true);
-          }
-        }}
-      >
+      <button onClick={handleAddClick}>
         {addToPlaylistId
-          ? "Add directly to your playlist"
+          ? `Add directly to your “${addToPlaylistTitle}” playlist`
           : "Add track to personal playlist"}
       </button>
 

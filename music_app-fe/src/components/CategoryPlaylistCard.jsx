@@ -1,12 +1,23 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function CategoryPlaylistCard({ playlist, addToPlaylistId }) {
-  console.log("Playlist:", playlist, "AddToPlaylistId:", addToPlaylistId);
+function CategoryPlaylistCard({
+  playlist,
+  addToPlaylistId,
+  addToPlaylistTitle,
+}) {
+  console.log(
+    "Playlist:",
+    playlist,
+    "AddToPlaylistId:",
+    addToPlaylistId,
+    "AddToPlaylistTitle:",
+    addToPlaylistTitle
+  );
   return (
     <Link
       to="/playlist"
-      state={{ playlist, addToPlaylistId }}
+      state={{ playlist, addToPlaylistId, addToPlaylistTitle }}
       className="category-playlist-card"
     >
       <span>{playlist.title}</span>

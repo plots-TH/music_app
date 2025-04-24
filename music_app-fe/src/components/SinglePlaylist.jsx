@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import axios from "axios";
 
+// Route path="/playlist"
 function SinglePlaylist() {
   const { state } = useLocation();
-  const { playlist, addToPlaylistId } = state || {}; // get the playlist passed through state from parent: CategoryPlaylistCard
+  const { playlist, addToPlaylistId, addToPlaylistTitle } = state || {}; // get the playlist passed through state from parent: CategoryPlaylistCard
   const [tracks, setTracks] = useState([]);
 
   useEffect(() => {
@@ -40,7 +41,10 @@ function SinglePlaylist() {
       <ul className="track-list">
         {tracksWithPreviews.map((track) => (
           <li key={track.id}>
-            <Link to={`/track/${track.id}`} state={{ track, addToPlaylistId }}>
+            <Link
+              to={`/track/${track.id}`}
+              state={{ track, addToPlaylistId, addToPlaylistTitle }}
+            >
               {/* Deezer's album cover can be accessed via track.album.cover or cover_medium */}
               {track.album.cover_medium && (
                 <img

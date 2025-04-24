@@ -8,11 +8,13 @@ import { useLocation } from "react-router-dom"; // needed to pass the selected p
 // VITE_API_BASE_URL should now point to Deezer's API in your .env file:
 // e.g., VITE_API_BASE_URL=https://api.deezer.com
 
+//Route path="/"
 function Songs() {
   const [songCategories, setSongCategories] = useState([]);
 
   const { state } = useLocation();
   const addToPlaylistId = state?.addToPlaylistId;
+  const addToPlaylistTitle = state?.addToPlaylistTitle;
 
   useEffect(() => {
     // Using Deezer's endpoint to fetch genres (which we'll use as categories)
@@ -32,6 +34,7 @@ function Songs() {
       <CategoryCardList
         categories={songCategories}
         addToPlaylistId={addToPlaylistId}
+        addToPlaylistTitle={addToPlaylistTitle}
       />
     </div>
   );

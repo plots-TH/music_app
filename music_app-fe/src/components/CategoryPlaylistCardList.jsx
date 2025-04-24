@@ -1,7 +1,11 @@
 import React from "react";
 import CategoryPlaylistCard from "./CategoryPlaylistCard";
 
-function CategoryPlaylistCardList({ playlists, addToPlaylistId }) {
+function CategoryPlaylistCardList({
+  playlists,
+  addToPlaylistId,
+  addToPlaylistTitle,
+}) {
   return (
     <div className="category-playlist-card-list">
       {playlists.map((playlist) => (
@@ -9,6 +13,7 @@ function CategoryPlaylistCardList({ playlists, addToPlaylistId }) {
           key={playlist.id}
           playlist={playlist}
           addToPlaylistId={addToPlaylistId}
+          addToPlaylistTitle={addToPlaylistTitle}
         />
       ))}
     </div>

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 // pass setToken prop name inside the Register function/component
+// Route path="/register"
 function Register({ setUserToken, userToken }) {
   const [newUserData, setNewUserData] = useState({});
   const navigate = useNavigate();

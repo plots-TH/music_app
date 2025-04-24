@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 //In your Login.jsx file, update your handleSubmit to send the email and password to the login endpoint.
+//Route path="/login"
 function Login({ setUserToken, userToken }) {
   const [userData, setUserData] = useState({});
   // useNavigate lets us programmatically send the user to a different route with react router dom

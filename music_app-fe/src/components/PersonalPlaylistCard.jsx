@@ -98,7 +98,12 @@ function PersonalPlaylistCard({
   const navigate = useNavigate(); // declare const navigate to use useNavigate for the "Add to this playlist" button
   const handleClickAddTrackToPlaylist = () => {
     // function to redirect to the "Explore all music" page - used inside onClick for the "Add to this playlist" button
-    navigate("/", { state: { addToPlaylistId: personalPlaylist.id } }); // pass in the selected playlist's ID using React Router State
+    navigate("/", {
+      state: {
+        addToPlaylistId: personalPlaylist.id,
+        addToPlaylistTitle: personalPlaylist.title,
+      },
+    }); // pass in the selected playlist's ID using React Router State
   };
   // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS^^^----------------------------------------------------------------------------
 
