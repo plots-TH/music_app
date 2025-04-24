@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 
 // Helper: Format duration (seconds to minutes:seconds)
@@ -82,6 +82,8 @@ function AddToPersonalPlaylistModal({
 function SingleSong({ userToken }) {
   // Get the track id from the URL parameter.
   const { id } = useParams();
+  const location = useLocation();
+  const addToPlaylistId = location.state?.addToPlaylistId;
 
   const [track, setTrack] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -109,7 +111,7 @@ function SingleSong({ userToken }) {
     }
   }, [id]);
 
-  // Fetch personal playlists when the modal opens.
+  // Fetch personal playlists if/when we need the modal.
   useEffect(() => {
     if (showModal && userToken) {
       setLoadingPlaylists(true);
@@ -175,6 +177,17 @@ function SingleSong({ userToken }) {
     }
   };
 
+  // unified “Add” button handler
+  const handleAddClick = () => {
+    if (addToPlaylistId) {
+      // we already “remembered” which playlist they clicked
+      handleAddToPlaylist(addToPlaylistId);
+    } else {
+      // otherwise show them the modal choice
+      setShowModal(true);
+    }
+  };
+
   if (loading) {
     return <p>Loading track details...</p>;
   }
@@ -227,12 +240,24 @@ function SingleSong({ userToken }) {
         <span>Album link not available</span>
       )}
       <br />
-      {/* The Add to personal playlist button */}
-      <button onClick={() => setShowModal(true)}>
-        Add track to personal playlist
+
+      {/* single button that either adds immediately, or pops up the modal */}
+      <button
+        onClick={() => {
+          if (addToPlaylistId) {
+            handleAddToPlaylist(addToPlaylistId);
+          } else {
+            setShowModal(true);
+          }
+        }}
+      >
+        {addToPlaylistId
+          ? "Add directly to your playlist"
+          : "Add track to personal playlist"}
       </button>
 
-      {showModal && (
+      {/* only show the modal when we didn’t already get a playlistId */}
+      {!addToPlaylistId && showModal && (
         <AddToPersonalPlaylistModal
           playlists={personalPlaylists}
           onClose={() => setShowModal(false)}

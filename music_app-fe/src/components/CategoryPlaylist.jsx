@@ -5,8 +5,9 @@ import axios from "axios";
 
 function CategoryPlaylist() {
   const { id } = useParams();
-  const location = useLocation();
-  const categoryName = location.state?.name || `category ID: ${id}`; // fallback to id if name is not provided
+  const { state } = useLocation(); // ← grab the router state once
+  const categoryName = state?.name || `category ID: ${id}`; // fallback to id if name is not provided
+  const addToPlaylistId = state?.addToPlaylistId; // ← and get your playlistId
 
   const [playlists, setPlaylists] = useState([]);
 
@@ -35,7 +36,10 @@ function CategoryPlaylist() {
   return (
     <div className="category-playlists-page">
       <h2>Playlists for: {categoryName}</h2>
-      <CategoryPlaylistCardList playlists={playlists} />
+      <CategoryPlaylistCardList
+        playlists={playlists}
+        addToPlaylistId={addToPlaylistId}
+      />
     </div>
   );
 }
