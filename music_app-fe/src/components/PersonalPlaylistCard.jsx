@@ -93,6 +93,7 @@ function PersonalPlaylistCard({
   onUpdateTitle,
   onRemoveTrack,
   onDeletePlaylist,
+  onEditDescription,
 }) {
   // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS BELOW----------------------------------------------------------------------------
   const navigate = useNavigate(); // declare const navigate to use useNavigate for the "Add to this playlist" button
@@ -193,9 +194,30 @@ function PersonalPlaylistCard({
   };
   // ---- DELETE PLAYLIST FUNCTIONS ^^^ ------------------
 
+  const [editedDescription, setEditedDescription] = useState(
+    personalPlaylist.description || ""
+  ); // store the newly edited playlist description - defaulted to empty string ""
+
+  const handleSaveDescription = async () => {
+    try {
+      const res = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
+          personalPlaylist.id
+        }/description`,
+        { description: editedDescription }, // matches what server expects
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      );
+      onEditDescription(personalPlaylist.id, editedDescription);
+      setShowModal(false);
+    } catch (err) {
+      console.error("Error saving description:", err);
+    }
+  };
+
   return (
     <div className="personal-playlist-card">
       <h2>{personalPlaylist.title}</h2>
+      <p>Description: {personalPlaylist.description}</p>
       <div>
         {personalPlaylist.tracks &&
           personalPlaylist.tracks.map((track) => (
@@ -222,13 +244,7 @@ function PersonalPlaylistCard({
               <button onClick={handleEditTitleClick}>
                 {showEditPlaylistTitleForm ? "Cancel" : "Edit Title"}
               </button>
-              <br />
-              <button
-                onClick={handleClickDeletePlaylist}
-                style={{ color: "red" }}
-              >
-                Delete Playlist
-              </button>
+              <button onClick={handleSaveDescription}></button>
             </h2>
             {showEditPlaylistTitleForm && (
               <form onSubmit={handleSubmit}>
@@ -243,6 +259,15 @@ function PersonalPlaylistCard({
                 <button type="submit">Submit</button>
               </form>
             )}
+
+            <h3>Playlist Description:</h3>
+            <textarea
+              rows={3}
+              style={{ width: "100%", marginBottom: "0.5rem" }}
+              value={editedDescription}
+              onChange={(e) => setEditedDescription(e.target.value)}
+            ></textarea>
+            <button onClick={handleSaveDescription}>Save Description</button>
 
             {/* display track list here */}
             <h3>Playlist Tracks:</h3>
@@ -267,6 +292,9 @@ function PersonalPlaylistCard({
             />
           </div>
           <p>This is the modal content. add buttons later</p>
+          <button onClick={handleClickDeletePlaylist} style={{ color: "red" }}>
+            Delete Playlist
+          </button>
         </EditPersonalPlaylistModal>
       </div>
     </div>

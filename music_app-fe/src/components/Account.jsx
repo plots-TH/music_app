@@ -125,6 +125,21 @@ function Account({ userToken }) {
     setDisplayedPlaylists(searchResults);
   };
 
+  // handler to update a playlist's description in-place:
+  const handleUpdateDescription = (playlistId, description) => {
+    setPersonalPlaylists((prev) =>
+      prev.map((playlist) =>
+        playlist.id === playlistId ? { ...playlist, description } : playlist
+      )
+    );
+
+    setDisplayedPlaylists((prev) =>
+      prev.map((playlist) =>
+        playlist.id === playlistId ? { ...playlist, description } : playlist
+      )
+    );
+  };
+
   return (
     <div>
       <h2>My Personal Playlists:</h2>
@@ -142,6 +157,7 @@ function Account({ userToken }) {
           onUpdateTitle={handleUpdateTitle}
           onRemoveTrack={handleRemoveTrack}
           onDeletePlaylist={handleDeletePlaylist}
+          onEditDescription={handleUpdateDescription}
         />
       ) : (
         <p>You don't have any personal playlists yet.</p>

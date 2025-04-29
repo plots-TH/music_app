@@ -1,6 +1,7 @@
 // server/api/personalPlaylistRoutes.js
 const express = require("express");
 const router = express.Router();
+// req.user comes from authenticate middleware
 
 // Import our database functions for personal playlists
 const {
@@ -11,6 +12,7 @@ const {
   editPersonalPlaylistTitle,
   removeTrackFromPersonalPlaylist,
   deletePersonalPlaylist,
+  updatePlaylistDescription,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
@@ -50,7 +52,7 @@ router.get("/", authenticate, async (req, res) => {
   }
 });
 
-// POST /api/personalPlaylists/:playlistId/tracks
+// POST /api/personalPlaylists + /:playlistId/tracks
 // Add a track to a specific personal playlist.
 router.post("/:playlistId/tracks", authenticate, async (req, res) => {
   const { playlistId } = req.params;
@@ -122,7 +124,7 @@ router.delete(
   }
 );
 
-// PATCH /api/personalPlaylists/:playlistId - created to edit the title of a personal playlist
+// PATCH /api/personalPlaylists + /:playlistId - created to edit the title of a personal playlist
 router.patch("/:playlistId", authenticate, async (req, res) => {
   const { playlistId } = req.params;
   const { playlistTitle } = req.body;
@@ -139,6 +141,33 @@ router.patch("/:playlistId", authenticate, async (req, res) => {
     res
       .status(500)
       .json({ error: "Could not update title of personal playlist" });
+  }
+});
+
+// PATCH /api/personalPlaylists + /:playlistId/description
+router.patch("/:playlistId/description", authenticate, async (req, res) => {
+  const { playlistId } = req.params;
+  const { description } = req.body;
+  try {
+    const updatedDescription = await updatePlaylistDescription(
+      playlistId,
+      description
+    );
+
+    if (!updatedDescription) {
+      return res.status(404).json({ error: "Playlist not found" });
+    }
+    console.log("playlist description updated for playlist ID:", playlistId);
+    // RESPONSE BACK TO FRONTEND:
+    res.status(200).json({
+      message: "playlist description updated successfully",
+      playlist: updatedDescription,
+    });
+  } catch (err) {
+    console.error("Error updating description of personal playlist", err);
+    res
+      .status(500)
+      .json({ error: "Could not update description of personal playlist" });
   }
 });
 

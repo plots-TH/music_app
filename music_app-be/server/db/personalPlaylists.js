@@ -125,6 +125,15 @@ const deletePersonalPlaylist = async (playlistId, userId) => {
   return rows[0];
 };
 
+// insert a description into personal Playlist - DATA ACCESS FUNCTION
+const updatePlaylistDescription = async (playlistId, description) => {
+  const SQL = `
+  UPDATE personal_playlists SET description = $2 WHERE id = $1 RETURNING *;
+  `;
+  const { rows } = await pool.query(SQL, [playlistId, description]);
+  return rows[0];
+};
+
 module.exports = {
   createPersonalPlaylist,
   getUserPersonalPlaylists,
@@ -133,4 +142,5 @@ module.exports = {
   editPersonalPlaylistTitle,
   removeTrackFromPersonalPlaylist,
   deletePersonalPlaylist,
+  updatePlaylistDescription,
 };

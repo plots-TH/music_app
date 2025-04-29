@@ -5,6 +5,7 @@ function CategoryPlaylistCardList({
   playlists,
   addToPlaylistId,
   addToPlaylistTitle,
+  onUpdateDescription,
 }) {
   return (
     <div className="category-playlist-card-list">
@@ -14,6 +15,7 @@ function CategoryPlaylistCardList({
           playlist={playlist}
           addToPlaylistId={addToPlaylistId}
           addToPlaylistTitle={addToPlaylistTitle}
+          onUpdateDescription={onUpdateDescription}
         />
       ))}
     </div>

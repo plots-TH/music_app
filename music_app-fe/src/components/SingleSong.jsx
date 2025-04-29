@@ -96,6 +96,9 @@ function SingleSong({ userToken }) {
   const [personalPlaylists, setPersonalPlaylists] = useState([]);
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
 
+  // state for add-to-personal-playlist success message
+  const [successMessage, setSuccessMessage] = useState("");
+
   // Always fetch the full track details when the component mounts.
   useEffect(() => {
     if (id) {
@@ -180,10 +183,20 @@ function SingleSong({ userToken }) {
   };
 
   // unified “Add” button handler
-  const handleAddClick = () => {
+  const handleAddClick = async () => {
     if (addToPlaylistId) {
-      // we already “remembered” which playlist they clicked
-      handleAddToPlaylist(addToPlaylistId);
+      try {
+        // we already “remembered” which playlist they clicked
+        await handleAddToPlaylist(addToPlaylistId);
+
+        // show success message after awaiting for the POST to finish from handleAddToPlaylist(addToPlaylistId);
+        setSuccessMessage(`Track added to “${addToPlaylistTitle}”!`);
+
+        // clear the success message after 3 seconds
+        setTimeout(() => setSuccessMessage(""), 3000);
+      } catch (err) {
+        console.error("Error adding track:", err);
+      }
     } else {
       // otherwise show them the modal choice
       setShowModal(true);
@@ -243,6 +256,7 @@ function SingleSong({ userToken }) {
       )}
       <br />
 
+      {successMessage && <div>{successMessage}</div>}
       {/* single button that either adds immediately, or pops up the modal */}
       <button onClick={handleAddClick}>
         {addToPlaylistId
