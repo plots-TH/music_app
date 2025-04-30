@@ -36,7 +36,8 @@ const createTables = async () => {
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   title VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  description TEXT DEFAULT ''
+  description TEXT DEFAULT '',
+  cover_url VARCHAR(512)
 );
 `);
 
@@ -48,6 +49,7 @@ const createTables = async () => {
   track_id VARCHAR(20) NOT NULL,
   track_title VARCHAR(255),
   track_artist VARCHAR(255),
+  track_cover_url VARCHAR(512),
   added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (personal_playlist_id, track_id)
 );

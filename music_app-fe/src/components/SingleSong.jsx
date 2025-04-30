@@ -149,6 +149,7 @@ function SingleSong({ userToken }) {
           trackId: track.id,
           trackTitle: track.title,
           trackArtist: track.artist.name,
+          trackCoverUrl: track.album.cover_medium,
         },
         { headers: { Authorization: `Bearer ${userToken}` } }
       )

@@ -217,7 +217,17 @@ function PersonalPlaylistCard({
   return (
     <div className="personal-playlist-card">
       <h2>{personalPlaylist.title}</h2>
-      <p>Description: {personalPlaylist.description}</p>
+      {/* show 1st track cover or fallback if null */}
+      <img
+        src={personalPlaylist.cover_url || "/fallback-cover.png"}
+        alt={personalPlaylist.title}
+        style={{ width: 120, height: 120, objectFit: "cover" }}
+      />
+
+      {personalPlaylist.description && (
+        <p>{personalPlaylist.description}</p> // && shortcut to conditionally render playlist description. empty strings "" are falsey, so nothing renders
+      )}
+
       <div>
         {personalPlaylist.tracks &&
           personalPlaylist.tracks.map((track) => (
@@ -244,7 +254,6 @@ function PersonalPlaylistCard({
               <button onClick={handleEditTitleClick}>
                 {showEditPlaylistTitleForm ? "Cancel" : "Edit Title"}
               </button>
-              <button onClick={handleSaveDescription}></button>
             </h2>
             {showEditPlaylistTitleForm && (
               <form onSubmit={handleSubmit}>

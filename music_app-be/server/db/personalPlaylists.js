@@ -26,15 +26,17 @@ const getUserPersonalPlaylists = async (userId) => {
 };
 
 // Adds a track (using the track_id from Deezer) to a specific personal playlist.
+// and, if playlist.cover_url is still null, sets it to this track’s cover URL.
 const addTrackToPersonalPlaylist = async (
   playlistId,
   trackId,
   trackTitle,
-  trackArtist
+  trackArtist,
+  trackCoverUrl
 ) => {
   const SQL = `
-    INSERT INTO personal_playlist_tracks (personal_playlist_id, track_id, track_title, track_artist)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO personal_playlist_tracks (personal_playlist_id, track_id, track_title, track_artist, track_cover_url)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *;
   `;
   const { rows } = await pool.query(SQL, [
@@ -42,8 +44,21 @@ const addTrackToPersonalPlaylist = async (
     trackId,
     trackTitle,
     trackArtist,
+    trackCoverUrl,
   ]);
-  return rows[0];
+  const newTrack = rows[0];
+
+  // If the playlist has no cover yet, set it
+  const updateSQL = `
+    UPDATE personal_playlists
+    SET cover_url = $2
+    WHERE id = $1
+    AND cover_url IS NULL
+    RETURNING cover_url;
+  `;
+  await pool.query(updateSQL, [playlistId, trackCoverUrl]);
+
+  return newTrack;
 };
 
 // remove track from personal playlist - DATA ACCESS LAYER
@@ -64,10 +79,13 @@ const getTracksByPersonalPlaylist = async (userId) => {
 SELECT 
   personal_playlists.id,
   personal_playlists.title,
+  personal_playlists.description,
   personal_playlists.created_at,
+  personal_playlists.cover_url      AS cover_url,
   personal_playlist_tracks.track_id,
   personal_playlist_tracks.track_title,
   personal_playlist_tracks.track_artist,
+  personal_playlist_tracks.track_cover_url      AS track_cover_url,
   personal_playlist_tracks.added_at
 FROM personal_playlists
 LEFT JOIN personal_playlist_tracks 
@@ -86,7 +104,9 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
       grouped[row.id] = {
         id: row.id,
         title: row.title,
+        description: row.description,
         created_at: row.created_at,
+        cover_url: row.cover_url,
         tracks: [],
       };
     }
@@ -97,6 +117,7 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
         track_title: row.track_title,
         track_artist: row.track_artist,
         added_at: row.added_at,
+        cover_url: row.track_cover_url, // if I ever want per-track covers later
       });
     }
   });

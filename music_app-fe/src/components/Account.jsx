@@ -143,9 +143,14 @@ function Account({ userToken }) {
   return (
     <div>
       <h2>My Personal Playlists:</h2>
+      {/* if no displayed playlists, hide the search bar */}
       <div>
-        Search your playlists:{" "}
-        <input type="text" onChange={handlePersonalPlaylistSearch} />
+        {displayedPlaylists.length > 0 && (
+          <div>
+            Search your playlists:
+            <input type="text" onChange={handlePersonalPlaylistSearch} />
+          </div>
+        )}
       </div>
       <button onClick={handleCreatePlaylist}>Create New Playlist</button>
       {loading && <p>Loading your playlists...</p>}
