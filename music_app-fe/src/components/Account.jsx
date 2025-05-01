@@ -78,29 +78,35 @@ function Account({ userToken }) {
   // this callback function will be passed down to personalPlaylistCard so children can update the list in-place optimistically, avoiding a page refresh
   const handleRemoveTrack = (playlistId, trackId) => {
     setPersonalPlaylists((prev) =>
-      prev.map((playlist) =>
-        playlist.id !== playlistId
-          ? playlist
-          : {
-              ...playlist,
-              tracks: playlist.tracks.filter(
-                (track) => track.track_id !== trackId
-              ),
-            }
-      )
-    );
+      prev.map((playlist) => {
+        if (playlist.id !== playlistId) return playlist;
 
+        const newTracks = playlist.tracks.filter(
+          (track) => track.track_id !== trackId
+        );
+
+        return {
+          ...playlist,
+          tracks: newTracks,
+          cover_url: newTracks.length > 0 ? newTracks[0].track_cover_url : null,
+        };
+      })
+    );
+    // fix setDeisplayedPlaylists to rerender no cover image
     setDisplayedPlaylists((prev) =>
-      prev.map((playlist) =>
-        playlist.id !== playlistId
-          ? playlist
-          : {
-              ...playlist,
-              tracks: playlist.tracks.filter(
-                (track) => track.track_id !== trackId
-              ),
-            }
-      )
+      prev.map((playlist) => {
+        if (playlist.id !== playlistId) return playlist;
+
+        const newTracks = playlist.tracks.filter(
+          (track) => track.track_id !== trackId
+        );
+
+        return {
+          ...playlist,
+          tracks: newTracks,
+          cover_url: newTracks.length > 0 ? newTracks[0].track_cover_url : null,
+        };
+      })
     );
   };
 

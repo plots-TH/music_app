@@ -117,7 +117,7 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
         track_title: row.track_title,
         track_artist: row.track_artist,
         added_at: row.added_at,
-        cover_url: row.track_cover_url, // if I ever want per-track covers later
+        track_cover_url: row.track_cover_url, // if I ever want per-track covers later
       });
     }
   });
