@@ -72,14 +72,13 @@ const removeTrackFromPersonalPlaylist = async (playlistId, trackId) => {
     await client.query("BEGIN");
 
     // delete the track
-
     const deleteSQL = `
     DELETE FROM personal_playlist_tracks 
     WHERE personal_playlist_id = $1 
     AND track_id = $2 
     RETURNING *;
   `;
-    const { rows: deleted } = await pool.query(deleteSQL, [
+    const { rows: deleted } = await client.query(deleteSQL, [
       playlistId,
       trackId,
     ]);
@@ -91,16 +90,23 @@ const removeTrackFromPersonalPlaylist = async (playlistId, trackId) => {
     ORDER BY added_at ASC
     LIMIT 1;
   `;
-    const { rows: remaining } = await pool.query(remainingSQL, [playlistId]);
+    const { rows: remaining } = await client.query(remainingSQL, [playlistId]);
+    let newCover;
+    if (remaining.length === 0) {
+      newCover = null;
+    } else {
+      newCover = remaining[0].track_cover_url;
+    }
 
     // update the playlist’s cover_url based on what remains (or clear it)
-    const newCover = remaining[0].track_cover_url || null;
+    console.log({ deleted, remaining });
+
     const updateSQL = `
     UPDATE personal_playlists
     SET cover_url = $2
     WHERE id = $1;
   `;
-    await pool.query(updateSQL, [playlistId, newCover]);
+    await client.query(updateSQL, [playlistId, newCover]);
 
     // commit — now all three statements are permanently applied
     await client.query("COMMIT");
