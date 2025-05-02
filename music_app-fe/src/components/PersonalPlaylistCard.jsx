@@ -217,7 +217,7 @@ function PersonalPlaylistCard({
   return (
     <div className="personal-playlist-card">
       <h2>{personalPlaylist.title}</h2>
-      {/* show 1st track cover or fallback if null */}
+      {/* show 1st track cover. if 0 tracks, dont render image tag */}
       {personalPlaylist.tracks.length > 0 && (
         <img
           src={personalPlaylist.cover_url}

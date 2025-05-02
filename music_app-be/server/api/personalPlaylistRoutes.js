@@ -71,6 +71,13 @@ router.post("/:playlistId/tracks", authenticate, async (req, res) => {
     res.status(201).json({ message: "Track added successfully", result });
   } catch (err) {
     console.error("Error adding track to personal playlist:", err);
+    if (err.code === "23505") {
+      // 23505 is postgres's error code for unique constraint violation. in this case its a duplicate-key violation
+      // 409 is the standard HTTP status for “the request conflicts with the current state of the resource” = duplicate-key error
+      return res
+        .status(409)
+        .json({ error: "This track is already in that playlist" });
+    }
     res.status(500).json({ error: "Could not add track to personal playlist" });
   }
 });

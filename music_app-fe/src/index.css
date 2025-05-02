@@ -98,6 +98,8 @@
   margin: 5px auto;
   padding-bottom: 10px;
   list-style: none;
+  /* explicitly opt out of stretching: */
+  align-self: flex-start;
 }
 
 .personal-playlist-card span {
