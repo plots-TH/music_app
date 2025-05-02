@@ -85,6 +85,9 @@ function Account({ userToken }) {
           (track) => track.track_id !== trackId
         );
 
+        // Create a new playlist object by copying all existing fields (...playlist),
+        // then overwrite `tracks` with the filtered list (`newTracks`)
+        // and set `cover_url` to the first track’s cover_url (or null if there are no tracks)
         return {
           ...playlist,
           tracks: newTracks,

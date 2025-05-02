@@ -61,16 +61,60 @@ const addTrackToPersonalPlaylist = async (
   return newTrack;
 };
 
-// remove track from personal playlist - DATA ACCESS LAYER
+// remove track from personal playlist - DATA ACCESS LAYER - remove track handler
 const removeTrackFromPersonalPlaylist = async (playlistId, trackId) => {
-  const SQL = `
+  // grab a dedicated client from the pool
+  const client = await pool.connect();
+
+  try {
+    // start the transaction - so all three of the following client.queries either succeed or fail together
+    // this avoids half-updated or half-applied states in the database
+    await client.query("BEGIN");
+
+    // delete the track
+
+    const deleteSQL = `
     DELETE FROM personal_playlist_tracks 
     WHERE personal_playlist_id = $1 
     AND track_id = $2 
     RETURNING *;
   `;
-  const { rows } = await pool.query(SQL, [playlistId, trackId]);
-  return rows[0];
+    const { rows: deleted } = await pool.query(deleteSQL, [
+      playlistId,
+      trackId,
+    ]);
+
+    // see if any tracks remain. If they do, we will set the track's image to the playlist's cover image
+    const remainingSQL = `
+    SELECT track_cover_url FROM personal_playlist_tracks
+    WHERE personal_playlist_id = $1
+    ORDER BY added_at ASC
+    LIMIT 1;
+  `;
+    const { rows: remaining } = await pool.query(remainingSQL, [playlistId]);
+
+    // update the playlist’s cover_url based on what remains (or clear it)
+    const newCover = remaining[0].track_cover_url || null;
+    const updateSQL = `
+    UPDATE personal_playlists
+    SET cover_url = $2
+    WHERE id = $1;
+  `;
+    await pool.query(updateSQL, [playlistId, newCover]);
+
+    // commit — now all three statements are permanently applied
+    await client.query("COMMIT");
+
+    // return the deleted row so your service layer can respond
+    return deleted[0];
+  } catch (err) {
+    // if anything threw, undo all of the above
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    // awlays release the client back to the pool, even if an error occured
+    client.release();
+  }
 };
 
 // Optionally, fetch tracks associated with a particular personal playlist.
