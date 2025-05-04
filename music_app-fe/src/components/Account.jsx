@@ -9,6 +9,9 @@ function Account({ userToken }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // state variable for personalPlaylist searchbar (used in handlePersonalPlaylistSearch)
+  const [searchInput, setSearchInput] = useState("");
+
   // Function to fetch personal playlists for the logged-in user
   const fetchPlaylists = () => {
     if (userToken) {
@@ -95,7 +98,7 @@ function Account({ userToken }) {
         };
       })
     );
-    // fix setDeisplayedPlaylists to rerender no cover image
+    // fix setDisplayedPlaylists to rerender no cover image
     setDisplayedPlaylists((prev) =>
       prev.map((playlist) => {
         if (playlist.id !== playlistId) return playlist;
@@ -127,10 +130,13 @@ function Account({ userToken }) {
 
   // handler function "function expression" to filter displayed playlist titles based on the value within searchbar input field:
   const handlePersonalPlaylistSearch = (event) => {
-    const searchInput = event.target.value.toLowerCase();
+    const input = event.target.value.toLowerCase();
+    setSearchInput(input);
+
     const searchResults = personalPlaylists.filter((playlist) =>
-      playlist.title.toLowerCase().includes(searchInput)
+      playlist.title.toLowerCase().includes(input)
     );
+
     setDisplayedPlaylists(searchResults);
   };
 
@@ -152,19 +158,25 @@ function Account({ userToken }) {
   return (
     <div>
       <h2>My Personal Playlists:</h2>
-      {/* if no displayed playlists, hide the search bar */}
+      {/* always show the searchbar if the user has at least 1 personal playlist */}
       <div>
-        {displayedPlaylists.length > 0 && (
+        {personalPlaylists.length > 0 && (
           <div>
             Search your playlists:
             <input type="text" onChange={handlePersonalPlaylistSearch} />
           </div>
         )}
       </div>
+
+      {/* create a playlist button */}
       <button onClick={handleCreatePlaylist}>Create New Playlist</button>
       {loading && <p>Loading your playlists...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {displayedPlaylists && displayedPlaylists.length > 0 ? (
+
+      {/* If 0 personal playlists exist, show "no playlists yet" message. If displayedPlaylists.length > 0, show them  */}
+      {personalPlaylists.length === 0 ? (
+        <p>You have not created any personal playlists yet.</p>
+      ) : displayedPlaylists.length > 0 ? (
         <PersonalPlaylistCardList
           personalPlaylists={displayedPlaylists}
           userToken={userToken}
@@ -174,7 +186,8 @@ function Account({ userToken }) {
           onEditDescription={handleUpdateDescription}
         />
       ) : (
-        <p>You don't have any personal playlists yet.</p>
+        // if they *have* playlists but none matched the current searchTerm
+        <p>No playlists match “{searchInput}”.</p>
       )}
     </div>
   );
