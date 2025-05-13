@@ -25,6 +25,17 @@ const getUserPersonalPlaylists = async (userId) => {
   return rows;
 };
 
+// Get a specific personal playlist by it's ID
+const getpersonalPlaylistById = async (playlistId) => {
+  const SQL = `
+    SELECT *
+    FROM personal_playlists
+    WHERE id = $1
+  `;
+  const { rows } = await pool.query(SQL, [playlistId]);
+  return rows[0];
+};
+
 // Adds a track (using the track_id from Deezer) to a specific personal playlist.
 // and, if playlist.cover_url is still null, sets it to this track’s cover URL.
 const addTrackToPersonalPlaylist = async (
@@ -132,6 +143,7 @@ SELECT
   personal_playlists.description,
   personal_playlists.created_at,
   personal_playlists.cover_url      AS cover_url,
+  personal_playlists.is_public      AS is_public,
   personal_playlist_tracks.track_id,
   personal_playlist_tracks.track_title,
   personal_playlist_tracks.track_artist,
@@ -157,6 +169,7 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
         description: row.description,
         created_at: row.created_at,
         cover_url: row.cover_url,
+        is_public: row.is_public,
         tracks: [],
       };
     }
@@ -168,6 +181,7 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
         track_artist: row.track_artist,
         added_at: row.added_at,
         track_cover_url: row.track_cover_url, // if I ever want per-track covers later
+        is_public: row.is_public,
       });
     }
   });
@@ -178,7 +192,11 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
 
 //
 const editPersonalPlaylistTitle = async (playlistId, newplaylistTitle) => {
-  const SQL = `UPDATE personal_playlists SET title = $2 WHERE id = $1 RETURNING *;
+  const SQL = `
+  UPDATE personal_playlists
+    SET title = $2
+    WHERE id = $1
+    RETURNING *;
   `;
   const { rows } = await pool.query(SQL, [playlistId, newplaylistTitle]);
   return rows[0];
@@ -199,19 +217,36 @@ const deletePersonalPlaylist = async (playlistId, userId) => {
 // insert a description into personal Playlist - DATA ACCESS FUNCTION
 const updatePlaylistDescription = async (playlistId, description) => {
   const SQL = `
-  UPDATE personal_playlists SET description = $2 WHERE id = $1 RETURNING *;
+  UPDATE personal_playlists
+   SET description = $2 
+   WHERE id = $1 
+   RETURNING *;
   `;
   const { rows } = await pool.query(SQL, [playlistId, description]);
+  return rows[0];
+};
+
+// update the is_public status of a personal playlist
+const updatePublicStatus = async (playlistId, isPublic) => {
+  const SQL = `
+  UPDATE personal_playlists
+   SET is_public = $2
+   WHERE id = $1
+   RETURNING *;
+  `;
+  const { rows } = await pool.query(SQL, [playlistId, isPublic]);
   return rows[0];
 };
 
 module.exports = {
   createPersonalPlaylist,
   getUserPersonalPlaylists,
+  getpersonalPlaylistById,
   addTrackToPersonalPlaylist,
   getTracksByPersonalPlaylist,
   editPersonalPlaylistTitle,
   removeTrackFromPersonalPlaylist,
   deletePersonalPlaylist,
   updatePlaylistDescription,
+  updatePublicStatus,
 };

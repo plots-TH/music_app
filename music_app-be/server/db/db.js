@@ -37,7 +37,8 @@ const createTables = async () => {
   title VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   description TEXT DEFAULT '',
-  cover_url VARCHAR(512)
+  cover_url VARCHAR(512),
+  is_public BOOLEAN NOT NULL DEFAULT FALSE
 );
 `);
 
@@ -58,15 +59,32 @@ const createTables = async () => {
     const hashedPassword = await bcrypt.hash("c", 10);
     const values = ["c", "c", "c", "c@fake.com", hashedPassword];
     // -- Seed database with a test user:
-    await pool.query(
+    const { rows } = await pool.query(
       `
     INSERT INTO users (firstname, lastname, username, email, password)
-    VALUES ($1, $2, $3, $4, $5);
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id;
     `,
       values
     );
+    const user1Id = rows[0].id;
+
+    const hashedPassword2 = await bcrypt.hash("d", 10);
+    const values2 = ["d", "d", "d", "d@fake.com", hashedPassword2];
+    // seed 2nd test user:
+    await pool.query(
+      `
+      INSERT INTO users (firstname, lastname, username, email, password)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id;
+      `,
+      values2
+    );
+    const user2Id = rows[0].id;
 
     console.log("Tables created successfully!");
+    console.log("user1Id:", user1Id);
+    console.log("user2Id:", user2Id);
   } catch (err) {
     console.error(":x: Error creating tables:", err);
   }

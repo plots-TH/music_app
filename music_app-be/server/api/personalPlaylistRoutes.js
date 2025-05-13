@@ -7,12 +7,14 @@ const router = express.Router();
 const {
   createPersonalPlaylist,
   getUserPersonalPlaylists,
+  getpersonalPlaylistById,
   addTrackToPersonalPlaylist,
   getTracksByPersonalPlaylist,
   editPersonalPlaylistTitle,
   removeTrackFromPersonalPlaylist,
   deletePersonalPlaylist,
   updatePlaylistDescription,
+  updatePublicStatus,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
@@ -176,6 +178,44 @@ router.patch("/:playlistId/description", authenticate, async (req, res) => {
     res
       .status(500)
       .json({ error: "Could not update description of personal playlist" });
+  }
+});
+
+// PATCH /api/personalPlaylists + /:playlistId/publish
+router.patch("/:playlistId/publish", authenticate, async (req, res) => {
+  const userId = req.user.id; // from authenticate middleware
+  const { playlistId } = req.params;
+  const { isPublic } = req.body;
+  console.log("req.user payload:", req.user);
+
+  // Business rule: only the playlist's creator may toggle publicity (publish/unpublish)
+  const personalPlaylist = await getpersonalPlaylistById(playlistId);
+
+  console.log("raw req.user.id:", req.user.id);
+  console.log("Fetched playlist.userid:", personalPlaylist.user_id);
+
+  if (personalPlaylist.user_id !== userId) {
+    return res.status(403).json({
+      error:
+        "You are not the creator of this playlist and cannot publish/unpublish it.",
+    });
+  }
+
+  try {
+    const updatedPublicStatus = await updatePublicStatus(playlistId, isPublic);
+
+    console.log(
+      "public status updated for playlist ID:",
+      playlistId,
+      "public status:",
+      updatedPublicStatus
+    );
+    res.status(200).json({
+      message: `your (${updatedPublicStatus.title}) playlist's public status was updated successfully`,
+      publicStatus: updatedPublicStatus.is_public,
+    });
+  } catch (err) {
+    console.error("Error updating public-status of personal playlist", err);
   }
 });
 
