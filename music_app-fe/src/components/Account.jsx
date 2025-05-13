@@ -155,6 +155,76 @@ function Account({ userToken }) {
     );
   };
 
+  // // temporary useEffect on page mount just to see the console log value of personalPlaylist.is_public
+  // useEffect(() => {
+  //   console.log(
+  //     `[mount] playlist ${personalPlaylist.id} initial isPublic:`,
+  //     personalPlaylist.is_public
+  //   );
+  // }, []);
+
+  // // useEffect to log *after* the value of isPublic is changed (place isPublic in dependecy array to ensure this):
+  // useEffect(() => {
+  //   console.log(
+  //     `for playlist with ID: ${personalPlaylist.id}, isPublic value updated to:`,
+  //     isPublic
+  //   );
+  // }, [isPublic]);
+
+  const handleTogglePublic = async (playlistId) => {
+    console.log("toggle called for:", playlistId);
+    const playlist = personalPlaylists.find((pl) => pl.id === playlistId);
+    console.log("found playlist:", playlistId);
+
+    const newValue = !playlist.is_public;
+    console.log("new is_public value aka newValue will be:", newValue);
+
+    setPersonalPlaylists((prev) =>
+      prev.map((playlist) =>
+        playlist.id === playlistId
+          ? { ...playlist, is_public: newValue }
+          : playlist
+      )
+    );
+
+    setDisplayedPlaylists((prev) =>
+      prev.map((playlist) =>
+        playlist.id === playlistId
+          ? { ...playlist, is_public: newValue }
+          : playlist
+      )
+    );
+
+    //console.log("toggling from", isPublic, "=>", !isPublic);
+    //const newPublicValue = !isPublic;
+    //console.log("about to PATCH /publish, body:", { newPublicValue });
+    //setIsPublic(newPublicValue);
+    // fire off PATCH here:
+    try {
+      const res = await axios.patch(
+        `${
+          import.meta.env.VITE_BACKEND_API_BASE_URL
+        }/personalPlaylists/${playlistId}/publish`,
+        { isPublic: newValue },
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      );
+      console.log("handleTogglePublic PATCH response:", res);
+      console.log("playlist's isPublic value:", newValue);
+    } catch (err) {
+      console.error(
+        "error updating playlist public status (handleTogglePublic PATCH request):",
+        err
+      );
+    }
+  };
+
+  useEffect(() => {
+    console.log(
+      "playlists now:",
+      personalPlaylists.map((p) => ({ id: p.id, isPublic: p.is_public }))
+    );
+  }, [personalPlaylists]);
+
   return (
     <div>
       <h2>My Personal Playlists:</h2>
@@ -184,6 +254,7 @@ function Account({ userToken }) {
           onRemoveTrack={handleRemoveTrack}
           onDeletePlaylist={handleDeletePlaylist}
           onEditDescription={handleUpdateDescription}
+          onTogglePublic={handleTogglePublic}
         />
       ) : (
         // if they *have* playlists but none matched the current searchTerm

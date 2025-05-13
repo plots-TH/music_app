@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -94,6 +94,7 @@ function PersonalPlaylistCard({
   onRemoveTrack,
   onDeletePlaylist,
   onEditDescription,
+  onTogglePublic,
 }) {
   // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS BELOW----------------------------------------------------------------------------
   const navigate = useNavigate(); // declare const navigate to use useNavigate for the "Add to this playlist" button
@@ -214,9 +215,18 @@ function PersonalPlaylistCard({
     }
   };
 
+  console.log(
+    `Card render for ${personalPlaylist.id}, is_public =`,
+    personalPlaylist.is_public
+  );
+
   return (
     <div className="personal-playlist-card">
       <h2>{personalPlaylist.title}</h2>
+
+      {/* render "This Playlist is Publicly Visible" when newValue of isPublic (from handleTogglePublic in Account.jsx ) = true */}
+      {personalPlaylist.is_public && <p>This Playlist is Publicly Viewable</p>}
+
       {/* show 1st track cover. if 0 tracks, dont render image tag */}
       {personalPlaylist.tracks.length > 0 && (
         <img
@@ -245,6 +255,9 @@ function PersonalPlaylistCard({
           Add to this Playlist
         </button>
         <button onClick={openEditPlaylistModal}>Edit Playlist</button>
+        <button onClick={() => onTogglePublic(personalPlaylist.id)}>
+          {personalPlaylist.is_public ? "Set to Private" : "Publish Playlist"}
+        </button>
 
         <EditPersonalPlaylistModal
           isModalOpen={showModal}

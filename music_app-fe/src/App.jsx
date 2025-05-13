@@ -9,6 +9,7 @@ import Songs from "./components/Songs";
 import CategoryPlaylist from "./components/CategoryPlaylist";
 import axios from "axios";
 import SinglePlaylist from "./components/SinglePlaylist";
+import ExplorePublic from "./components/ExplorePublic";
 
 function App() {
   // widgets are an example slice
@@ -71,6 +72,8 @@ function App() {
         ></Route>
         {/* create a "select all path" using "*" to redirect the user to the home page if no url match is found */}
         <Route path="*" element={<Songs />}></Route>
+
+        <Route path="/publicPlaylists" element={<ExplorePublic />}></Route>
       </Routes>
     </>
   );
