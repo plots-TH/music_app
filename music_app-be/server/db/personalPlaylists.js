@@ -238,6 +238,18 @@ const updatePublicStatus = async (playlistId, isPublic) => {
   return rows[0];
 };
 
+// get publicly published personal playlists - for the "explore public user playlists" page
+const getPublicPlaylists = async () => {
+  const SQL = `
+  SELECT * 
+  FROM personal_playlists 
+  WHERE is_public = TRUE;
+  `;
+  const { rows } = await pool.query(SQL);
+  console.log("data access function getPublicPlaylists rows:", rows);
+  return rows;
+};
+
 module.exports = {
   createPersonalPlaylist,
   getUserPersonalPlaylists,
@@ -249,4 +261,5 @@ module.exports = {
   deletePersonalPlaylist,
   updatePlaylistDescription,
   updatePublicStatus,
+  getPublicPlaylists,
 };

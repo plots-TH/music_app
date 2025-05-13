@@ -15,6 +15,7 @@ const {
   deletePersonalPlaylist,
   updatePlaylistDescription,
   updatePublicStatus,
+  getPublicPlaylists,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
@@ -52,6 +53,13 @@ router.get("/", authenticate, async (req, res) => {
     console.error("Error fetching playlist tracks:", err);
     res.status(500).json({ error: "Could not retrieve playlist tracks" });
   }
+});
+
+// GET /api/personalPlaylists + /publicPlaylists - handler that calls getPublicPlaylists function in personalPlaylists.js
+router.get("/publicPlaylists", async (req, res) => {
+  const playlists = await getPublicPlaylists();
+  console.log(`/publicPlaylists returning:`, playlists);
+  res.json({ publicPlaylists: playlists });
 });
 
 // POST /api/personalPlaylists + /:playlistId/tracks
