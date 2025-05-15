@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import PublicPlaylistCardList from "./publicPlaylistCardList";
 
 //Route path="/publicPlaylists"
 function ExplorePublic() {
   const [publicPlaylists, setPublicPlaylists] = useState([]);
+  const [displayedPublicPlaylists, setDisplayedPublicPlaylists] = useState([]);
 
   useEffect(() => {
     console.log("fetching public playlists...");
@@ -19,6 +21,7 @@ function ExplorePublic() {
           res.data.publicPlaylists
         );
         setPublicPlaylists(res.data.publicPlaylists);
+        setDisplayedPublicPlaylists(res.data.publicPlaylists);
       })
       .catch((err) => {
         console.error("Error fetching Public Playlists:", err);
@@ -26,12 +29,19 @@ function ExplorePublic() {
   }, []); // empty dependency array so useEffect is only called on component mount
 
   return (
+    // <div>
+    //   <h2>Explore Playlists Created by other Users:</h2>
+    //   {publicPlaylists.map((playlist) => (
+    //     <div key={playlist.id}>
+    //       {/* swap this out with a card later */}
+    //       <h3>{playlist.title}</h3>
+    //     </div>
+    //   ))}
+    // </div>
     <div>
-      {publicPlaylists.map((playlist) => (
-        <div key={playlist.id}>
-          <h3>{playlist.title}</h3>
-        </div>
-      ))}
+      <h2>Explore Playlists Created by other Users:</h2>
+
+      <PublicPlaylistCardList publicPlaylists={displayedPublicPlaylists} />
     </div>
   );
 }
