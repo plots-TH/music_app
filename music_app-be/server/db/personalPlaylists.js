@@ -241,13 +241,57 @@ const updatePublicStatus = async (playlistId, isPublic) => {
 // get publicly published personal playlists - for the "explore public user playlists" page
 const getPublicPlaylists = async () => {
   const SQL = `
-  SELECT * 
-  FROM personal_playlists 
-  WHERE is_public = TRUE;
+  SELECT 
+  personal_playlists.id,
+  personal_playlists.title,
+  personal_playlists.description,
+  personal_playlists.created_at,
+  personal_playlists.cover_url      AS cover_url,
+  personal_playlists.is_public      AS is_public,
+  personal_playlist_tracks.track_id,
+  personal_playlist_tracks.track_title,
+  personal_playlist_tracks.track_artist,
+  personal_playlist_tracks.track_cover_url      AS track_cover_url,
+  personal_playlist_tracks.added_at
+  FROM personal_playlists
+  LEFT JOIN personal_playlist_tracks
+  ON personal_playlists.id = personal_playlist_tracks.personal_playlist_id 
+  WHERE is_public = TRUE
+  ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at DESC;
   `;
   const { rows } = await pool.query(SQL);
   console.log("data access function getPublicPlaylists rows:", rows);
-  return rows;
+
+  // Group the rows by playlist ID:
+  const grouped = {};
+  rows.forEach((row) => {
+    // If we haven't seen this playlist yet, create a new group object for it.
+    if (!grouped[row.id]) {
+      grouped[row.id] = {
+        id: row.id,
+        title: row.title,
+        description: row.description,
+        created_at: row.created_at,
+        cover_url: row.cover_url,
+        is_public: row.is_public,
+        tracks: [],
+      };
+    }
+    // If there is track data (track_id not null), add it to the group's tracks.
+    if (row.track_id) {
+      grouped[row.id].tracks.push({
+        track_id: row.track_id,
+        track_title: row.track_title,
+        track_artist: row.track_artist,
+        added_at: row.added_at,
+        track_cover_url: row.track_cover_url, // if I ever want per-track covers later
+        is_public: row.is_public,
+      });
+    }
+  });
+
+  // Convert the grouped object into an array.
+  return Object.values(grouped);
 };
 
 module.exports = {

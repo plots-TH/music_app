@@ -16,10 +16,7 @@ function ExplorePublic() {
         }/personalPlaylists/publicPlaylists`
       )
       .then((res) => {
-        console.log(
-          "response from public playlist fetch request:",
-          res.data.publicPlaylists
-        );
+        console.log("response from public playlist fetch request:", res.data);
         setPublicPlaylists(res.data.publicPlaylists);
         setDisplayedPublicPlaylists(res.data.publicPlaylists);
       })
