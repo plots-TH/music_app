@@ -6,6 +6,11 @@ function PublicPlaylistCard({ publicPlaylist }) {
     <div className="personal-playlist-card">
       <h2>{publicPlaylist.title}</h2>
 
+      {/* render the playlist creator's username */}
+      <div>
+        <p>playlist created by {publicPlaylist.creator}</p>
+      </div>
+
       {/* show 1st track cover. if 0 tracks, dont render image tag */}
       {publicPlaylist.tracks.length > 0 && (
         <img

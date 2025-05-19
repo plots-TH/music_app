@@ -248,12 +248,15 @@ const getPublicPlaylists = async () => {
   personal_playlists.created_at,
   personal_playlists.cover_url      AS cover_url,
   personal_playlists.is_public      AS is_public,
+  users.username                    AS creator_username,
   personal_playlist_tracks.track_id,
   personal_playlist_tracks.track_title,
   personal_playlist_tracks.track_artist,
   personal_playlist_tracks.track_cover_url      AS track_cover_url,
   personal_playlist_tracks.added_at
   FROM personal_playlists
+  JOIN users
+  ON personal_playlists.user_id = users.id
   LEFT JOIN personal_playlist_tracks
   ON personal_playlists.id = personal_playlist_tracks.personal_playlist_id 
   WHERE is_public = TRUE
@@ -269,6 +272,7 @@ const getPublicPlaylists = async () => {
     if (!grouped[row.id]) {
       grouped[row.id] = {
         id: row.id,
+        creator: row.creator_username,
         title: row.title,
         description: row.description,
         created_at: row.created_at,
