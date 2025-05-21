@@ -12,6 +12,8 @@ function Navigations({ userToken, setUserToken }) {
       {/* show "my account" link in navbar, only if i am loged in */}
       {userToken && <Link to="/account">Account</Link>}
 
+      <Link to="/publicPlaylists">Browse User-Playlists</Link>
+
       {userToken ? (
         <button onClick={handleLogout}>Logout</button>
       ) : (
