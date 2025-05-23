@@ -41,6 +41,22 @@ router.post("/", authenticate, async (req, res) => {
   }
 });
 
+// POST /api/personalPlaylists
+// Create a new cloned personal playlist from another user's public playlist
+router.post("/", authenticate, async (req, res) => {
+  const userId = req.user.id; // Set by the authentication middleware
+  const { playlistId } = req.body;
+
+  try {
+    const clonedPlaylist = await clonePublicPlaylist(playlistId);
+    console.log("POST /personalPlaylists playlist ID to clone:", playlistId);
+    res.json({ clonedPlaylist });
+  } catch (err) {
+    console.error("Error cloning public playlist:", err);
+    res.status(500).json({ error: "Could not clone public playlist" });
+  }
+});
+
 // GET /api/personalPlaylists
 router.get("/", authenticate, async (req, res) => {
   console.log("GET /personalPlaylists user id:", req.user.id);

@@ -298,6 +298,52 @@ const getPublicPlaylists = async () => {
   return Object.values(grouped);
 };
 
+const clonePublicPlaylist = async (playlistId) => {
+  console.log("about to clone playlist with ID:", { playlistId });
+
+  // fetch the playlist row
+  const getPlaylistSQL = `
+  SELECT 
+    id, 
+    user_id,
+    title,
+    description,
+    cover_url,
+    is_public
+  FROM personal_playlists
+  WHERE id = $1;
+  `;
+  console.log(await pool.query("SELECT current_database()"));
+
+  const { rows: copiedPlaylist } = await pool.query(getPlaylistSQL, [
+    playlistId,
+  ]);
+  console.log(
+    "returning data (rows: copiedPlaylist) from clonePublicPlaylist:,",
+    copiedPlaylist
+  );
+
+  // fetch the playlist's tracks row
+  const getTracksSQL = `
+  SELECT 
+    track_id,
+    track_title,
+    track_artist,
+    track_cover_url,
+    added_at
+  FROM personal_playlist_tracks
+  WHERE personal_playlist_id = $1
+  ORDER BY added_at ASC;
+  `;
+  const { rows: copiedTracks } = await pool.query(getTracksSQL, [playlistId]);
+  console.log(
+    "returning data (rows: copiedTracks) from clonePublicPlaylist:,",
+    copiedTracks
+  );
+
+  return { playlistRows: copiedPlaylist[0], trackRows: copiedTracks };
+};
+
 module.exports = {
   createPersonalPlaylist,
   getUserPersonalPlaylists,
@@ -310,4 +356,5 @@ module.exports = {
   updatePlaylistDescription,
   updatePublicStatus,
   getPublicPlaylists,
+  clonePublicPlaylist,
 };

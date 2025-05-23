@@ -69,10 +69,35 @@ const createTables = async () => {
     );
     const user1Id = rows[0].id;
 
+    // insert statement to create private playlist for user1 aka (C's)
+    const cPrivatePlValues = [user1Id, "C's private pl", "false"];
+    const cPrivateResult = await pool.query(
+      `
+      INSERT INTO personal_playlists (user_id, title, is_public)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `,
+      cPrivatePlValues
+    );
+    const cPrivatePlRows = cPrivateResult.rows;
+
+    // insert statement for C's PUBLIC playlist
+    const cPublicPlValues = [user1Id, "C's PUBLIC pl", "true"];
+    const cPublicPlResult = await pool.query(
+      `
+      INSERT INTO personal_playlists (user_id, title, is_public)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+      `,
+      cPublicPlValues
+    );
+    const cPublicPlRows = cPublicPlResult.rows;
+
     const hashedPassword2 = await bcrypt.hash("d", 10);
     const values2 = ["d", "d", "d", "d@fake.com", hashedPassword2];
+
     // seed 2nd test user:
-    await pool.query(
+    const { rows: user2Rows } = await pool.query(
       `
       INSERT INTO users (firstname, lastname, username, email, password)
       VALUES ($1, $2, $3, $4, $5)
@@ -80,11 +105,40 @@ const createTables = async () => {
       `,
       values2
     );
-    const user2Id = rows[0].id;
+    const user2Id = user2Rows[0].id;
+
+    // insert statement for D's Private playlist
+    const dPrivatePlValues = [user2Id, "D's private pl", "false"];
+    const dPrivatePlResult = await pool.query(
+      `
+      INSERT INTO personal_playlists (user_id, title, is_public)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+      `,
+      dPrivatePlValues
+    );
+    const dPrivatePlRows = dPrivatePlResult.rows;
+
+    // insert statement for D's public playlist
+    const dPublicPlValues = [user2Id, "D's PUBLIC pl", "true"];
+    const dPublicResult = await pool.query(
+      `
+      INSERT INTO personal_playlists (user_id, title, is_public)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+      `,
+      dPublicPlValues
+    );
+    const dPublicPlRows = dPublicResult.rows;
 
     console.log("Tables created successfully!");
-    console.log("user1Id:", user1Id);
-    console.log("user2Id:", user2Id);
+    console.log("userC's ID:", user1Id);
+    console.log("C's private pl rows:", cPrivatePlRows);
+    console.log("C's public pl rows:", cPublicPlRows);
+    // console.log("C's public pl's title:", cPublicPlRows[0].title);
+    console.log("userD's ID:", user2Id);
+    console.log("D's private pl rows:", dPrivatePlRows);
+    console.log("D's public pl rows:", dPublicPlRows);
   } catch (err) {
     console.error(":x: Error creating tables:", err);
   }
