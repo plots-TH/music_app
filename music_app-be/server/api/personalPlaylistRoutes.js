@@ -6,6 +6,7 @@ const router = express.Router();
 // Import our database functions for personal playlists
 const {
   createPersonalPlaylist,
+  clonePublicPlaylist,
   getUserPersonalPlaylists,
   getpersonalPlaylistById,
   addTrackToPersonalPlaylist,
@@ -41,16 +42,20 @@ router.post("/", authenticate, async (req, res) => {
   }
 });
 
-// POST /api/personalPlaylists
-// Create a new cloned personal playlist from another user's public playlist
-router.post("/", authenticate, async (req, res) => {
+// POST /api/personalPlaylists/clone
+// Create a new CLONED personal playlist from another user's public playlist
+router.post("/clone", authenticate, async (req, res) => {
   const userId = req.user.id; // Set by the authentication middleware
   const { playlistId } = req.body;
 
   try {
-    const clonedPlaylist = await clonePublicPlaylist(playlistId);
-    console.log("POST /personalPlaylists playlist ID to clone:", playlistId);
-    res.json({ clonedPlaylist });
+    const clonedPlaylist = await clonePublicPlaylist({ playlistId, userId });
+    console.log("POST /clone playlist ID to clone:", playlistId);
+    console.log("POST /clone ID of user who is cloning a PL:", userId);
+    res.status(201).json({
+      message: "Public playlist cloned successfully",
+      clonedPlaylist,
+    });
   } catch (err) {
     console.error("Error cloning public playlist:", err);
     res.status(500).json({ error: "Could not clone public playlist" });

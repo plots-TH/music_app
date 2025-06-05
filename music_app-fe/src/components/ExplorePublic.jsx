@@ -3,7 +3,7 @@ import axios from "axios";
 import PublicPlaylistCardList from "./publicPlaylistCardList";
 
 //Route path="/publicPlaylists"
-function ExplorePublic() {
+function ExplorePublic({ userToken }) {
   const [publicPlaylists, setPublicPlaylists] = useState([]);
   const [displayedPublicPlaylists, setDisplayedPublicPlaylists] = useState([]);
 
@@ -25,6 +25,34 @@ function ExplorePublic() {
       });
   }, []); // empty dependency array so useEffect is only called on component mount
 
+  const handleClonePlaylist = (playlistId) => {
+    console.log(
+      "Inside handleClonePlaylist from ExplorePublic - ABOUT TO CLONE pl with ID:",
+      { playlistId }
+    );
+    console.log("userToken inside ExplorePublic:", userToken);
+    axios
+      .post(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists`,
+        {
+          playlistId,
+        },
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      )
+      .then((res) => {
+        console.log(
+          " Inside handleClonePlaylist: Playlist successfully cloned and added to collection:",
+          res.data
+        );
+      })
+      .catch((err) => {
+        console.error(
+          "Inside handleClonePlaylist: Error cloning/adding playlist to collection:",
+          err
+        );
+      });
+  };
+
   return (
     // <div>
     //   <h2>Explore Playlists Created by other Users:</h2>
@@ -38,7 +66,11 @@ function ExplorePublic() {
     <div>
       <h2>Explore Playlists Created by other Users:</h2>
 
-      <PublicPlaylistCardList publicPlaylists={displayedPublicPlaylists} />
+      <PublicPlaylistCardList
+        publicPlaylists={displayedPublicPlaylists}
+        userToken={userToken}
+        onClonePlaylist={handleClonePlaylist}
+      />
     </div>
   );
 }

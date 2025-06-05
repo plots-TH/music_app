@@ -298,11 +298,25 @@ const getPublicPlaylists = async () => {
   return Object.values(grouped);
 };
 
-const clonePublicPlaylist = async (playlistId) => {
+const clonePublicPlaylist = async ({ playlistId, userId }) => {
   console.log("about to clone playlist with ID:", { playlistId });
+  console.log("The userID of the user who is about to clone a playlist:", {
+    userId,
+  });
 
-  // fetch the playlist row
-  const getPlaylistSQL = `
+  // start a client and BEGIN a transaction
+  const client = await pool.connect();
+  console.log(
+    "[clone] got client, beginning transaction for playlist",
+    playlistId
+  );
+
+  try {
+    await client.query("BEGIN");
+    console.log("[clone] transaction begun");
+
+    // fetch the source playlist's rows
+    const getPlaylistSQL = `
   SELECT 
     id, 
     user_id,
@@ -313,18 +327,15 @@ const clonePublicPlaylist = async (playlistId) => {
   FROM personal_playlists
   WHERE id = $1;
   `;
-  console.log(await pool.query("SELECT current_database()"));
 
-  const { rows: copiedPlaylist } = await pool.query(getPlaylistSQL, [
-    playlistId,
-  ]);
-  console.log(
-    "returning data (rows: copiedPlaylist) from clonePublicPlaylist:,",
-    copiedPlaylist
-  );
+    const { rows: copiedPlaylistRows } = await client.query(getPlaylistSQL, [
+      playlistId,
+    ]);
+    console.log("[clone] fetched source playlist:", copiedPlaylistRows);
+    const copiedPlaylist = copiedPlaylistRows[0];
 
-  // fetch the playlist's tracks row
-  const getTracksSQL = `
+    // fetch the original playlist's tracks rows
+    const getTracksSQL = `
   SELECT 
     track_id,
     track_title,
@@ -335,13 +346,95 @@ const clonePublicPlaylist = async (playlistId) => {
   WHERE personal_playlist_id = $1
   ORDER BY added_at ASC;
   `;
-  const { rows: copiedTracks } = await pool.query(getTracksSQL, [playlistId]);
-  console.log(
-    "returning data (rows: copiedTracks) from clonePublicPlaylist:,",
-    copiedTracks
-  );
+    const { rows: copiedTracks } = await client.query(getTracksSQL, [
+      playlistId,
+    ]);
+    console.log("[clone] fetched source PL's tracks:", copiedTracks);
 
-  return { playlistRows: copiedPlaylist[0], trackRows: copiedTracks };
+    // INSERT a new 'playlist' row for the current user (omit is_public so it defaults to false)
+    const insertPlaylistSQL = `
+    INSERT INTO personal_playlists (user_id, title, description, cover_url)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;
+    `;
+
+    console.log(
+      "[clone] Inserting new playist row for user with id of:",
+      userId,
+      "with fields:",
+      copiedPlaylist.title,
+      copiedPlaylist.description,
+      copiedPlaylist.cover_url
+    );
+
+    const {
+      rows: [newPlaylistRow],
+    } = await client.query(insertPlaylistSQL, [
+      userId,
+      copiedPlaylist.title,
+      copiedPlaylist.description,
+      copiedPlaylist.cover_url,
+    ]);
+
+    console.log("[clone] new playlist inserted:", newPlaylistRow);
+    const newPlaylistId = newPlaylistRow.id;
+    console.log("[clone] new playlist id is:", newPlaylistId);
+
+    // INSERT each track from the source playlist into the new cloned playlist
+    const insertTracksSQL = `
+    INSERT INTO personal_playlist_tracks (personal_playlist_id, track_id, track_title, track_artist, track_cover_url, added_at)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING *;
+    `;
+
+    console.log(
+      "[clone] inserting the following tracks into new cloned playlist:",
+      copiedTracks
+    );
+
+    const insertedTracks = [];
+    for (const track of copiedTracks) {
+      const {
+        rows: [insertedTrackRow],
+      } = await client.query(insertTracksSQL, [
+        newPlaylistId,
+        track.track_id,
+        track.track_title,
+        track.track_artist,
+        track.track_cover_url,
+        track.added_at, // double check if the added at is new or cloned. it should be new (default)
+      ]);
+      insertedTracks.push(insertedTrackRow);
+      console.log("inserted track:", insertedTrackRow.track_title);
+    }
+    console.log(
+      "all tracks inserted. full insertedTracks array is:",
+      insertedTracks
+    );
+
+    await client.query("COMMIT");
+    console.log(
+      "[clone] transaction COMMITTED for newPlaylistId:",
+      newPlaylistId
+    );
+
+    // return the newly committed playlist + its tracks
+    return {
+      playlistRows: newPlaylistRow,
+      trackRows: insertedTracks,
+    };
+
+    // if error, ROLLBACK the transaction to protect the database from incomplete entries
+  } catch (err) {
+    console.log("[clone] error caught - beginning ROLLBACK:", err);
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+    console.log(
+      "[clone] client released and playlist + tracks have been cloned successfully"
+    );
+  }
 };
 
 module.exports = {

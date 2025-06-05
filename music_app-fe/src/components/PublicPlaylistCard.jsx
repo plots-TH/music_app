@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-function PublicPlaylistCard({ publicPlaylist }) {
+function PublicPlaylistCard({ publicPlaylist, onClonePlaylist, userToken }) {
   return (
     <div className="personal-playlist-card">
       <h2>{publicPlaylist.title}</h2>
@@ -10,6 +10,8 @@ function PublicPlaylistCard({ publicPlaylist }) {
       <div>
         <p>playlist created by {publicPlaylist.creator}</p>
       </div>
+
+      {publicPlaylist.description && <p>{publicPlaylist.description}</p>}
 
       {/* show 1st track cover. if 0 tracks, dont render image tag */}
       {publicPlaylist.tracks.length > 0 && (
@@ -20,7 +22,11 @@ function PublicPlaylistCard({ publicPlaylist }) {
         />
       )}
 
-      {publicPlaylist.description && <p>{publicPlaylist.description}</p>}
+      {/* add line break to temporarily position the copy playlist button below the cover img */}
+      <br />
+      <button onClick={() => onClonePlaylist(userToken, publicPlaylist.id)}>
+        Copy & Add to your collection
+      </button>
 
       <div>
         {publicPlaylist.tracks &&

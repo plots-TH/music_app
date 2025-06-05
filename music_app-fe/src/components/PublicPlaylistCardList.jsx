@@ -1,7 +1,11 @@
 import React from "react";
 import PublicPlaylistCard from "./publicPlaylistCard";
 
-function PublicPlaylistCardList({ publicPlaylists }) {
+function PublicPlaylistCardList({
+  publicPlaylists,
+  onClonePlaylist,
+  userToken,
+}) {
   console.log(
     "displayed public playlists - logging from inside card list:",
     publicPlaylists
@@ -12,6 +16,8 @@ function PublicPlaylistCardList({ publicPlaylists }) {
         <PublicPlaylistCard
           key={publicPlaylist.id}
           publicPlaylist={publicPlaylist}
+          userToken={userToken}
+          onClonePlaylist={onClonePlaylist}
         />
       ))}
     </div>

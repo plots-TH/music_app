@@ -73,7 +73,10 @@ function App() {
         {/* create a "select all path" using "*" to redirect the user to the home page if no url match is found */}
         <Route path="*" element={<Songs />}></Route>
 
-        <Route path="/publicPlaylists" element={<ExplorePublic />}></Route>
+        <Route
+          path="/publicPlaylists"
+          element={<ExplorePublic userToken={userToken} />}
+        ></Route>
       </Routes>
     </>
   );
