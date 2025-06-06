@@ -382,8 +382,8 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
 
     // INSERT each track from the source playlist into the new cloned playlist
     const insertTracksSQL = `
-    INSERT INTO personal_playlist_tracks (personal_playlist_id, track_id, track_title, track_artist, track_cover_url, added_at)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO personal_playlist_tracks (personal_playlist_id, track_id, track_title, track_artist, track_cover_url)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *;
     `;
 
@@ -402,7 +402,6 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
         track.track_title,
         track.track_artist,
         track.track_cover_url,
-        track.added_at, // double check if the added at is new or cloned. it should be new (default)
       ]);
       insertedTracks.push(insertedTrackRow);
       console.log("inserted track:", insertedTrackRow.track_title);
@@ -416,6 +415,10 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
     console.log(
       "[clone] transaction COMMITTED for newPlaylistId:",
       newPlaylistId
+    );
+    console.log(
+      "[clone] transaction COMMITTED for newPlaylist named:",
+      newPlaylistRow.title
     );
 
     // return the newly committed playlist + its tracks

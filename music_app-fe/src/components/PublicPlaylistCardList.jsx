@@ -5,6 +5,7 @@ function PublicPlaylistCardList({
   publicPlaylists,
   onClonePlaylist,
   userToken,
+  justClonedId,
 }) {
   console.log(
     "displayed public playlists - logging from inside card list:",
@@ -18,6 +19,7 @@ function PublicPlaylistCardList({
           publicPlaylist={publicPlaylist}
           userToken={userToken}
           onClonePlaylist={onClonePlaylist}
+          justClonedId={justClonedId}
         />
       ))}
     </div>

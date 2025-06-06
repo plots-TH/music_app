@@ -53,7 +53,7 @@ router.post("/clone", authenticate, async (req, res) => {
     console.log("POST /clone playlist ID to clone:", playlistId);
     console.log("POST /clone ID of user who is cloning a PL:", userId);
     res.status(201).json({
-      message: "Public playlist cloned successfully",
+      message: "Playlist cloned successfully",
       clonedPlaylist,
     });
   } catch (err) {

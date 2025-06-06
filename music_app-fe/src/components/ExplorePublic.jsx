@@ -7,6 +7,9 @@ function ExplorePublic({ userToken }) {
   const [publicPlaylists, setPublicPlaylists] = useState([]);
   const [displayedPublicPlaylists, setDisplayedPublicPlaylists] = useState([]);
 
+  // flag to be used for clone success message in PublicPlaylistCard
+  const [justClonedId, setJustClonedId] = useState(null);
+
   useEffect(() => {
     console.log("fetching public playlists...");
     axios
@@ -33,7 +36,7 @@ function ExplorePublic({ userToken }) {
     console.log("userToken inside ExplorePublic:", userToken);
     axios
       .post(
-        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists`,
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/clone`,
         {
           playlistId,
         },
@@ -44,6 +47,9 @@ function ExplorePublic({ userToken }) {
           " Inside handleClonePlaylist: Playlist successfully cloned and added to collection:",
           res.data
         );
+        // set cloneSuccess to true for 3 seconds - this will be used to conditionally render the success message in ExplorePublic.jsx or PublicPlaylistCard.jsx
+        setJustClonedId(playlistId);
+        setTimeout(() => setJustClonedId(null), 3000);
       })
       .catch((err) => {
         console.error(
@@ -70,6 +76,7 @@ function ExplorePublic({ userToken }) {
         publicPlaylists={displayedPublicPlaylists}
         userToken={userToken}
         onClonePlaylist={handleClonePlaylist}
+        justClonedId={justClonedId}
       />
     </div>
   );

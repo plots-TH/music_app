@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-function PublicPlaylistCard({ publicPlaylist, onClonePlaylist, userToken }) {
+function PublicPlaylistCard({
+  publicPlaylist,
+  onClonePlaylist,
+  userToken,
+  justClonedId,
+}) {
   return (
     <div className="personal-playlist-card">
       <h2>{publicPlaylist.title}</h2>
@@ -24,9 +29,17 @@ function PublicPlaylistCard({ publicPlaylist, onClonePlaylist, userToken }) {
 
       {/* add line break to temporarily position the copy playlist button below the cover img */}
       <br />
-      <button onClick={() => onClonePlaylist(userToken, publicPlaylist.id)}>
+      {/* add ternary operator to conditionally hide this button if playlist belongs to user already. */}
+      <button onClick={() => onClonePlaylist(publicPlaylist.id, userToken)}>
         Copy & Add to your collection
       </button>
+
+      {/* show success message only when Id's match */}
+      {publicPlaylist.id === justClonedId && (
+        <div className="clone-success-message">
+          <p>Playlist cloned successfully!</p>
+        </div>
+      )}
 
       <div>
         {publicPlaylist.tracks &&
