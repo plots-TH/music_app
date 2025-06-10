@@ -11,6 +11,7 @@ const createTables = async () => {
     // -- Drop dependent tables first to start fresh.
     await pool.query(`DROP TABLE IF EXISTS personal_playlist_tracks CASCADE;`);
     await pool.query(`DROP TABLE IF EXISTS personal_playlists CASCADE;`);
+    await pool.query(`DROP TABLE IF EXISTS playlist_likes CASCADE;`);
     await pool.query(`DROP TABLE IF EXISTS users CASCADE;`);
 
     // -- Create the users table.
@@ -56,6 +57,17 @@ const createTables = async () => {
 );
 `);
 
+    // create the playlist_likes table:
+    await pool.query(`
+  CREATE TABLE playlist_likes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id),
+  playlist_id UUID NOT NULL REFERENCES personal_playlists(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+      `);
+
+    // Test Users ------------------------------
     const hashedPassword = await bcrypt.hash("c", 10);
     const values = ["c", "c", "c", "c@fake.com", hashedPassword];
     // -- Seed database with a test user:
