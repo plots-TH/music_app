@@ -63,7 +63,8 @@ const createTables = async () => {
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES users(id),
   playlist_id UUID NOT NULL REFERENCES personal_playlists(id),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT unique_user_playlist_like UNIQUE (user_id, playlist_id)
   );
       `);
 

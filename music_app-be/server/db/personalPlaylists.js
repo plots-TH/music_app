@@ -36,6 +36,81 @@ const getpersonalPlaylistById = async (playlistId) => {
   return rows[0];
 };
 
+// Get "Likes" for a personal playlist (public playlists can be liked by other users)
+const getPlaylistLikeInfo = async (userId, playlistId) => {
+  const SQL = `
+    SELECT *
+    FROM playlist_likes
+    WHERE playlist_id = $2
+    ORDER BY created_at DESC;
+  `;
+  const { rows } = await pool.query(SQL, [playlistId]);
+  return rows[0];
+};
+
+const addLikeToPlaylist = async ({ userId, playlistId }) => {
+  const client = await pool.connect();
+
+  console.log(
+    "addLikeToPlaylist args:",
+    "user id:",
+    userId,
+    "playlistId:",
+    playlistId
+  );
+
+  try {
+    await client.query("BEGIN");
+
+    const likeSQL = `
+    INSERT INTO playlist_likes (user_id, playlist_id)
+    VALUES ($1, $2)
+    RETURNING *;
+  `;
+    const { rows: addedLikes } = await client.query(likeSQL, [
+      userId,
+      playlistId,
+    ]);
+
+    console.log({ addedLikes });
+
+    await client.query("COMMIT");
+
+    return addedLikes[0];
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  }
+};
+
+const removeLikeFromPlaylist = async (userId, playlistId) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const removeLikeSQL = `
+    DELETE FROM playlist_likes
+    WHERE user_id = $1
+    AND playlist_id = $2
+    RETURNING *;
+  `;
+    const { rows: deletedLikes } = await client.query(removeLikeSQL, [
+      userId,
+      playlistId,
+    ]);
+
+    console.log({ deletedLikes });
+
+    await client.query("COMMIT");
+
+    return deletedLikes[0];
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  }
+};
+
 // Adds a track (using the track_id from Deezer) to a specific personal playlist.
 // and, if playlist.cover_url is still null, sets it to this track’s cover URL.
 const addTrackToPersonalPlaylist = async (
@@ -453,4 +528,6 @@ module.exports = {
   updatePublicStatus,
   getPublicPlaylists,
   clonePublicPlaylist,
+  getPlaylistLikeInfo,
+  addLikeToPlaylist,
 };
