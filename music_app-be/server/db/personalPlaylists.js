@@ -13,6 +13,7 @@ const createPersonalPlaylist = async ({ userId, title }) => {
   return rows[0];
 };
 
+//  LIKING A PLAYLIST SECTION START -----------------------------------
 // Gets all personal playlists for a given user.
 const getUserPersonalPlaylists = async (userId) => {
   const SQL = `
@@ -25,27 +26,30 @@ const getUserPersonalPlaylists = async (userId) => {
   return rows;
 };
 
-// Get a specific personal playlist by it's ID
-const getpersonalPlaylistById = async (playlistId) => {
-  const SQL = `
-    SELECT *
-    FROM personal_playlists
-    WHERE id = $1
-  `;
-  const { rows } = await pool.query(SQL, [playlistId]);
-  return rows[0];
-};
-
-// Get "Likes" for a personal playlist (public playlists can be liked by other users)
-const getPlaylistLikeInfo = async (userId, playlistId) => {
+// GET "Likes" for a personal playlist (public playlists can be liked by other users)
+const getAllPlaylistLikes = async ({ playlistId }) => {
   const SQL = `
     SELECT *
     FROM playlist_likes
-    WHERE playlist_id = $2
+    WHERE playlist_id = $1
     ORDER BY created_at DESC;
   `;
-  const { rows } = await pool.query(SQL, [playlistId]);
-  return rows[0];
+  const { rows: allLikes } = await pool.query(SQL, [playlistId]);
+  console.log("'allLikes' value from getAllPlaylistLikes:", { allLikes });
+  return allLikes;
+};
+
+// GET or "Check" whether or not the user has personally liked a playlist
+const getPlaylistLikeByUser = async ({ playlistId, userId }) => {
+  const SQL = `
+    SELECT *
+    FROM playlist_likes
+    WHERE playlist_id = $1
+    AND user_id = $2
+    LIMIT 1;
+  `;
+  const { rows } = await pool.query(SQL, [playlistId, userId]);
+  return rows[0] || null;
 };
 
 const addLikeToPlaylist = async ({ userId, playlistId }) => {
@@ -83,8 +87,16 @@ const addLikeToPlaylist = async ({ userId, playlistId }) => {
   }
 };
 
-const removeLikeFromPlaylist = async (userId, playlistId) => {
+const removeLikeFromPlaylist = async ({ userId, playlistId }) => {
   const client = await pool.connect();
+
+  console.log(
+    "removeLikeFromPlaylist args:",
+    "user id:",
+    userId,
+    "playlistId:",
+    playlistId
+  );
 
   try {
     await client.query("BEGIN");
@@ -100,7 +112,7 @@ const removeLikeFromPlaylist = async (userId, playlistId) => {
       playlistId,
     ]);
 
-    console.log({ deletedLikes });
+    console.log("deleted likes:", { deletedLikes });
 
     await client.query("COMMIT");
 
@@ -109,6 +121,18 @@ const removeLikeFromPlaylist = async (userId, playlistId) => {
     await client.query("ROLLBACK");
     throw err;
   }
+};
+//  LIKING A PLAYLIST SECTION END -----------------------------------
+
+// Get a specific personal playlist by it's ID
+const getpersonalPlaylistById = async (playlistId) => {
+  const SQL = `
+    SELECT *
+    FROM personal_playlists
+    WHERE id = $1
+  `;
+  const { rows } = await pool.query(SQL, [playlistId]);
+  return rows[0];
 };
 
 // Adds a track (using the track_id from Deezer) to a specific personal playlist.
@@ -528,6 +552,8 @@ module.exports = {
   updatePublicStatus,
   getPublicPlaylists,
   clonePublicPlaylist,
-  getPlaylistLikeInfo,
+  getAllPlaylistLikes,
+  getPlaylistLikeByUser,
   addLikeToPlaylist,
+  removeLikeFromPlaylist,
 };

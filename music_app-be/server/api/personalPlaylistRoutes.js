@@ -17,6 +17,10 @@ const {
   updatePlaylistDescription,
   updatePublicStatus,
   getPublicPlaylists,
+  getAllPlaylistLikes,
+  getPlaylistLikeByUser,
+  addLikeToPlaylist,
+  removeLikeFromPlaylist,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
@@ -247,5 +251,69 @@ router.patch("/:playlistId/publish", authenticate, async (req, res) => {
     console.error("Error updating public-status of personal playlist", err);
   }
 });
+
+// Liking and Unliking a playlist START--------------------
+// GET /api/personalPlaylists + /:playlistId/like
+router.get("/:playlistId/like", authenticate, async (req, res) => {
+  const { playlistId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const allLikes = await getAllPlaylistLikes({ playlistId });
+
+    console.log(
+      "getAllPlaylistLikes received playlistId value of:",
+      playlistId
+    );
+
+    console.log("allLikes for this playlist:", allLikes);
+
+    // call getPlaylistLikeByUser to check if current user has liked the playlist
+    const hasLiked = await getPlaylistLikeByUser({ userId, playlistId });
+
+    console.log("getPlaylistLikeByUser received userId value:", userId);
+    console.log("getPlaylistLikeByUser received playlistId value:", playlistId);
+
+    res.status(200).json({
+      totalLikes: allLikes.length,
+      likes: allLikes,
+      hasLiked: !!hasLiked, // "!!" ensures the client always sees a plain true or false instead of possibly getting null or an object.
+    });
+  } catch (err) {
+    console.error("Error getting 'like-info' for playlist:", err);
+    res.status(500).json({ error: "Could not fetch like info" });
+  }
+});
+
+// POST /api/personalPlaylists + /:playlistId/like
+router.post("/:playlistId/like", authenticate, async (req, res) => {
+  const { playlistId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const result = await addLikeToPlaylist({ userId, playlistId });
+
+    console.log("addLikeToPlaylist received userId value:", userId);
+    console.log("addLikeToPlaylist received playlistId value:", playlistId);
+
+    res.status(201).json({ message: "playlist 'Liked' successfully", result });
+  } catch (err) {}
+});
+
+// DELETE /api/personalPlaylists + /:playlistId/like
+router.delete("/:playlistId/like", authenticate, async (req, res) => {
+  const { playlistId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const unlikeResult = await removeLikeFromPlaylist({ userId, playlistId });
+    res
+      .status(201)
+      .json({ message: "playlist 'Unliked' successfully", unlikeResult });
+  } catch (err) {
+    console.error("Error removing 'Like' from playlist:", err);
+  }
+});
+// Liking and Unliking a playlist END--------------------
 
 module.exports = router;

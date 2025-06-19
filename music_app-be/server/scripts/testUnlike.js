@@ -1,5 +1,5 @@
 const { pool } = require("../db/index.js");
-const { addLikeToPlaylist } = require("../db/personalPlaylists.js");
+const { removeLikeFromPlaylist } = require("../db/personalPlaylists.js");
 
 (async () => {
   console.log("env PGDATABASE:", process.env.PGDATABASE);
@@ -12,18 +12,18 @@ const { addLikeToPlaylist } = require("../db/personalPlaylists.js");
     (await pool.query("SELECT current_database()")).rows[0]
   );
   try {
-    const addLikeTestResult = await addLikeToPlaylist({
+    const removeLikeTestResult = await removeLikeFromPlaylist({
       // grab real id's for this test
-      userId: "2aa35766-32cb-4094-ae6f-c08d94ea1992",
-      playlistId: "44924bc0-9287-45ff-bdb9-9369c23209d8",
+      userId: "351238dd-bd68-49a6-90dd-94891dcca272",
+      playlistId: "b8c5c795-f93f-4161-92e5-d70c7b051679",
     });
 
     console.log(
-      "addLikeToPlaylist test successfully returned:",
-      addLikeTestResult
+      "removeLikeFromPlaylist test successfully returned:",
+      removeLikeTestResult
     );
   } catch (err) {
-    console.error("addLikeToPlaylist test threw:", err);
+    console.error("removeLikeFromPlaylist test threw:", err);
   } finally {
     await pool.end();
   }
