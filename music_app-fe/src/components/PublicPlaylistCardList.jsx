@@ -5,6 +5,7 @@ function PublicPlaylistCardList({
   publicPlaylists,
   onClonePlaylist,
   userToken,
+  userId,
   justClonedId,
 }) {
   console.log(
@@ -18,6 +19,7 @@ function PublicPlaylistCardList({
           key={publicPlaylist.id}
           publicPlaylist={publicPlaylist}
           userToken={userToken}
+          userId={userId}
           onClonePlaylist={onClonePlaylist}
           justClonedId={justClonedId}
         />

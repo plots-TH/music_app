@@ -3,13 +3,14 @@ import axios from "axios";
 import PublicPlaylistCardList from "./publicPlaylistCardList";
 
 //Route path="/publicPlaylists"
-function ExplorePublic({ userToken }) {
+function ExplorePublic({ userToken, userId }) {
   const [publicPlaylists, setPublicPlaylists] = useState([]);
-  const [displayedPublicPlaylists, setDisplayedPublicPlaylists] = useState([]);
+  const [playlistsLoaded, setPlaylistsLoaded] = useState(false); // state to track data loading status
 
   // flag to be used for clone success message in PublicPlaylistCard
   const [justClonedId, setJustClonedId] = useState(null);
 
+  // initial fetch of public playlists
   useEffect(() => {
     console.log("fetching public playlists...");
     axios
@@ -21,7 +22,7 @@ function ExplorePublic({ userToken }) {
       .then((res) => {
         console.log("response from public playlist fetch request:", res.data);
         setPublicPlaylists(res.data.publicPlaylists);
-        setDisplayedPublicPlaylists(res.data.publicPlaylists);
+        setPlaylistsLoaded(true); // update state after playlists data is loaded
       })
       .catch((err) => {
         console.error("Error fetching Public Playlists:", err);
@@ -60,21 +61,13 @@ function ExplorePublic({ userToken }) {
   };
 
   return (
-    // <div>
-    //   <h2>Explore Playlists Created by other Users:</h2>
-    //   {publicPlaylists.map((playlist) => (
-    //     <div key={playlist.id}>
-    //       {/* swap this out with a card later */}
-    //       <h3>{playlist.title}</h3>
-    //     </div>
-    //   ))}
-    // </div>
     <div>
       <h2>Explore Playlists Created by other Users:</h2>
 
       <PublicPlaylistCardList
-        publicPlaylists={displayedPublicPlaylists}
+        publicPlaylists={publicPlaylists}
         userToken={userToken}
+        userId={userId}
         onClonePlaylist={handleClonePlaylist}
         justClonedId={justClonedId}
       />

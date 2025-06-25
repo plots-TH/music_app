@@ -25,12 +25,15 @@ function App() {
   // widgets are an example slice ^^^^
 
   const [userToken, setUserToken] = useState(null);
+  const [userId, setUserId] = useState(null);
+
   useEffect(() => {
     const localToken = localStorage.getItem("token"); // we localStorage.setItem(token) to data.data.userToken in Register.jsx. Now we localStorage.getItem(token).
-
-    if (localToken) {
+    const currentUser = localStorage.getItem("userId");
+    if (localToken && currentUser) {
       //  if the token doesn't exist, it is set to null. If it already exists in the browser's local storage, we setUserToken to the value of the token in localStorage. this keeps the user logged in with their token even if the page refreshes.
       setUserToken(localToken);
+      setUserId(currentUser);
     }
   }, []);
 
@@ -46,36 +49,50 @@ function App() {
       <Navigations
         userToken={userToken}
         setUserToken={setUserToken}
+        userId={userId}
+        setUserId={setUserId}
       ></Navigations>
       <Routes>
         <Route path="/" element={<Songs />}></Route>
         {/* create a prop called setUserToken and pass in the "setUserToken" function to the authentication routes (register and signup) */}
         <Route
           path="/login"
-          element={<Login setUserToken={setUserToken} userToken={userToken} />}
+          element={
+            <Login
+              setUserToken={setUserToken}
+              userToken={userToken}
+              userId={userId}
+              setUserId={setUserId}
+            />
+          }
         ></Route>
         <Route
           path="/register"
           element={
-            <Register setUserToken={setUserToken} userToken={userToken} />
+            <Register
+              setUserToken={setUserToken}
+              userToken={userToken}
+              userId={userId}
+              setUserId={setUserId}
+            />
           }
         ></Route>
         <Route path="/category/:id" element={<CategoryPlaylist />}></Route>
         <Route path="/playlist" element={<SinglePlaylist />}></Route>
         <Route
           path="/track/:id"
-          element={<SingleSong userToken={userToken} />}
+          element={<SingleSong userToken={userToken} userId={userId} />}
         ></Route>
         <Route
           path="/account"
-          element={<Account userToken={userToken} />}
+          element={<Account userToken={userToken} userId={userId} />}
         ></Route>
         {/* create a "select all path" using "*" to redirect the user to the home page if no url match is found */}
         <Route path="*" element={<Songs />}></Route>
 
         <Route
           path="/publicPlaylists"
-          element={<ExplorePublic userToken={userToken} />}
+          element={<ExplorePublic userToken={userToken} userId={userId} />}
         ></Route>
       </Routes>
     </>

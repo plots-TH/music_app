@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 // pass setToken prop name inside the Register function/component
 // Route path="/register"
-function Register({ setUserToken, userToken }) {
+function Register({ setUserToken, userToken, setUserId, userId }) {
   const [newUserData, setNewUserData] = useState({});
   const navigate = useNavigate();
 
@@ -19,7 +19,9 @@ function Register({ setUserToken, userToken }) {
         .then((res) => {
           console.log("new user data:", res);
           setUserToken(res.data.userToken);
+          setUserId(res.data.user.id);
           localStorage.setItem("token", res.data.userToken); // localStorage is an object built-into the browser's javascript. (browser object methods) it is accessable with javascript, without any libraries.
+          localStorage.setItem("userId", res.data.user.id);
         })
         .catch((err) => {
           console.log(err);
@@ -33,10 +35,10 @@ function Register({ setUserToken, userToken }) {
   };
 
   useEffect(() => {
-    if (userToken) {
+    if (userToken && userId) {
       navigate("/account");
     }
-  }, [userToken, navigate]);
+  }, [userToken, userId, navigate]);
 
   return (
     <div className="register-container">
