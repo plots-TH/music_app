@@ -14,8 +14,8 @@ const { addLikeToPlaylist } = require("../db/personalPlaylists.js");
   try {
     const addLikeTestResult = await addLikeToPlaylist({
       // grab real id's for this test
-      userId: "2aa35766-32cb-4094-ae6f-c08d94ea1992",
-      playlistId: "44924bc0-9287-45ff-bdb9-9369c23209d8",
+      userId: "69966c06-01ac-49b0-803c-c8ee8e6174fc",
+      playlistId: "8e6f5df7-670b-49cd-a497-79a69c2d50ce",
     });
 
     console.log(

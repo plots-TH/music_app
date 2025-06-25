@@ -80,6 +80,7 @@ router.get("/", authenticate, async (req, res) => {
   }
 });
 
+// GET Public Playlists:
 // GET /api/personalPlaylists + /publicPlaylists - handler that calls getPublicPlaylists function in personalPlaylists.js
 router.get("/publicPlaylists", async (req, res) => {
   const playlists = await getPublicPlaylists();
@@ -253,6 +254,7 @@ router.patch("/:playlistId/publish", authenticate, async (req, res) => {
 });
 
 // Liking and Unliking a playlist START--------------------
+// GET LIKES:
 // GET /api/personalPlaylists + /:playlistId/like
 router.get("/:playlistId/like", authenticate, async (req, res) => {
   const { playlistId } = req.params;
@@ -285,6 +287,7 @@ router.get("/:playlistId/like", authenticate, async (req, res) => {
   }
 });
 
+// ADD A LIKE
 // POST /api/personalPlaylists + /:playlistId/like
 router.post("/:playlistId/like", authenticate, async (req, res) => {
   const { playlistId } = req.params;
@@ -297,7 +300,9 @@ router.post("/:playlistId/like", authenticate, async (req, res) => {
     console.log("addLikeToPlaylist received playlistId value:", playlistId);
 
     res.status(201).json({ message: "playlist 'Liked' successfully", result });
-  } catch (err) {}
+  } catch (err) {
+    console.error("[route] Error adding like to playlist:", err);
+  }
 });
 
 // DELETE /api/personalPlaylists + /:playlistId/like

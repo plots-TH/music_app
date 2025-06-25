@@ -348,6 +348,7 @@ const getPublicPlaylists = async () => {
   personal_playlists.cover_url      AS cover_url,
   personal_playlists.is_public      AS is_public,
   users.username                    AS creator_username,
+  COUNT(playlist_likes.id) OVER (PARTITION BY personal_playlists.id) AS total_likes,
   personal_playlist_tracks.track_id,
   personal_playlist_tracks.track_title,
   personal_playlist_tracks.track_artist,
@@ -358,6 +359,7 @@ const getPublicPlaylists = async () => {
   ON personal_playlists.user_id = users.id
   LEFT JOIN personal_playlist_tracks
   ON personal_playlists.id = personal_playlist_tracks.personal_playlist_id 
+  LEFT JOIN playlist_likes ON personal_playlists.id = playlist_likes.playlist_id
   WHERE is_public = TRUE
   ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at DESC;
   `;
@@ -377,6 +379,7 @@ const getPublicPlaylists = async () => {
         created_at: row.created_at,
         cover_url: row.cover_url,
         is_public: row.is_public,
+        total_likes: row.total_likes,
         tracks: [],
       };
     }
