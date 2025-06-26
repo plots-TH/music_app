@@ -383,16 +383,24 @@ const getPublicPlaylists = async () => {
         tracks: [],
       };
     }
-    // If there is track data (track_id not null), add it to the group's tracks.
+
+    // Only add the track if row.track_id is non-null AND not already in the array
     if (row.track_id) {
-      grouped[row.id].tracks.push({
-        track_id: row.track_id,
-        track_title: row.track_title,
-        track_artist: row.track_artist,
-        added_at: row.added_at,
-        track_cover_url: row.track_cover_url, // if I ever want per-track covers later
-        is_public: row.is_public,
-      });
+      // `.some(...)` returns true if ANY element matches the predicate
+      const alreadyInArray = grouped[row.id].tracks.some(
+        (track) => track.track_id === row.track.id
+      );
+      // if the track is not already in the array, PUSH it in
+      if (!alreadyInArray) {
+        grouped[row.id].tracks.push({
+          track_id: row.track_id,
+          track_title: row.track_title,
+          track_artist: row.track_artist,
+          added_at: row.added_at,
+          track_cover_url: row.track_cover_url, // if I ever want per-track covers later
+          is_public: row.is_public,
+        });
+      }
     }
   });
 

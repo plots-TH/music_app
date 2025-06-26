@@ -62,35 +62,6 @@ function PublicPlaylistCard({
     }
   };
 
-  // addLike button component
-  // const handleAddLike = async () => {
-  //   console.log("addLike button clicked!", publicPlaylist);
-  //   console.log("this playlist was just liked:", publicPlaylist.title);
-  //   console.log("current userId:", userId);
-
-  //   try {
-  //     const likeResponse = await axios.post(
-  //       `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-  //         publicPlaylist.id
-  //       }/like`,
-  //       {}, // empty body argument
-  //       { headers: { Authorization: `Bearer ${userToken}` } }
-  //     );
-  //     const { data } = await axios.get(
-  //       `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-  //         publicPlaylist.id
-  //       }/like`,
-  //       { headers: { Authorization: `Bearer ${userToken}` } }
-  //     );
-  //     console.log("getLikes returned:", data);
-  //     setLikes(data.totalLikes);
-  //     console.log("ADD Like response:", likeResponse);
-  //     // toggle value of userHasLiked onClick
-  //   } catch (err) {
-  //     console.error("[button] error adding like thru button:", err);
-  //   }
-  // };
-
   return (
     <div className="personal-playlist-card">
       <h2>{publicPlaylist.title}</h2>
