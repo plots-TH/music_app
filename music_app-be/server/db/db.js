@@ -68,6 +68,83 @@ const createTables = async () => {
   );
       `);
 
+    // create the tags table:
+    await pool.query(`
+    CREATE TABLE tags (
+    id SERIAL PRIMARY KEY,
+    tag_name TEXT UNIQUE
+    );
+      `);
+
+    // create the playlist_tags junction table (connecting playlist and tags tables):
+    await pool.query(`
+      BEGIN;
+  CREATE TABLE playlist_tags (
+  playlist_id UUID NOT NULL REFERENCES personal_playlists(id) ON DELETE CASCADE,
+  tag_id INT NOT NULL REFERENCES tags(id),
+  PRIMARY KEY (playlist_id, tag_id)
+  );
+
+  CREATE INDEX ON playlist_tags(tag_id);
+  COMMIT;
+      `);
+
+    // seed predefined playlist tags:
+    const { rows: tagNames } = await pool.query(
+      `
+      INSERT INTO tags (tag_name)
+VALUES
+    ('Pop'),
+    ('Rap/Hip Hop'),
+    ('Reggaeton'),
+    ('Rock'),
+    ('Dance'),
+    ('R&B'),
+    ('Alternative'),
+    ('Christian'),
+    ('Electro'),
+    ('Folk'),
+    ('Reggae'),
+    ('Jazz'),
+    ('Country'),
+    ('Salsa'),
+    ('Traditional Mexicano'),
+    ('Classical'),
+    ('Films/Games'),
+    ('Metal'),
+    ('Soul & Funk'),
+    ('African Music'),
+    ('Asian Music'),
+    ('Blues'),
+    ('Brazilian Music'),
+    ('Cumbia'),
+    ('Indian Music'),
+    ('Kids'),
+    ('Latin Music'),
+    ('Indie'),
+
+    ('Chill'),
+    ('Party'),
+    ('Study Music'),
+    ('Roadtrip'),
+    ('Sleep'),
+    ('Romantic'),
+    ('Energetic'),
+    ('Sad'),
+    ('Gaming'),
+    ('Ambient'),
+
+    ('30''s'),
+    ('40''s'),
+    ('50''s'),
+    ('60''s'),
+    ('70''s'),
+    ('80''s'),
+    ('90''s')
+    RETURNING *;
+      `
+    );
+
     // Test Users ------------------------------
     const hashedPassword = await bcrypt.hash("c", 10);
     const values = ["c", "c", "c", "c@fake.com", hashedPassword];

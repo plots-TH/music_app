@@ -321,4 +321,12 @@ router.delete("/:playlistId/like", authenticate, async (req, res) => {
 });
 // Liking and Unliking a playlist END--------------------
 
+// playlist tags START-----------------------------------
+
+// ADD a Tag
+// POST /api/personalPlaylists + /:playlistId/tags
+
+// REMOVE a Tag
+// DELETE /api/personalPlaylists + /:playlistId/tags/:tagId
+
 module.exports = router;

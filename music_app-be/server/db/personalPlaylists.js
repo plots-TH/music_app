@@ -390,7 +390,7 @@ const getPublicPlaylists = async () => {
       const alreadyInArray = grouped[row.id].tracks.some(
         (track) => track.track_id === row.track.id
       );
-      // if the track is not already in the array, PUSH it in
+      // if the track ID is not already in the array, PUSH it in
       if (!alreadyInArray) {
         grouped[row.id].tracks.push({
           track_id: row.track_id,
