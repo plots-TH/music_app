@@ -12,6 +12,8 @@ const createTables = async () => {
     await pool.query(`DROP TABLE IF EXISTS personal_playlist_tracks CASCADE;`);
     await pool.query(`DROP TABLE IF EXISTS personal_playlists CASCADE;`);
     await pool.query(`DROP TABLE IF EXISTS playlist_likes CASCADE;`);
+    await pool.query(`DROP TABLE IF EXISTS tags CASCADE;`);
+    await pool.query(`DROP TABLE IF EXISTS playlist_tags CASCADE;`);
     await pool.query(`DROP TABLE IF EXISTS users CASCADE;`);
 
     // -- Create the users table.
@@ -183,10 +185,35 @@ VALUES
     );
     const cPublicPlRows = cPublicPlResult.rows;
 
+    // Create a 3rd (public) playlist for user C which will have an associated genre tag:
+    const taggedPublicValues = [user1Id, "C's Public Tagged pl", "true"];
+    const taggedPublicResult = await pool.query(
+      `
+      INSERT INTO personal_playlists (user_id, title, is_public)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+      `,
+      taggedPublicValues
+    );
+    const taggedPublicRows = taggedPublicResult.rows;
+
+    // insert a tag into "taggedPublicPlaylist ^^^":
+    // "1" is the id for the "Pop" tag in the "tags" table
+    const tagValues = [taggedPublicRows[0].id, 1];
+    const insertTagResult = await pool.query(
+      `
+      INSERT INTO playlist_tags (playlist_id, tag_id)
+      VALUES ($1, $2)
+      RETURNING *;
+      `,
+      tagValues
+    );
+    const playlistTagRows = insertTagResult.rows;
+
+    // seed 2nd test user:
     const hashedPassword2 = await bcrypt.hash("d", 10);
     const values2 = ["d", "d", "d", "d@fake.com", hashedPassword2];
 
-    // seed 2nd test user:
     const { rows: user2Rows } = await pool.query(
       `
       INSERT INTO users (firstname, lastname, username, email, password)
@@ -229,6 +256,8 @@ VALUES
     console.log("userD's ID:", user2Id);
     console.log("D's private pl rows:", dPrivatePlRows);
     console.log("D's public pl rows:", dPublicPlRows);
+    console.log("C's Public Tagged rows:", taggedPublicRows);
+    console.log("inserted into playlist_tags table:", playlistTagRows);
   } catch (err) {
     console.error(":x: Error creating tables:", err);
   }
