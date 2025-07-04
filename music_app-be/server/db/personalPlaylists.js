@@ -550,6 +550,41 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
   }
 };
 
+const addTagToPlaylist = async ({ tagId, playlistId }) => {
+  const client = await pool.connect();
+
+  console.log(
+    "addTagToPlaylist args:",
+    "tag ID:",
+    tagId,
+    "playlist ID:",
+    playlistId
+  );
+  try {
+    await client.query("BEGIN");
+
+    const addTagSQL = `
+    INSERT INTO playlist_tags (tag_id, playlist_id) 
+    VALUES ($1, $2) 
+    RETURNING *;
+  `;
+
+    const { rows: addedTags } = await client.query(addTagSQL, [
+      tagId,
+      playlistId,
+    ]);
+
+    console.log({ addedTags });
+
+    await client.query("COMMIT");
+
+    return addedTags[0];
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  }
+};
+
 const getPlaylistsByTag = async (tagName) => {
   const SQL = `
     SELECT 
@@ -563,8 +598,7 @@ const getPlaylistsByTag = async (tagName) => {
     FROM
       personal_playlists
 
-    JOIN users
-    ON personal_playlists.user_id = users.id
+    JOIN users ON personal_playlists.user_id = users.id
 
     JOIN playlist_tags ON playlist_tags.playlist_id = personal_playlists.id
 
@@ -592,4 +626,6 @@ module.exports = {
   getPlaylistLikeByUser,
   addLikeToPlaylist,
   removeLikeFromPlaylist,
+  addTagToPlaylist,
+  getPlaylistsByTag,
 };
