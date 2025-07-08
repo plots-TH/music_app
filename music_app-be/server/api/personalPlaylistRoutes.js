@@ -326,18 +326,19 @@ router.delete("/:playlistId/like", authenticate, async (req, res) => {
 
 // ADD a Tag
 // POST /api/personalPlaylists + /:playlistId/tags
+router.post("");
 
 // GET playlists by a TAG
 // GET /api/personalPlaylists + /publicPlaylists + ?tag=${tagValue}&sortBy=${someValue}
-router.get("/publicPlaylists", async (req, res) => {
-  const {tag} = req.query;
+// router.get("/publicPlaylists", async (req, res) => {
+//   const {tag} = req.query;
 
-  try {
-    const tagResult = await 
-  } catch (err) {
-    console.error("Error fetching playlists by tag", err);
-  }
-});
+//   try {
+//     const tagResult = await getPlaylistsByTag ({})
+//   } catch (err) {
+//     console.error("Error fetching playlists by tag", err);
+//   }
+// });
 
 // REMOVE a Tag
 // DELETE /api/personalPlaylists + /:playlistId/tags/:tagId

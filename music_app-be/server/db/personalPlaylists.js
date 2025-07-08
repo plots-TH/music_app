@@ -585,6 +585,43 @@ const addTagToPlaylist = async ({ tagId, playlistId }) => {
   }
 };
 
+const removePlaylistTag = async ({ tagId, playlistId }) => {
+  const client = await pool.connect();
+
+  console.log(
+    "removePlaylistTag args:",
+    "tag ID:",
+    tagId,
+    "playlist ID:",
+    playlistId
+  );
+
+  try {
+    await client.query("BEGIN");
+
+    const removeTagSQL = `
+    DELETE FROM playlist_tags
+    WHERE tag_id = $1
+    AND playlist_id = $2
+    RETURNING *;
+    `;
+
+    const { rows: removedTag } = await client.query(removeTagSQL, [
+      tagId,
+      playlistId,
+    ]);
+
+    console.log("removed tag:", { removedTag });
+
+    await client.query("COMMIT");
+
+    return removedTag[0];
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  }
+};
+
 const getPlaylistsByTag = async (tagName) => {
   const SQL = `
     SELECT 
@@ -627,5 +664,6 @@ module.exports = {
   addLikeToPlaylist,
   removeLikeFromPlaylist,
   addTagToPlaylist,
+  removePlaylistTag,
   getPlaylistsByTag,
 };
