@@ -550,6 +550,8 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
   }
 };
 
+// Playlist Tags:
+
 const addTagToPlaylist = async ({ tagId, playlistId }) => {
   const client = await pool.connect();
 
@@ -622,6 +624,23 @@ const removePlaylistTag = async ({ tagId, playlistId }) => {
   }
 };
 
+const getAllTags = async () => {
+  const client = await pool.connect();
+
+  try {
+    const getTagsSQL = `
+    SELECT * FROM tags;
+    `;
+
+    const { rows: allTags } = await client.query(getTagsSQL);
+    console.log("[getAllTags] here are all the tags:", allTags);
+
+    return allTags;
+  } catch (err) {
+    console.error("failed to retrieve all tags:", err);
+  }
+};
+
 const getPlaylistsByTag = async (tagName) => {
   const SQL = `
     SELECT 
@@ -663,6 +682,7 @@ module.exports = {
   getPlaylistLikeByUser,
   addLikeToPlaylist,
   removeLikeFromPlaylist,
+  getAllTags,
   addTagToPlaylist,
   removePlaylistTag,
   getPlaylistsByTag,

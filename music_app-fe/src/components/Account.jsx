@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import PersonalPlaylistCardList from "./PersonalPlaylistCardList";
+import Tags from "./Tags";
 
 // Route path="/account"
 function Account({ userToken }) {
@@ -260,6 +261,10 @@ function Account({ userToken }) {
         // if they *have* playlists but none matched the current searchTerm
         <p>No playlists match “{searchInput}”.</p>
       )}
+
+      <div>
+        <Tags />
+      </div>
     </div>
   );
 }

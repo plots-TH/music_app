@@ -1,6 +1,7 @@
 // server/api/personalPlaylistRoutes.js
 const express = require("express");
 const router = express.Router();
+const pool = require("../db/pool");
 // req.user comes from authenticate middleware
 
 // Import our database functions for personal playlists
@@ -22,6 +23,7 @@ const {
   addLikeToPlaylist,
   removeLikeFromPlaylist,
   getPlaylistsByTag,
+  getAllTags,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
@@ -328,17 +330,18 @@ router.delete("/:playlistId/like", authenticate, async (req, res) => {
 // POST /api/personalPlaylists + /:playlistId/tags
 router.post("");
 
-// GET playlists by a TAG
-// GET /api/personalPlaylists + /publicPlaylists + ?tag=${tagValue}&sortBy=${someValue}
-// router.get("/publicPlaylists", async (req, res) => {
-//   const {tag} = req.query;
-
-//   try {
-//     const tagResult = await getPlaylistsByTag ({})
-//   } catch (err) {
-//     console.error("Error fetching playlists by tag", err);
-//   }
-// });
+// GET ALL TAGS
+// GET /api/personalPlaylists + /tags
+router.get("/tags", async (req, res) => {
+  try {
+    const tags = await getAllTags();
+    console.log("[router.get] getAllTags() returned:", tags);
+    res.status(200).json({ message: "All Tags retrieved successfully:", tags });
+  } catch (err) {
+    console.error("Error fetching playlists by tag", err);
+    res.sendStatus(500);
+  }
+});
 
 // REMOVE a Tag
 // DELETE /api/personalPlaylists + /:playlistId/tags/:tagId
