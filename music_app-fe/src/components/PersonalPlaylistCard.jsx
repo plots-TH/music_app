@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Tags from "./Tags";
 
 // ----CONFIRM DELETE MODAL COMPONENT--------------------------------------
 function ConfirmDeleteModal({ isOpen, onConfirm, onCancel }) {
@@ -87,6 +88,65 @@ function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
 }
 // ----EDIT PERSONAL PLAYLIST MODAL COMPONENT^^^^-----------------------------------------------------------------------------
 
+// mouse scrolling component:
+
+const handleWheelEvent = (e) => {
+  console.log("deltaY:", e.deltaY); // Vertical scroll amount
+};
+
+// ADD/REMOVE TAGS modal:
+const EditPlaylistTagsModal = ({ isTagModalOpen, onClose }) => {
+  if (!isTagModalOpen) {
+    return null;
+  }
+
+  return (
+    <div
+      className="modal-overlay" // same overlay styling as in SingleSong
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}
+    >
+      <div
+        className="modal" // same inner modal styling as in SingleSong
+        style={{
+          background: "#fff",
+          padding: "1rem",
+          borderRadius: "4px",
+          width: "90%",
+          maxWidth: "400px",
+        }}
+      >
+        <div
+          onWheel={handleWheelEvent}
+          style={{
+            height: "200px",
+            overflowY: "auto",
+            border: "1px solid black",
+          }}
+        >
+          <span>Toggle tags to add or remove them:</span>
+          <p>scroll me with mousewheel</p>
+          <Tags />
+          {/* add a scroll bar so user can close the tag modal */}
+          <button onClick={onClose} style={{ float: "right" }}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function PersonalPlaylistCard({
   personalPlaylist,
   userToken,
@@ -108,6 +168,14 @@ function PersonalPlaylistCard({
     }); // pass in the selected playlist's ID using React Router State
   };
   // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS^^^----------------------------------------------------------------------------
+
+  const [showTagModal, setShowTagModal] = useState(false);
+  const openEditPlaylistTagsModal = () => {
+    setShowTagModal(true);
+  };
+  const closeEditPlaylistTagsModal = () => {
+    setShowTagModal(!showTagModal);
+  };
 
   // ----EDIT PLAYLIST MODAL FUNCTIONS BELOW---------------------------------------------------------------------------------
   const [showModal, setShowModal] = useState(false); // use useState hook to manage modal visibility
@@ -254,6 +322,9 @@ function PersonalPlaylistCard({
         <button onClick={handleClickAddTrackToPlaylist}>
           Add to this Playlist
         </button>
+
+        <button onClick={openEditPlaylistTagsModal}>Manage Tags</button>
+
         <button onClick={openEditPlaylistModal}>Edit Playlist</button>
         <button onClick={() => onTogglePublic(personalPlaylist.id)}>
           {personalPlaylist.is_public ? "Set to Private" : "Publish Playlist"}
@@ -320,6 +391,11 @@ function PersonalPlaylistCard({
             Delete Playlist
           </button>
         </EditPersonalPlaylistModal>
+
+        <EditPlaylistTagsModal
+          isTagModalOpen={showTagModal}
+          onClose={closeEditPlaylistTagsModal}
+        ></EditPlaylistTagsModal>
       </div>
     </div>
   );
