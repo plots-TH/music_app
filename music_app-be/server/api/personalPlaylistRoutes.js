@@ -24,6 +24,8 @@ const {
   removeLikeFromPlaylist,
   getPlaylistsByTag,
   getAllTags,
+  addTagToPlaylist,
+  getActivePlaylistTags,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
@@ -328,7 +330,26 @@ router.delete("/:playlistId/like", authenticate, async (req, res) => {
 
 // ADD a Tag
 // POST /api/personalPlaylists + /:playlistId/tags
-router.post("");
+router.post("/:playlistId/tags", authenticate, async (req, res) => {
+  const userId = req.user.id;
+  const { playlistId } = req.params;
+  const { tagId } = req.body;
+
+  try {
+    // Ensure current user owns the playlist to tag:
+    const playlist = await getpersonalPlaylistById(playlistId);
+    if (!playlist || playlist.user_id !== userId) {
+      return res.status(403).json({ error: "You do not own this playlist." });
+    }
+    // Add the tag
+    const addedTag = await addTagToPlaylist({ tagId, playlistId });
+    res
+      .status(201)
+      .json({ message: "playlist tag added successfully", addedTag });
+  } catch (err) {
+    console.log("Error adding tag to playlist:", err);
+  }
+});
 
 // GET ALL TAGS
 // GET /api/personalPlaylists + /tags
@@ -339,6 +360,24 @@ router.get("/tags", async (req, res) => {
     res.status(200).json({ message: "All Tags retrieved successfully:", tags });
   } catch (err) {
     console.error("Error fetching playlists by tag", err);
+    res.sendStatus(500);
+  }
+});
+
+// GET ALL ACTIVE TAGS FOR THIS SPECIFIC PLAYLIST
+// GET /api/personalPlaylists + /:playlistId/tags
+router.get("/:playlistId/tags", async (req, res) => {
+  const { playlistId } = req.params;
+  const { tagId } = req.body;
+
+  try {
+    const activeTagsResult = await getActivePlaylistTags({ tagId, playlistId });
+    res.status(201).json({
+      message: "this playlist has the following active tags:",
+      activeTagsResult,
+    });
+  } catch (err) {
+    console.error("Error fetching active tags for this playlist", err);
     res.sendStatus(500);
   }
 });

@@ -1,5 +1,5 @@
 const { pool } = require("../db/index.js");
-const { addTagToPlaylist } = require("../db/personalPlaylists.js");
+const { getActivePlaylistTags } = require("../db/personalPlaylists.js");
 
 (async () => {
   console.log("env PGDATABASE:", process.env.PGDATABASE);
@@ -12,18 +12,18 @@ const { addTagToPlaylist } = require("../db/personalPlaylists.js");
     (await pool.query("SELECT current_database()")).rows[0]
   );
   try {
-    const addTagTestResult = await addTagToPlaylist({
-      // grab real id's for this test (D's public PL)
-      tagId: 3,
-      playlistId: "9b074e33-4937-4486-9f23-cf010202fe87",
+    const getActiveTagsResult = await getActivePlaylistTags({
+      // grab real id's for this test
+      tagId: "3",
+      playlistId: "28d3ac38-8624-46b9-9c37-11663daeaae1",
     });
 
     console.log(
-      "addTagToPlaylist test successfully returned:",
-      addTagTestResult
+      "getActivePlaylistTags test successfully returned:",
+      getActiveTagsResult
     );
   } catch (err) {
-    console.error("addTagToPlaylist test threw:", err);
+    console.error("getActivePlaylistTags test threw:", err);
   } finally {
     await pool.end();
   }

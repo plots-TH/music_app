@@ -551,6 +551,7 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
 };
 
 // Playlist Tags:
+// addTagToPlaylist HAS WORKED IN THE TESTS
 
 const addTagToPlaylist = async ({ tagId, playlistId }) => {
   const client = await pool.connect();
@@ -637,7 +638,34 @@ const getAllTags = async () => {
 
     return allTags;
   } catch (err) {
-    console.error("failed to retrieve all tags:", err);
+    console.error("[getAllTags] failed to retrieve all tags:", err);
+  }
+};
+
+const getActivePlaylistTags = async ({ tagId, playlistId }) => {
+  const client = await pool.connect();
+
+  try {
+    const getActiveTagsSQL = `
+    SELECT * FROM playlist_tags
+    WHERE tag_id = $1 AND playlist_id = $2
+    `;
+
+    const { rows: activeTags } = await client.query(getActiveTagsSQL, [
+      tagId,
+      playlistId,
+    ]);
+    console.log(
+      "[getActivetags] here are the active tags for this playlist:",
+      activeTags
+    );
+
+    return activeTags;
+  } catch (err) {
+    console.error(
+      "[getActivetags] failed to retrieve active tags for this playlist:",
+      err
+    );
   }
 };
 
@@ -686,4 +714,5 @@ module.exports = {
   addTagToPlaylist,
   removePlaylistTag,
   getPlaylistsByTag,
+  getActivePlaylistTags,
 };

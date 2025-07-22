@@ -1,6 +1,6 @@
 import React from "react";
 
-const TagCard = ({ key, name }) => {
+const TagCard = ({ name }) => {
   return <span className="tag-card">{name}</span>;
 };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Tags from "./Tags";
+import TagCardList from "./TagCardList";
 
 // ----CONFIRM DELETE MODAL COMPONENT--------------------------------------
 function ConfirmDeleteModal({ isOpen, onConfirm, onCancel }) {
@@ -90,12 +90,10 @@ function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
 
 // mouse scrolling component:
 
-const handleWheelEvent = (e) => {
-  console.log("deltaY:", e.deltaY); // Vertical scroll amount
-};
+const handleWheelEvent = (e) => {};
 
 // ADD/REMOVE TAGS modal:
-const EditPlaylistTagsModal = ({ isTagModalOpen, onClose }) => {
+const EditPlaylistTagsModal = ({ isTagModalOpen, onClose, children }) => {
   if (!isTagModalOpen) {
     return null;
   }
@@ -135,13 +133,12 @@ const EditPlaylistTagsModal = ({ isTagModalOpen, onClose }) => {
           }}
         >
           <span>Toggle tags to add or remove them:</span>
-          <p>scroll me with mousewheel</p>
-          <Tags />
-          {/* add a scroll bar so user can close the tag modal */}
-          <button onClick={onClose} style={{ float: "right" }}>
-            Close
-          </button>
+
+          {children}
         </div>
+        <button onClick={onClose} style={{ float: "right" }}>
+          Close
+        </button>
       </div>
     </div>
   );
@@ -170,9 +167,41 @@ function PersonalPlaylistCard({
   // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS^^^----------------------------------------------------------------------------
 
   const [showTagModal, setShowTagModal] = useState(false);
+  const [allTags, setAllTags] = useState([]);
+  const [activeTags, setActivetags] = useState([]);
+
   const openEditPlaylistTagsModal = () => {
     setShowTagModal(true);
+    // fetch ALL the tags
+    const fetchAllTags = async () => {
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/tags`
+        );
+        setAllTags(data.tags);
+        console.log("fetched tags:", data.tags);
+      } catch (err) {
+        console.error("Error Fetching tags", err);
+      }
+    };
+    fetchAllTags();
+
+    // fetch the tag ID's currently active for this playlist
+    // const fetchActiveTags = async () => {
+    //   try {
+    //     const activeTagRes = await axios.get(
+    //       `${
+    //         import.meta.env.VITE_BACKEND_API_BASE_URL
+    //       }/personalPlaylists/${playlistId}/tags`
+    //     );
+    //     console.log("value of activeTagRes:", activeTagRes);
+    //   } catch (err) {
+    //     console.error("Error fetching active tags for this playlist:", err);
+    //   }
+    // };
+    // fetchActiveTags();
   };
+
   const closeEditPlaylistTagsModal = () => {
     setShowTagModal(!showTagModal);
   };
@@ -319,9 +348,7 @@ function PersonalPlaylistCard({
           ))}
       </div>
       <div>
-        <button onClick={handleClickAddTrackToPlaylist}>
-          Add to this Playlist
-        </button>
+        <button onClick={handleClickAddTrackToPlaylist}>Add music</button>
 
         <button onClick={openEditPlaylistTagsModal}>Manage Tags</button>
 
@@ -395,7 +422,9 @@ function PersonalPlaylistCard({
         <EditPlaylistTagsModal
           isTagModalOpen={showTagModal}
           onClose={closeEditPlaylistTagsModal}
-        ></EditPlaylistTagsModal>
+        >
+          <TagCardList allTags={allTags} />
+        </EditPlaylistTagsModal>
       </div>
     </div>
   );
