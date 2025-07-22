@@ -133,7 +133,7 @@ const EditPlaylistTagsModal = ({ isTagModalOpen, onClose, children }) => {
           }}
         >
           <span>Toggle tags to add or remove them:</span>
-
+          {/* render the children of this component (in this case the child is TagCardList) */}
           {children}
         </div>
         <button onClick={onClose} style={{ float: "right" }}>
@@ -187,19 +187,20 @@ function PersonalPlaylistCard({
     fetchAllTags();
 
     // fetch the tag ID's currently active for this playlist
-    // const fetchActiveTags = async () => {
-    //   try {
-    //     const activeTagRes = await axios.get(
-    //       `${
-    //         import.meta.env.VITE_BACKEND_API_BASE_URL
-    //       }/personalPlaylists/${playlistId}/tags`
-    //     );
-    //     console.log("value of activeTagRes:", activeTagRes);
-    //   } catch (err) {
-    //     console.error("Error fetching active tags for this playlist:", err);
-    //   }
-    // };
-    // fetchActiveTags();
+    const fetchActiveTags = async () => {
+      try {
+        const activeTagRes = await axios.get(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
+            personalPlaylist.id
+          }/tags`
+        );
+
+        console.log("value of activeTagRes:", activeTagRes);
+      } catch (err) {
+        console.error("Error fetching active tags for this playlist:", err);
+      }
+    };
+    fetchActiveTags();
   };
 
   const closeEditPlaylistTagsModal = () => {

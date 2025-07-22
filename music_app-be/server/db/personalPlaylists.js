@@ -642,21 +642,20 @@ const getAllTags = async () => {
   }
 };
 
-const getActivePlaylistTags = async ({ tagId, playlistId }) => {
+const getActivePlaylistTags = async ({ playlistId }) => {
   const client = await pool.connect();
 
   try {
     const getActiveTagsSQL = `
     SELECT * FROM playlist_tags
-    WHERE tag_id = $1 AND playlist_id = $2
+    WHERE playlist_id = $1
     `;
 
     const { rows: activeTags } = await client.query(getActiveTagsSQL, [
-      tagId,
       playlistId,
     ]);
     console.log(
-      "[getActivetags] here are the active tags for this playlist:",
+      "[getActiveTags] here are the active tags for this playlist:",
       activeTags
     );
 
