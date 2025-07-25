@@ -1,4 +1,3 @@
-// server/db/personalPlaylists.js
 const pool = require("./pool");
 
 // Creates a new personal playlist for a user.
@@ -181,11 +180,8 @@ const removeTrackFromPersonalPlaylist = async (playlistId, trackId) => {
   const client = await pool.connect();
 
   try {
-    // start the transaction - so all three of the following client.queries either succeed or fail together
-    // this avoids half-updated or half-applied states in the database
     await client.query("BEGIN");
 
-    // delete the track
     const deleteSQL = `
     DELETE FROM personal_playlist_tracks 
     WHERE personal_playlist_id = $1 
@@ -197,7 +193,6 @@ const removeTrackFromPersonalPlaylist = async (playlistId, trackId) => {
       trackId,
     ]);
 
-    // see if any tracks remain. If they do, we will set the track's image to the playlist's cover image
     const remainingSQL = `
     SELECT track_cover_url FROM personal_playlist_tracks
     WHERE personal_playlist_id = $1
@@ -205,14 +200,8 @@ const removeTrackFromPersonalPlaylist = async (playlistId, trackId) => {
     LIMIT 1;
   `;
     const { rows: remaining } = await client.query(remainingSQL, [playlistId]);
-    let newCover;
-    if (remaining.length === 0) {
-      newCover = null;
-    } else {
-      newCover = remaining[0].track_cover_url;
-    }
+    let newCover = remaining.length === 0 ? null : remaining[0].track_cover_url;
 
-    // update the playlist’s cover_url based on what remains (or clear it)
     console.log({ deleted, remaining });
 
     const updateSQL = `
@@ -222,17 +211,12 @@ const removeTrackFromPersonalPlaylist = async (playlistId, trackId) => {
   `;
     await client.query(updateSQL, [playlistId, newCover]);
 
-    // commit — now all three statements are permanently applied
     await client.query("COMMIT");
-
-    // return the deleted row so your service layer can respond
     return deleted[0];
   } catch (err) {
-    // if anything threw, undo all of the above
     await client.query("ROLLBACK");
     throw err;
   } finally {
-    // awlays release the client back to the pool, even if an error occured
     client.release();
   }
 };
@@ -261,10 +245,8 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
   const { rows } = await pool.query(SQL, [userId]);
   console.log("Flat query results:", rows);
 
-  // Group the rows by playlist ID:
   const grouped = {};
   rows.forEach((row) => {
-    // If we haven't seen this playlist yet, create a new group object for it.
     if (!grouped[row.id]) {
       grouped[row.id] = {
         id: row.id,
@@ -276,24 +258,21 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
         tracks: [],
       };
     }
-    // If there is track data (track_id not null), add it to the group's tracks.
     if (row.track_id) {
       grouped[row.id].tracks.push({
         track_id: row.track_id,
         track_title: row.track_title,
         track_artist: row.track_artist,
         added_at: row.added_at,
-        track_cover_url: row.track_cover_url, // if I ever want per-track covers later
+        track_cover_url: row.track_cover_url,
         is_public: row.is_public,
       });
     }
   });
 
-  // Convert the grouped object into an array.
   return Object.values(grouped);
 };
 
-//
 const editPersonalPlaylistTitle = async (playlistId, newplaylistTitle) => {
   const SQL = `
   UPDATE personal_playlists
@@ -305,7 +284,6 @@ const editPersonalPlaylistTitle = async (playlistId, newplaylistTitle) => {
   return rows[0];
 };
 
-// delete personal playlist - DATA ACCESS LAYER
 const deletePersonalPlaylist = async (playlistId, userId) => {
   const SQL = `
   DELETE FROM personal_playlists
@@ -317,7 +295,6 @@ const deletePersonalPlaylist = async (playlistId, userId) => {
   return rows[0];
 };
 
-// insert a description into personal Playlist - DATA ACCESS FUNCTION
 const updatePlaylistDescription = async (playlistId, description) => {
   const SQL = `
   UPDATE personal_playlists
@@ -329,7 +306,6 @@ const updatePlaylistDescription = async (playlistId, description) => {
   return rows[0];
 };
 
-// update the is_public status of a personal playlist
 const updatePublicStatus = async (playlistId, isPublic) => {
   const SQL = `
   UPDATE personal_playlists
@@ -341,7 +317,6 @@ const updatePublicStatus = async (playlistId, isPublic) => {
   return rows[0];
 };
 
-// get publicly published personal playlists - for the "explore public user playlists" page
 const getPublicPlaylists = async () => {
   const SQL = `
   SELECT 
@@ -370,10 +345,8 @@ const getPublicPlaylists = async () => {
   const { rows } = await pool.query(SQL);
   console.log("data access function getPublicPlaylists rows:", rows);
 
-  // Group the rows by playlist ID:
   const grouped = {};
   rows.forEach((row) => {
-    // If we haven't seen this playlist yet, create a new group object for it.
     if (!grouped[row.id]) {
       grouped[row.id] = {
         id: row.id,
@@ -387,28 +360,23 @@ const getPublicPlaylists = async () => {
         tracks: [],
       };
     }
-
-    // Only add the track if row.track_id is non-null AND not already in the array
     if (row.track_id) {
-      // `.some(...)` returns true if ANY element matches the predicate
-      const alreadyInArray = grouped[row.id].tracks.some(
-        (track) => track.track_id === row.track.id
+      const already = grouped[row.id].tracks.some(
+        (t) => t.track_id === row.track_id
       );
-      // if the track ID is not already in the array, PUSH it in
-      if (!alreadyInArray) {
+      if (!already) {
         grouped[row.id].tracks.push({
           track_id: row.track_id,
           track_title: row.track_title,
           track_artist: row.track_artist,
           added_at: row.added_at,
-          track_cover_url: row.track_cover_url, // if I ever want per-track covers later
+          track_cover_url: row.track_cover_url,
           is_public: row.is_public,
         });
       }
     }
   });
 
-  // Convert the grouped object into an array.
   return Object.values(grouped);
 };
 
@@ -418,7 +386,6 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
     userId,
   });
 
-  // start a client and BEGIN a transaction
   const client = await pool.connect();
   console.log(
     "[clone] got client, beginning transaction for playlist",
@@ -431,56 +398,53 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
 
     // fetch the source playlist's rows
     const getPlaylistSQL = `
-  SELECT 
-    id, 
-    user_id,
-    title,
-    description,
-    cover_url,
-    is_public
-  FROM personal_playlists
-  WHERE id = $1;
-  `;
+      SELECT 
+        id, 
+        user_id,
+        title,
+        description,
+        cover_url,
+        is_public
+      FROM personal_playlists
+      WHERE id = $1;
+    `;
+    const {
+      rows: [copiedPlaylist],
+    } = await client.query(getPlaylistSQL, [playlistId]);
+    console.log("[clone] fetched source playlist:", copiedPlaylist);
 
-    const { rows: copiedPlaylistRows } = await client.query(getPlaylistSQL, [
-      playlistId,
-    ]);
-    console.log("[clone] fetched source playlist:", copiedPlaylistRows);
-    const copiedPlaylist = copiedPlaylistRows[0];
+    // fetch the source playlist's tags
+    const getTagsSQL = `
+      SELECT tag_id
+      FROM playlist_tags
+      WHERE playlist_id = $1;
+    `;
+    const { rows: copiedTags } = await client.query(getTagsSQL, [playlistId]);
+    console.log("[clone] fetched playlist tags to clone:", copiedTags);
 
     // fetch the original playlist's tracks rows
     const getTracksSQL = `
-  SELECT 
-    track_id,
-    track_title,
-    track_artist,
-    track_cover_url,
-    added_at
-  FROM personal_playlist_tracks
-  WHERE personal_playlist_id = $1
-  ORDER BY added_at ASC;
-  `;
+      SELECT 
+        track_id,
+        track_title,
+        track_artist,
+        track_cover_url,
+        added_at
+      FROM personal_playlist_tracks
+      WHERE personal_playlist_id = $1
+      ORDER BY added_at ASC;
+    `;
     const { rows: copiedTracks } = await client.query(getTracksSQL, [
       playlistId,
     ]);
     console.log("[clone] fetched source PL's tracks:", copiedTracks);
 
-    // INSERT a new 'playlist' row for the current user (omit is_public so it defaults to false)
+    // insert new playlist
     const insertPlaylistSQL = `
-    INSERT INTO personal_playlists (user_id, title, description, cover_url)
-    VALUES ($1, $2, $3, $4)
-    RETURNING *;
+      INSERT INTO personal_playlists (user_id, title, description, cover_url)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *;
     `;
-
-    console.log(
-      "[clone] Inserting new playist row for user with id of:",
-      userId,
-      "with fields:",
-      copiedPlaylist.title,
-      copiedPlaylist.description,
-      copiedPlaylist.cover_url
-    );
-
     const {
       rows: [newPlaylistRow],
     } = await client.query(insertPlaylistSQL, [
@@ -489,23 +453,15 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
       copiedPlaylist.description,
       copiedPlaylist.cover_url,
     ]);
-
     console.log("[clone] new playlist inserted:", newPlaylistRow);
     const newPlaylistId = newPlaylistRow.id;
-    console.log("[clone] new playlist id is:", newPlaylistId);
 
-    // INSERT each track from the source playlist into the new cloned playlist
+    // insert tracks
     const insertTracksSQL = `
-    INSERT INTO personal_playlist_tracks (personal_playlist_id, track_id, track_title, track_artist, track_cover_url)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING *;
+      INSERT INTO personal_playlist_tracks (personal_playlist_id, track_id, track_title, track_artist, track_cover_url)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *;
     `;
-
-    console.log(
-      "[clone] inserting the following tracks into new cloned playlist:",
-      copiedTracks
-    );
-
     const insertedTracks = [];
     for (const track of copiedTracks) {
       const {
@@ -520,28 +476,27 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
       insertedTracks.push(insertedTrackRow);
       console.log("inserted track:", insertedTrackRow.track_title);
     }
-    console.log(
-      "all tracks inserted. full insertedTracks array is:",
-      insertedTracks
-    );
+
+    // carry over tags
+    const insertTagSQL = `
+      INSERT INTO playlist_tags (playlist_id, tag_id)
+      VALUES ($1, $2);
+    `;
+    for (const { tag_id } of copiedTags) {
+      await client.query(insertTagSQL, [newPlaylistId, tag_id]);
+    }
+    console.log("[clone] carried over tags");
 
     await client.query("COMMIT");
     console.log(
       "[clone] transaction COMMITTED for newPlaylistId:",
       newPlaylistId
     );
-    console.log(
-      "[clone] transaction COMMITTED for newPlaylist named:",
-      newPlaylistRow.title
-    );
 
-    // return the newly committed playlist + its tracks
     return {
       playlistRows: newPlaylistRow,
-      trackRows: insertedTracks,
+      trackRows: copiedTracks,
     };
-
-    // if error, ROLLBACK the transaction to protect the database from incomplete entries
   } catch (err) {
     console.log("[clone] error caught - beginning ROLLBACK:", err);
     await client.query("ROLLBACK");
@@ -549,14 +504,12 @@ const clonePublicPlaylist = async ({ playlistId, userId }) => {
   } finally {
     client.release();
     console.log(
-      "[clone] client released and playlist + tracks have been cloned successfully"
+      "[clone] client released and playlist + tracks + tags have been cloned successfully"
     );
   }
 };
 
 // Playlist Tags:
-// addTagToPlaylist HAS WORKED IN THE TESTS
-
 const addTagToPlaylist = async ({ tagId, playlistId }) => {
   const client = await pool.connect();
 
@@ -575,7 +528,6 @@ const addTagToPlaylist = async ({ tagId, playlistId }) => {
     VALUES ($1, $2) 
     RETURNING *;
   `;
-
     const { rows: addedTags } = await client.query(addTagSQL, [
       tagId,
       playlistId,
@@ -614,7 +566,6 @@ const removePlaylistTag = async ({ tagId, playlistId }) => {
     AND playlist_id = $2
     RETURNING *;
     `;
-
     const { rows: removedTag } = await client.query(removeTagSQL, [
       tagId,
       playlistId,
@@ -638,10 +589,8 @@ const getAllTags = async () => {
     const getTagsSQL = `
     SELECT * FROM tags;
     `;
-
     const { rows: allTags } = await pool.query(getTagsSQL);
     console.log("[getAllTags] here are all the tags:", allTags);
-
     return allTags;
   } catch (err) {
     console.error("[getAllTags] failed to retrieve all tags:", err);
@@ -654,7 +603,6 @@ const getActivePlaylistTags = async ({ playlistId }) => {
     SELECT * FROM playlist_tags
     WHERE playlist_id = $1
     `;
-
     const { rows: activeTags } = await pool.query(getActiveTagsSQL, [
       playlistId,
     ]);
@@ -662,7 +610,6 @@ const getActivePlaylistTags = async ({ playlistId }) => {
       "[getActiveTags] here are the active tags for this playlist:",
       activeTags
     );
-
     return activeTags;
   } catch (err) {
     console.error(
@@ -684,11 +631,8 @@ const getPlaylistsByTag = async (tagName) => {
       users.username AS creator_username
     FROM
       personal_playlists
-
     JOIN users ON personal_playlists.user_id = users.id
-
     JOIN playlist_tags ON playlist_tags.playlist_id = personal_playlists.id
-
     JOIN tags ON tags.id = playlist_tags.tag_id
     WHERE tags.tag_name = $1
     AND personal_playlists.is_public = TRUE
