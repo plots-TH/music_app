@@ -84,6 +84,8 @@ const addLikeToPlaylist = async ({ userId, playlistId }) => {
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
+  } finally {
+    client.release();
   }
 };
 
@@ -120,6 +122,8 @@ const removeLikeFromPlaylist = async ({ userId, playlistId }) => {
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
+  } finally {
+    client.release();
   }
 };
 //  LIKING A PLAYLIST SECTION END -----------------------------------
@@ -585,6 +589,8 @@ const addTagToPlaylist = async ({ tagId, playlistId }) => {
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
+  } finally {
+    client.release();
   }
 };
 
@@ -622,18 +628,18 @@ const removePlaylistTag = async ({ tagId, playlistId }) => {
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
+  } finally {
+    client.release();
   }
 };
 
 const getAllTags = async () => {
-  const client = await pool.connect();
-
   try {
     const getTagsSQL = `
     SELECT * FROM tags;
     `;
 
-    const { rows: allTags } = await client.query(getTagsSQL);
+    const { rows: allTags } = await pool.query(getTagsSQL);
     console.log("[getAllTags] here are all the tags:", allTags);
 
     return allTags;
@@ -643,15 +649,13 @@ const getAllTags = async () => {
 };
 
 const getActivePlaylistTags = async ({ playlistId }) => {
-  const client = await pool.connect();
-
   try {
     const getActiveTagsSQL = `
     SELECT * FROM playlist_tags
     WHERE playlist_id = $1
     `;
 
-    const { rows: activeTags } = await client.query(getActiveTagsSQL, [
+    const { rows: activeTags } = await pool.query(getActiveTagsSQL, [
       playlistId,
     ]);
     console.log(

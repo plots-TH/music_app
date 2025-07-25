@@ -26,6 +26,7 @@ const {
   getAllTags,
   addTagToPlaylist,
   getActivePlaylistTags,
+  removePlaylistTag,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
@@ -383,6 +384,27 @@ router.get("/:playlistId/tags", async (req, res) => {
 });
 
 // REMOVE a Tag
+router.delete("/:playlistId/tags", authenticate, async (req, res) => {
+  const userId = req.user.id;
+  const { playlistId } = req.params;
+  const { tagId } = req.body;
+
+  try {
+    // check if the user owns the playlist
+    const playlist = await getpersonalPlaylistById(playlistId);
+    if (!playlist || playlist.user_id !== userId) {
+      return res.status(403).json({ error: "You do not own this playlist." });
+    }
+
+    const removeTagResult = await removePlaylistTag({ tagId, playlistId });
+    res.status(201).json({
+      message: "tag removed from playlist successfully:",
+      removeTagResult,
+    });
+  } catch (err) {
+    console.error("Error removing tag from playlist:", err);
+  }
+});
 // DELETE /api/personalPlaylists + /:playlistId/tags/:tagId
 
 module.exports = router;

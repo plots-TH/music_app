@@ -1,7 +1,11 @@
 import React from "react";
 
-const TagCard = ({ name }) => {
-  return <span className="tag-card">{name}</span>;
+const TagCard = ({ name, active, onClick }) => {
+  return (
+    <span className="tag-card" onClick={onClick}>
+      {name}
+    </span>
+  );
 };
 
 export default TagCard;

@@ -168,43 +168,100 @@ function PersonalPlaylistCard({
 
   const [showTagModal, setShowTagModal] = useState(false);
   const [allTags, setAllTags] = useState([]);
-  const [activeTags, setActivetags] = useState([]);
+  const [activeTags, setActiveTags] = useState([]);
+  const [tagsLoading, setTagsLoading] = useState(false);
 
-  const openEditPlaylistTagsModal = () => {
-    setShowTagModal(true);
-    // fetch ALL the tags
-    const fetchAllTags = async () => {
-      try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/tags`
-        );
-        setAllTags(data.tags);
-        console.log("fetched tags:", data.tags);
-      } catch (err) {
-        console.error("Error Fetching tags", err);
-      }
-    };
-    fetchAllTags();
-
-    // fetch the tag ID's currently active for this playlist
-    const fetchActiveTags = async () => {
-      try {
-        const activeTagRes = await axios.get(
-          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-            personalPlaylist.id
-          }/tags`
-        );
-
-        console.log("value of activeTagRes:", activeTagRes);
-      } catch (err) {
-        console.error("Error fetching active tags for this playlist:", err);
-      }
-    };
-    fetchActiveTags();
+  const openEditPlaylistTagsModal = () => setShowTagModal(true);
+  const closeEditPlaylistTagsModal = () => {
+    setShowTagModal(false);
+    // reset allTags and activeTags on every modal close to avoid rendering stale empty arrays
+    setAllTags([]);
+    setActiveTags([]);
   };
 
-  const closeEditPlaylistTagsModal = () => {
-    setShowTagModal(!showTagModal);
+  useEffect(() => {
+    if (!showTagModal) return;
+
+    setTagsLoading(true);
+    const loadTags = async () => {
+      try {
+        const [{ data: allTagsRes }, { data: activeTagsRes }] =
+          await Promise.all([
+            axios.get(
+              `${
+                import.meta.env.VITE_BACKEND_API_BASE_URL
+              }/personalPlaylists/tags`,
+              { headers: { Authorization: `Bearer ${userToken}` } }
+            ),
+            axios.get(
+              `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
+                personalPlaylist.id
+              }/tags`,
+              { headers: { Authorization: `Bearer ${userToken}` } }
+            ),
+          ]);
+
+        setAllTags(allTagsRes.tags || []);
+        setActiveTags(activeTagsRes.activeTagsResult || []);
+      } catch (err) {
+        console.error("Error loading tags for modal:", err);
+      } finally {
+        setTagsLoading(false);
+      }
+    };
+
+    loadTags();
+  }, [showTagModal, personalPlaylist.id, userToken]);
+
+  const handleToggleTag = async (tagId) => {
+    try {
+      // create const isActive. if isActive, delete the tag. else add it.
+      const isActive = activeTags.some((tag) => tag.tag_id === tagId);
+      console.log("Tag Clicked! tag ID:", tagId);
+
+      if (isActive) {
+        // remove the tag (send tagId in the req.body)
+        console.log("This tag was active. attempting to remove it...");
+
+        const deleteTagRes = await axios.delete(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
+            personalPlaylist.id
+          }/tags`,
+          {
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: { tagId },
+          }
+        );
+        console.log("[handleToggleTag] DELETE response:", deleteTagRes); // log response
+        setActiveTags((prev) => {
+          const activeTagsAfterDelete = prev.filter(
+            (tag) => tag.tag_id !== tagId
+          );
+          console.log("new active tags list:", activeTagsAfterDelete);
+          return activeTagsAfterDelete;
+        });
+      } else {
+        console.log("this tag was inactive. attempting to activate...");
+
+        const addTagRes = await axios.post(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
+            personalPlaylist.id
+          }/tags`,
+          { tagId },
+          {
+            headers: { Authorization: `Bearer ${userToken}` },
+          }
+        );
+
+        setActiveTags((prev) => {
+          const activeTagsAfterAdd = [...prev, { tag_id: tagId }];
+          console.log("new active tags list:", activeTagsAfterAdd);
+          return activeTagsAfterAdd;
+        });
+      }
+    } catch (err) {
+      console.error("Error deactivating tag from playlist:", err);
+    }
   };
 
   // ----EDIT PLAYLIST MODAL FUNCTIONS BELOW---------------------------------------------------------------------------------
@@ -424,7 +481,16 @@ function PersonalPlaylistCard({
           isTagModalOpen={showTagModal}
           onClose={closeEditPlaylistTagsModal}
         >
-          <TagCardList allTags={allTags} />
+          {tagsLoading ? (
+            <p>Loading tags...</p>
+          ) : (
+            <TagCardList
+              key={personalPlaylist.id}
+              allTags={allTags}
+              activeTags={activeTags}
+              onToggleTag={handleToggleTag}
+            />
+          )}
         </EditPlaylistTagsModal>
       </div>
     </div>

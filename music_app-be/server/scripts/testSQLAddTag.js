@@ -14,8 +14,8 @@ const { addTagToPlaylist } = require("../db/personalPlaylists.js");
   try {
     const addTagTestResult = await addTagToPlaylist({
       // grab real id's for this test (D's public PL)
-      tagId: 3,
-      playlistId: "9b074e33-4937-4486-9f23-cf010202fe87",
+      tagId: 2,
+      playlistId: "dc4fe62f-e33c-4188-8c02-ba11eec16552",
     });
 
     console.log(

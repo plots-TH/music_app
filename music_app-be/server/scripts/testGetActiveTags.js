@@ -14,7 +14,7 @@ const { getActivePlaylistTags } = require("../db/personalPlaylists.js");
   try {
     const getActiveTagsResult = await getActivePlaylistTags({
       // grab real id's for this test
-      playlistId: "2f9f192c-a64c-41a8-94f9-0cf986bca92b",
+      playlistId: "964812ac-005b-4c92-a0cb-0d6b371766d5",
     });
 
     console.log(

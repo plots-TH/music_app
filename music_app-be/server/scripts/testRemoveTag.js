@@ -15,7 +15,7 @@ const { removePlaylistTag } = require("../db/personalPlaylists.js");
     const removeTagTestResult = await removePlaylistTag({
       // grab real id's for this test (D's public PL)
       tagId: 1,
-      playlistId: "42839a38-27e8-4c06-80e0-9a8c94631799",
+      playlistId: "ff068839-2e69-4a47-b190-7dd5e5971b3f",
     });
 
     console.log(
