@@ -10,7 +10,7 @@ function ExplorePublic({ userToken, userId }) {
   // flag to be used for clone success message in PublicPlaylistCard
   const [justClonedId, setJustClonedId] = useState(null);
 
-  // initial fetch of public playlists
+  // initial fetch of public playlists + tags
   useEffect(() => {
     console.log("fetching public playlists...");
     axios

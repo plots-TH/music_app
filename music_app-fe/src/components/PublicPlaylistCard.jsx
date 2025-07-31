@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function PublicPlaylistCard({
   publicPlaylist,
@@ -14,22 +14,50 @@ function PublicPlaylistCard({
   // local state for toggling "like" button to "unlike" button
   const [hasLiked, setHasLiked] = useState(false);
 
-  // Fetch like-info on mount and whenever the playlist ID or user token changes
+  // state for public playlist tags
+  const [allTags, setAllTags] = useState([]);
+  const [activePubTags, setActivePubTags] = useState([]);
+
+  // Fetch like-info (and any tags) on mount and whenever the playlist ID or user token changes
   useEffect(() => {
     const fetchLikeInfo = async () => {
       try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-            publicPlaylist.id
-          }/like`,
-          { headers: { Authorization: `Bearer ${userToken}` } }
-        );
-        setLikes(data.totalLikes);
-        setHasLiked(data.hasLiked);
+        const [
+          { data: likesRes },
+          { data: allTagsRes },
+          { data: activePubTagsRes },
+        ] = await Promise.all([
+          axios.get(
+            `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
+              publicPlaylist.id
+            }/like`,
+            { headers: { Authorization: `Bearer ${userToken}` } }
+          ),
+          // fetch all the tags
+          axios.get(
+            `${
+              import.meta.env.VITE_BACKEND_API_BASE_URL
+            }/personalPlaylists/tags`,
+            { headers: { Authorization: `Bearer ${userToken}` } }
+          ),
+          // get active tags for the playlist
+          axios.get(
+            `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
+              publicPlaylist.id
+            }/tags`,
+            { headers: { Authorization: `Bearer ${userToken}` } }
+          ),
+        ]);
+
+        setLikes(likesRes.totalLikes || []);
+        setHasLiked(likesRes.hasLiked);
+        setAllTags(allTagsRes.tags || []);
+        setActivePubTags(activePubTagsRes.activeTagsResult || []);
       } catch (err) {
-        console.error("Error Fetching Like Info on Mount:", err);
+        console.error("Error Fetching Like/tag Info on Mount:", err);
       }
     };
+
     fetchLikeInfo();
   }, [publicPlaylist.id, userToken]);
 
@@ -47,6 +75,9 @@ function PublicPlaylistCard({
         // setLikes to whatever the current value is + 1
         setLikes((prevLikes) => prevLikes + 1);
         setHasLiked(true);
+
+        console.log("Master tag list:", allTags);
+        console.log("active tags for public playlist:", activePubTags);
       } else {
         const removeLikeResponse = await axios.delete(
           `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
@@ -56,6 +87,9 @@ function PublicPlaylistCard({
         );
         setLikes((prevLikes) => prevLikes - 1);
         setHasLiked(false);
+
+        console.log("Master tag list:", allTags);
+        console.log("active tags for public playlist:", activePubTags);
       }
     } catch (err) {
       console.error("Error Toggling Like:", err);
