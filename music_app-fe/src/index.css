@@ -181,3 +181,15 @@
   width: 90%;
   margin: 0 auto;
 }
+
+.dropdown-container {
+  border: 1px solid black;
+}
+
+.tag-filter-modal {
+  background: "#fff";
+  padding: "1rem";
+  border-radius: "4px";
+  width: "90%";
+  max-width: "400px";
+}

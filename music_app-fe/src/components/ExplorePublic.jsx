@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import PublicPlaylistCardList from "./publicPlaylistCardList";
+import DropDownMenu from "./DropDownMenu";
+import TagCardList from "./TagCardList";
 
 //Route path="/publicPlaylists"
 function ExplorePublic({ userToken, userId }) {
   const [publicPlaylists, setPublicPlaylists] = useState([]);
   const [playlistsLoaded, setPlaylistsLoaded] = useState(false); // state to track data loading status
 
+  // state for tags
+  const [allTags, setAllTags] = useState([]);
+  const [tagsLoading, setTagsLoading] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
+
   // flag to be used for clone success message in PublicPlaylistCard
   const [justClonedId, setJustClonedId] = useState(null);
 
-  // initial fetch of public playlists + tags
+  // initial fetch of public playlists
   useEffect(() => {
     console.log("fetching public playlists...");
     axios
@@ -28,6 +35,33 @@ function ExplorePublic({ userToken, userId }) {
         console.error("Error fetching Public Playlists:", err);
       });
   }, []); // empty dependency array so useEffect is only called on component mount
+
+  // fetch master tag list
+  useEffect(() => {
+    if (!userToken) {
+      return;
+    }
+
+    console.log("[ExplorePublic useEffect] fetching master tag list...");
+    setTagsLoading(true);
+
+    const loadTags = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/tags`,
+          { headers: { Authorization: `Bearer ${userToken}` } }
+        );
+
+        console.log("fetched tags:", res.data.tags);
+        setAllTags(res.data.tags);
+      } catch (err) {
+        "[ExplorePublic useEffect] error fetching master tag list:", err;
+      } finally {
+        setTagsLoading(false);
+      }
+    };
+    loadTags();
+  }, [userToken]);
 
   const handleClonePlaylist = (playlistId) => {
     console.log(
@@ -63,6 +97,9 @@ function ExplorePublic({ userToken, userId }) {
   return (
     <div>
       <h2>Explore Playlists Created by other Users:</h2>
+
+      <h3>filter by tags</h3>
+      <DropDownMenu></DropDownMenu>
 
       <PublicPlaylistCardList
         publicPlaylists={publicPlaylists}
