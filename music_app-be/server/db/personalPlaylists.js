@@ -691,4 +691,5 @@ module.exports = {
   removePlaylistTag,
   getPlaylistsByTag,
   getActivePlaylistTags,
+  getTrackCountForPersonalPlaylist,
 };
