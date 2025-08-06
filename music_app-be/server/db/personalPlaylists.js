@@ -273,7 +273,7 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
   return Object.values(grouped);
 };
 
-getTrackCountForPersonalPlaylist = async (playlistId) => {
+const getTrackCountForPlaylist = async (playlistId) => {
   // In PostgreSQL, the result of COUNT(*) is a bigint by default.
   // The ::int casts that bigint into a regular 32-bit integer.
   // You do this if the consuming code expects a plain int
@@ -691,5 +691,5 @@ module.exports = {
   removePlaylistTag,
   getPlaylistsByTag,
   getActivePlaylistTags,
-  getTrackCountForPersonalPlaylist,
+  getTrackCountForPlaylist,
 };

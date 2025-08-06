@@ -27,7 +27,7 @@ const {
   addTagToPlaylist,
   getActivePlaylistTags,
   removePlaylistTag,
-  getTrackCountForPersonalPlaylist,
+  getTrackCountForPlaylist,
 } = require("../db/personalPlaylists");
 
 // Authentication middleware to protect routes (you will implement this)
