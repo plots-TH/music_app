@@ -166,10 +166,20 @@
   border-radius: 8px;
   box-sizing: border-box;
 }
+
+/* style for tag when mouse hovers over it */
 .tag-card:hover {
   color: rgb(255, 255, 255);
   text-decoration: none;
   background-color: rgb(105, 105, 105);
+  cursor: pointer;
+}
+
+/* style for an active tag after it is clicked */
+.active-tag {
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+  background-color: rgb(17, 255, 28);
   cursor: pointer;
 }
 
@@ -184,12 +194,4 @@
 
 .dropdown-container {
   border: 1px solid black;
-}
-
-.tag-filter-modal {
-  background: "#fff";
-  padding: "1rem";
-  border-radius: "4px";
-  width: "90%";
-  max-width: "400px";
 }

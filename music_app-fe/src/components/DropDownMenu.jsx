@@ -6,20 +6,12 @@ function DropDownMenu({ children }) {
   // state for menu visibility
   const [isOpen, setIsOpen] = useState(false);
 
-  // state for tags
-  const [allTags, setAllTags] = useState([]);
-  const [activeTags, setActiveTags] = useState([]);
-  const [tagsLoading, setTagsLoading] = useState(false);
-
   // capture event for scrolling
   const handleScroll = (e) => {};
 
   const toggleDropDown = () => {
     setIsOpen(!isOpen);
   };
-
-  // whenever tag filter dropdown menu is opened, fetch the tag list
-  useEffect(() => {}, []);
 
   return (
     <div>

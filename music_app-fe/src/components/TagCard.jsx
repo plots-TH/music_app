@@ -2,7 +2,10 @@ import React from "react";
 
 const TagCard = ({ name, active, onClick }) => {
   return (
-    <span className="tag-card" onClick={onClick}>
+    <span
+      className={`tag-card ${active ? "active-tag" : ""}`}
+      onClick={onClick}
+    >
       {name}
     </span>
   );

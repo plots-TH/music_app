@@ -411,9 +411,15 @@ function PersonalPlaylistCard({
         <button onClick={openEditPlaylistTagsModal}>Manage Tags</button>
 
         <button onClick={openEditPlaylistModal}>Edit Playlist</button>
-        <button onClick={() => onTogglePublic(personalPlaylist.id)}>
-          {personalPlaylist.is_public ? "Set to Private" : "Publish Playlist"}
-        </button>
+
+        {/* if there are no tracks in the playlist, hide the publish button */}
+        {personalPlaylist.tracks.length ? (
+          <button onClick={() => onTogglePublic(personalPlaylist.id)}>
+            {personalPlaylist.is_public ? "Set to Private" : "Publish Playlist"}
+          </button>
+        ) : (
+          ""
+        )}
 
         <EditPersonalPlaylistModal
           isModalOpen={showModal}

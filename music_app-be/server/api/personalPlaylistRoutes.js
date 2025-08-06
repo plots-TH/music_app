@@ -241,6 +241,12 @@ router.patch("/:playlistId/publish", authenticate, async (req, res) => {
     });
   }
 
+  if (isPublic && (await getTrackCountForPlaylist(playlistId)) === 0) {
+    return res.status(400).json({
+      error: "Cannot publish an empty playlist. Add at least one track.",
+    });
+  }
+
   try {
     const updatedPublicStatus = await updatePublicStatus(playlistId, isPublic);
 

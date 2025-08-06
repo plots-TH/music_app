@@ -273,6 +273,19 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
   return Object.values(grouped);
 };
 
+getTrackCountForPersonalPlaylist = async (playlistId) => {
+  // In PostgreSQL, the result of COUNT(*) is a bigint by default.
+  // The ::int casts that bigint into a regular 32-bit integer.
+  // You do this if the consuming code expects a plain int
+  const SQL = `
+  SELECT COUNT(*) ::int AS count
+  FROM personal_playlist_tracks
+  WHERE personal_playlist_id = $1
+  `;
+  const { rows } = await pool.query(SQL, [playlistId]);
+  return rows[0].count;
+};
+
 const editPersonalPlaylistTitle = async (playlistId, newplaylistTitle) => {
   const SQL = `
   UPDATE personal_playlists

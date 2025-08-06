@@ -52,7 +52,7 @@ function ExplorePublic({ userToken, userId }) {
           { headers: { Authorization: `Bearer ${userToken}` } }
         );
 
-        console.log("fetched tags:", res.data.tags);
+        console.log("[ExplorePublic] fetched tags:", res.data.tags);
         setAllTags(res.data.tags);
       } catch (err) {
         "[ExplorePublic useEffect] error fetching master tag list:", err;
@@ -63,12 +63,23 @@ function ExplorePublic({ userToken, userId }) {
     loadTags();
   }, [userToken]);
 
-  const handleClonePlaylist = (playlistId) => {
-    console.log(
-      "Inside handleClonePlaylist from ExplorePublic - ABOUT TO CLONE pl with ID:",
-      { playlistId }
+  const handleToggleTagFilter = (tagId) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId]
     );
-    console.log("userToken inside ExplorePublic:", userToken);
+  };
+
+  const filtered = selectedTags.length
+    ? publicPlaylists.filter((pl) =>
+        selectedTags.every((id) => pl.tags.some((t) => t.tag_id === id))
+      )
+    : publicPlaylists;
+
+  const handleClonePlaylist = (playlistId) => {
+    console.log("[ExplorePublic] ABOUT TO CLONE pl with ID:", { playlistId });
+    console.log("[ExplorePublic] userToken:", userToken);
     axios
       .post(
         `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/clone`,
@@ -98,11 +109,21 @@ function ExplorePublic({ userToken, userId }) {
     <div>
       <h2>Explore Playlists Created by other Users:</h2>
 
-      <h3>filter by tags</h3>
-      <DropDownMenu></DropDownMenu>
+      <h3>Filter by tags</h3>
+      <DropDownMenu>
+        {tagsLoading ? (
+          <p>Loading tags...</p>
+        ) : (
+          <TagCardList
+            allTags={allTags}
+            activeTags={selectedTags.map((id) => ({ tag_id: id }))}
+            onToggleTag={handleToggleTagFilter}
+          />
+        )}
+      </DropDownMenu>
 
       <PublicPlaylistCardList
-        publicPlaylists={publicPlaylists}
+        publicPlaylists={filtered}
         userToken={userToken}
         userId={userId}
         onClonePlaylist={handleClonePlaylist}
