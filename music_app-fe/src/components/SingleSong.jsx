@@ -65,7 +65,7 @@ function AddToPersonalPlaylistModal({
             {playlists.map((pl) => (
               <li key={pl.id} style={{ marginBottom: "0.5rem" }}>
                 {pl.title}{" "}
-                <button onClick={() => onAddTrack(pl.id)}>
+                <button onClick={() => onAddTrack(pl.id, pl.title)}>
                   Add to Playlist
                 </button>
               </li>
@@ -114,10 +114,11 @@ function SingleSong({ userToken }) {
     }
   }, [id]);
 
-  // Fetch personal playlists whenever the modal is about to open
+  // If show modal = true, fetch the list of personal playlists for the user
   useEffect(() => {
     if (showModal && userToken) {
       setLoadingPlaylists(true);
+      // fetch personal playlists
       axios
         .get(`${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists`, {
           headers: { Authorization: `Bearer ${userToken}` },
@@ -135,9 +136,9 @@ function SingleSong({ userToken }) {
     }
   }, [showModal, userToken]);
 
-  const handleAddToPlaylist = (playlistId) => {
-    axios
-      .post(
+  const handleAddToPlaylist = async (playlistId) => {
+    try {
+      await axios.post(
         `${
           import.meta.env.VITE_BACKEND_API_BASE_URL
         }/personalPlaylists/${playlistId}/tracks`,
@@ -148,25 +149,11 @@ function SingleSong({ userToken }) {
           trackCoverUrl: track.album.cover_medium,
         },
         { headers: { Authorization: `Bearer ${userToken}` } }
-      )
-      .then((res) => {
-        console.log("Track added to playlist:", res.data);
-        setShowModal(false);
-        setSuccessMessage(
-          `Track added to “${addToPlaylistTitle || "playlist"}”!`
-        );
-        setTimeout(() => setSuccessMessage(""), 3000);
-      })
-      .catch((err) => {
-        if (err.response?.status === 409) {
-          setTrackExistsMessage(
-            `This track is already in “${addToPlaylistTitle}”.`
-          );
-          setTimeout(() => setTrackExistsMessage(""), 3000);
-        } else {
-          console.error("Error adding track:", err);
-        }
-      });
+      );
+      setShowModal(false);
+    } catch (err) {
+      throw err;
+    }
   };
 
   const handleCreatePlaylistAndAddTrack = () => {
@@ -188,11 +175,24 @@ function SingleSong({ userToken }) {
     }
   };
 
+  const handleAddFromModal = async (playlistId, playlistTitle) => {
+    try {
+      await handleAddToPlaylist(playlistId);
+      setSuccessMessage(`Track added to “${playlistTitle}”!`);
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (err) {
+      if (err.response?.status === 409) {
+        setTrackExistsMessage(`This track is already in “${playlistTitle}”.`);
+        setTimeout(() => setTrackExistsMessage(""), 3000);
+      } else {
+        console.error("Error adding track:", err);
+      }
+    }
+  };
+
   // Always either do a direct add or open the modal
   const handleAddClick = async () => {
     if (addToPlaylistId) {
-      handleAddToPlaylist(addToPlaylistId);
-
       try {
         await handleAddToPlaylist(addToPlaylistId);
         setSuccessMessage(
@@ -210,7 +210,8 @@ function SingleSong({ userToken }) {
         }
       }
     } else {
-      // Always open the modal, regardless of whether playlists are already in state
+      // if location.state is empty aka user did not click "add music"
+      // button directly from a personal playlist - open the "choose playlist to add track modal"
       setShowModal(true);
     }
   };
@@ -282,7 +283,7 @@ function SingleSong({ userToken }) {
             setSuccessMessage("");
             setTrackExistsMessage("");
           }}
-          onAddTrack={handleAddToPlaylist}
+          onAddTrack={handleAddFromModal}
           onCreatePlaylist={handleCreatePlaylistAndAddTrack}
         />
       )}
