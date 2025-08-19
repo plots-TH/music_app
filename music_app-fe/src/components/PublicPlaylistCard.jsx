@@ -31,21 +31,21 @@ function PublicPlaylistCard({
             `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
               publicPlaylist.id
             }/like`,
-            { headers: { Authorization: `Bearer ${userToken}` } }
+            { headers: { Authorization: `Bearer ${userToken}` } },
           ),
           // fetch all the tags
           axios.get(
             `${
               import.meta.env.VITE_BACKEND_API_BASE_URL
             }/personalPlaylists/tags`,
-            { headers: { Authorization: `Bearer ${userToken}` } }
+            { headers: { Authorization: `Bearer ${userToken}` } },
           ),
           // get active tags for the playlist
           axios.get(
             `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
               publicPlaylist.id
             }/tags`,
-            { headers: { Authorization: `Bearer ${userToken}` } }
+            { headers: { Authorization: `Bearer ${userToken}` } },
           ),
         ]);
 
@@ -70,7 +70,7 @@ function PublicPlaylistCard({
             publicPlaylist.id
           }/like`,
           {},
-          { headers: { Authorization: `Bearer ${userToken}` } }
+          { headers: { Authorization: `Bearer ${userToken}` } },
         );
         // setLikes to whatever the current value is + 1
         setLikes((prevLikes) => prevLikes + 1);
@@ -83,7 +83,7 @@ function PublicPlaylistCard({
           `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
             publicPlaylist.id
           }/like`,
-          { headers: { Authorization: `Bearer ${userToken}` } }
+          { headers: { Authorization: `Bearer ${userToken}` } },
         );
         setLikes((prevLikes) => prevLikes - 1);
         setHasLiked(false);
@@ -129,7 +129,10 @@ function PublicPlaylistCard({
       {likes > 0 && <span className="playlist-likes">total likes:{likes}</span>}
 
       {/* add ternary operator to conditionally hide this button if playlist belongs to user already. */}
-      <button onClick={() => onClonePlaylist(publicPlaylist.id, userToken)}>
+      <button
+        className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+        onClick={() => onClonePlaylist(publicPlaylist.id, userToken)}
+      >
         Copy & Add to your collection
       </button>
 

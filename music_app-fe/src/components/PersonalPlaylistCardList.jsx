@@ -11,36 +11,22 @@ function PersonalPlaylistCardList({
   onTogglePublic,
 }) {
   return (
-    <div className="category-playlist-card-list">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {personalPlaylists.map((personalPlaylist) => (
-        <PersonalPlaylistCard
-          key={personalPlaylist.id}
-          personalPlaylist={personalPlaylist}
-          userToken={userToken}
-          onUpdateTitle={onUpdateTitle}
-          onRemoveTrack={onRemoveTrack}
-          onDeletePlaylist={onDeletePlaylist}
-          onEditDescription={onEditDescription}
-          onTogglePublic={onTogglePublic}
-        />
+        <div key={personalPlaylist.id} className="self-start">
+          <PersonalPlaylistCard
+            personalPlaylist={personalPlaylist}
+            userToken={userToken}
+            onUpdateTitle={onUpdateTitle}
+            onRemoveTrack={onRemoveTrack}
+            onDeletePlaylist={onDeletePlaylist}
+            onEditDescription={onEditDescription}
+            onTogglePublic={onTogglePublic}
+          />
+        </div>
       ))}
     </div>
   );
 }
 
 export default PersonalPlaylistCardList;
-
-// import React from "react";
-// import CategoryPlaylistCard from "./CategoryPlaylistCard";
-
-// function CategoryPlaylistCardList({ playlists }) {
-//   return (
-//     <div className="category-playlist-card-list">
-//       {playlists.map((playlist) => (
-//         <CategoryPlaylistCard key={playlist.id} playlist={playlist} />
-//       ))}
-//     </div>
-//   );
-// }
-
-// export default CategoryPlaylistCardList;

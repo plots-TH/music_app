@@ -50,7 +50,7 @@ function Account({ userToken }) {
         .post(
           `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists`,
           { title },
-          { headers: { Authorization: `Bearer ${userToken}` } }
+          { headers: { Authorization: `Bearer ${userToken}` } },
         )
         .then((res) => {
           console.log("New personal playlist created:", res.data);
@@ -67,14 +67,18 @@ function Account({ userToken }) {
   const handleUpdateTitle = (playlistId, newTitle) => {
     setPersonalPlaylists((prev) =>
       prev.map((playlist) =>
-        playlist.id === playlistId ? { ...playlist, title: newTitle } : playlist
-      )
+        playlist.id === playlistId
+          ? { ...playlist, title: newTitle }
+          : playlist,
+      ),
     );
 
     setDisplayedPlaylists((prev) =>
       prev.map((playlist) =>
-        playlist.id === playlistId ? { ...playlist, title: newTitle } : playlist
-      )
+        playlist.id === playlistId
+          ? { ...playlist, title: newTitle }
+          : playlist,
+      ),
     );
   };
 
@@ -85,7 +89,7 @@ function Account({ userToken }) {
         if (playlist.id !== playlistId) return playlist;
 
         const newTracks = playlist.tracks.filter(
-          (track) => track.track_id !== trackId
+          (track) => track.track_id !== trackId,
         );
 
         // Create a new playlist object by copying all existing fields (...playlist),
@@ -96,7 +100,7 @@ function Account({ userToken }) {
           tracks: newTracks,
           cover_url: newTracks.length > 0 ? newTracks[0].track_cover_url : null,
         };
-      })
+      }),
     );
     // fix setDisplayedPlaylists to rerender no cover image
     setDisplayedPlaylists((prev) =>
@@ -104,7 +108,7 @@ function Account({ userToken }) {
         if (playlist.id !== playlistId) return playlist;
 
         const newTracks = playlist.tracks.filter(
-          (track) => track.track_id !== trackId
+          (track) => track.track_id !== trackId,
         );
 
         return {
@@ -112,7 +116,7 @@ function Account({ userToken }) {
           tracks: newTracks,
           cover_url: newTracks.length > 0 ? newTracks[0].track_cover_url : null,
         };
-      })
+      }),
     );
   };
 
@@ -120,11 +124,11 @@ function Account({ userToken }) {
   const handleDeletePlaylist = (playlistId) => {
     setPersonalPlaylists((prev) =>
       // SET the personalPlaylists state variable to a new version that consists ONLY of playlists that do NOT match the playlist ID of the passed in parameter(playlistId)
-      prev.filter((playlist) => playlist.id !== playlistId)
+      prev.filter((playlist) => playlist.id !== playlistId),
     );
 
     setDisplayedPlaylists((prev) =>
-      prev.filter((playlist) => playlist.id !== playlistId)
+      prev.filter((playlist) => playlist.id !== playlistId),
     );
   };
 
@@ -134,7 +138,7 @@ function Account({ userToken }) {
     setSearchInput(input);
 
     const searchResults = personalPlaylists.filter((playlist) =>
-      playlist.title.toLowerCase().includes(input)
+      playlist.title.toLowerCase().includes(input),
     );
 
     setDisplayedPlaylists(searchResults);
@@ -144,14 +148,14 @@ function Account({ userToken }) {
   const handleUpdateDescription = (playlistId, description) => {
     setPersonalPlaylists((prev) =>
       prev.map((playlist) =>
-        playlist.id === playlistId ? { ...playlist, description } : playlist
-      )
+        playlist.id === playlistId ? { ...playlist, description } : playlist,
+      ),
     );
 
     setDisplayedPlaylists((prev) =>
       prev.map((playlist) =>
-        playlist.id === playlistId ? { ...playlist, description } : playlist
-      )
+        playlist.id === playlistId ? { ...playlist, description } : playlist,
+      ),
     );
   };
 
@@ -183,16 +187,16 @@ function Account({ userToken }) {
       prev.map((playlist) =>
         playlist.id === playlistId
           ? { ...playlist, is_public: newValue }
-          : playlist
-      )
+          : playlist,
+      ),
     );
 
     setDisplayedPlaylists((prev) =>
       prev.map((playlist) =>
         playlist.id === playlistId
           ? { ...playlist, is_public: newValue }
-          : playlist
-      )
+          : playlist,
+      ),
     );
 
     //console.log("toggling from", isPublic, "=>", !isPublic);
@@ -206,14 +210,14 @@ function Account({ userToken }) {
           import.meta.env.VITE_BACKEND_API_BASE_URL
         }/personalPlaylists/${playlistId}/publish`,
         { isPublic: newValue },
-        { headers: { Authorization: `Bearer ${userToken}` } }
+        { headers: { Authorization: `Bearer ${userToken}` } },
       );
       console.log("handleTogglePublic PATCH response:", res);
       console.log("playlist's isPublic value:", newValue);
     } catch (err) {
       console.error(
         "error updating playlist public status (handleTogglePublic PATCH request):",
-        err
+        err,
       );
     }
   };
@@ -221,25 +225,46 @@ function Account({ userToken }) {
   useEffect(() => {
     console.log(
       "playlists now:",
-      personalPlaylists.map((p) => ({ id: p.id, isPublic: p.is_public }))
+      personalPlaylists.map((p) => ({ id: p.id, isPublic: p.is_public })),
     );
   }, [personalPlaylists]);
 
+  const retrievedUsername = localStorage.getItem("username");
+
   return (
     <div>
-      <h2>My Personal Playlists:</h2>
+      <h2 className="mb-4 text-center">
+        {retrievedUsername ? (
+          <span>
+            Welcome {<span className="font-semibold">{retrievedUsername}</span>}
+            ! View and manage your playlists below.
+          </span>
+        ) : (
+          `View and manage your playlists below`
+        )}
+      </h2>
       {/* always show the searchbar if the user has at least 1 personal playlist */}
       <div>
         {personalPlaylists.length > 0 && (
-          <div>
-            Search your playlists:
-            <input type="text" onChange={handlePersonalPlaylistSearch} />
+          <div className="flex justify-center">
+            <input
+              type="text"
+              onChange={handlePersonalPlaylistSearch}
+              placeholder="Search your playlists..."
+              aria-label="Search your playlists"
+              className="w-full max-w-xs rounded-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
           </div>
         )}
       </div>
 
       {/* create a playlist button */}
-      <button onClick={handleCreatePlaylist}>Create New Playlist</button>
+      <button
+        className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+        onClick={handleCreatePlaylist}
+      >
+        Create New Playlist
+      </button>
       {loading && <p>Loading your playlists...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 

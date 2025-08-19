@@ -6,29 +6,25 @@ function DropDownMenu({ children }) {
   // state for menu visibility
   const [isOpen, setIsOpen] = useState(false);
 
-  // capture event for scrolling
-  const handleScroll = (e) => {};
-
   const toggleDropDown = () => {
     setIsOpen(!isOpen);
   };
 
   return (
-    <div>
-      <button className="dropdown-button" onClick={toggleDropDown}>
-        Drop Down Button
+    <div className="relative">
+      <button
+        className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+        onClick={toggleDropDown}
+      >
+        Filter by Tags
       </button>
       {isOpen && (
-        <div className="dropdown-container">
-          <div
-            onScroll={handleScroll}
-            style={{
-              height: "200px",
-              overflowY: "auto",
-              border: "1px solid black",
-            }}
-          >
-            <span>Filter playlists by toggling tags:</span>
+        // Tailwind styling for the tag filter modal
+        <div className="absolute z-10 mt-2 w-72 rounded-lg border bg-slate-100 p-3 shadow-lg">
+          <div className="max-h-64 space-x-2 space-y-2 overflow-y-auto">
+            <span className="underline underline-offset-8">
+              Filter playlists by toggling tags
+            </span>
             {children}
           </div>
         </div>

@@ -31,6 +31,9 @@ function Songs() {
 
   return (
     <div className="song-category-page">
+      <p className="mb-4 text-center font-medium">
+        Select a category to begin exploring playlists!
+      </p>
       <CategoryCardList
         categories={songCategories}
         addToPlaylistId={addToPlaylistId}

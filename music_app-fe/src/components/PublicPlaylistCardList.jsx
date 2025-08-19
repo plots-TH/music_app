@@ -10,7 +10,7 @@ function PublicPlaylistCardList({
 }) {
   console.log(
     "displayed public playlists - logging from inside card list:",
-    publicPlaylists
+    publicPlaylists,
   );
   return (
     <div className="category-playlist-card-list">

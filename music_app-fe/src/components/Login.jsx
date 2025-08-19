@@ -15,17 +15,19 @@ function Login({ setUserToken, userToken, setUserId, userId }) {
       axios
         .post(
           `${import.meta.env.VITE_BACKEND_API_BASE_URL}/users/login`,
-          userData
+          userData,
         )
         .then((res) => {
-          console.log("user data:", res);
-          console.log("Login successful!");
-          console.log("userToken:", res.data.userToken);
-          console.log("userId:", res.data.user.id);
+          console.log("[Login] user data:", res);
+          console.log("[Login] Login successful!");
+          console.log("[Login] userToken:", res.data.userToken);
+          console.log("[Login] userId:", res.data.user.id);
+          console.log("[Login] username:", res.data.user.username);
           setUserToken(res.data.userToken);
           setUserId(res.data.user.id);
           localStorage.setItem("token", res.data.userToken);
           localStorage.setItem("userId", res.data.user.id);
+          localStorage.setItem("username", res.data.user.username);
         })
         .catch((err) => {
           console.error("Login error:", err);

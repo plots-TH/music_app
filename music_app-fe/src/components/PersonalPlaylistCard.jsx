@@ -1,148 +1,116 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import TagCardList from "./TagCardList";
 
-// ----CONFIRM DELETE MODAL COMPONENT--------------------------------------
+// small accessible toggle switch (Tailwind-only)
+const ToggleSwitch = ({ checked, onChange, label = "Publish playlist" }) => {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={onChange}
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+        checked ? "bg-green-500" : "bg-gray-300"
+      }`}
+    >
+      <span
+        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+          checked ? "translate-x-5" : "translate-x-0"
+        }`}
+      />
+    </button>
+  );
+};
+
+// ---- CONFIRM DELETE MODAL COMPONENT ----
 function ConfirmDeleteModal({ isOpen, onConfirm, onCancel }) {
   if (!isOpen) return null;
   return (
-    <div
-      className="modal-overlay"
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.6)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1100,
-      }}
-    >
-      <div
-        className="modal"
-        style={{
-          background: "#fff",
-          padding: "1rem",
-          borderRadius: "4px",
-          width: "80%",
-          maxWidth: "350px",
-          textAlign: "center",
-        }}
-      >
-        <p>Are you sure you want to delete this playlist?</p>
-        <div style={{ marginTop: "1rem" }}>
-          <button onClick={onCancel}>Cancel</button>
-          <button onClick={onConfirm} style={{ marginRight: "0.5rem" }}>
-            Confirm
-          </button>
+    <>
+      <div className="fixed inset-0 z-40 bg-black/60" />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-sm rounded-lg bg-white p-4 text-center shadow-lg">
+          <p>Are you sure you want to delete this playlist?</p>
+          <div className="mt-4 flex justify-center gap-3">
+            <button className="rounded border px-3 py-1" onClick={onCancel}>
+              Cancel
+            </button>
+            <button
+              className="rounded border bg-red-500 px-3 py-1 text-white"
+              onClick={onConfirm}
+            >
+              Confirm
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
-// ----CONFIRM DELETE MODAL COMPONENT^^^^-----------------------------------------------------------------------------
+// ---- CONFIRM DELETE MODAL COMPONENT ^^^
 
-// ----EDIT PERSONAL PLAYLIST MODAL COMPONENT BELOW--------------------------------------
+// ---- EDIT PERSONAL PLAYLIST MODAL COMPONENT ----
 function EditPersonalPlaylistModal({ isModalOpen, onClose, children }) {
-  if (!isModalOpen) {
-    return null;
-  }
-
+  if (!isModalOpen) return null;
   return (
-    <div
-      className="modal-overlay" // same overlay styling as in SingleSong
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.6)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-      }}
-    >
-      <div
-        className="modal" // same inner modal styling as in SingleSong
-        style={{
-          background: "#fff",
-          padding: "1rem",
-          borderRadius: "4px",
-          width: "90%",
-          maxWidth: "400px",
-        }}
-      >
-        <button onClick={onClose} style={{ float: "right" }}>
-          Close
-        </button>
-        {children}
+    <>
+      <div className="fixed inset-0 z-40 bg-black/60" />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md rounded-lg bg-white p-4 shadow-lg">
+          <div className="flex justify-end">
+            <button
+              className="inline-flex items-center rounded-md border bg-white px-3 py-1 text-sm shadow-sm hover:bg-gray-50"
+              onClick={onClose}
+            >
+              Close
+            </button>
+          </div>
+          <div className="mt-2">{children}</div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
-// ----EDIT PERSONAL PLAYLIST MODAL COMPONENT^^^^-----------------------------------------------------------------------------
+// ---- EDIT PERSONAL PLAYLIST MODAL COMPONENT ^^^
 
-// mouse scrolling component:
-
-const handleWheelEvent = (e) => {};
-
-// ADD/REMOVE TAGS modal:
-const EditPlaylistTagsModal = ({ isTagModalOpen, onClose, children }) => {
-  if (!isTagModalOpen) {
-    return null;
-  }
+// ---- EDIT PLAYLIST TAGS MODAL ----
+const EditPlaylistTagsModal = ({
+  isTagModalOpen,
+  onClose,
+  children,
+  playlistTitle,
+}) => {
+  if (!isTagModalOpen) return null;
 
   return (
-    <div
-      className="modal-overlay" // same overlay styling as in SingleSong
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.6)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-      }}
-    >
-      <div
-        className="modal" // same inner modal styling as in SingleSong
-        style={{
-          background: "#fff",
-          padding: "1rem",
-          borderRadius: "4px",
-          width: "90%",
-          maxWidth: "400px",
-        }}
-      >
-        <div
-          onWheel={handleWheelEvent}
-          style={{
-            height: "200px",
-            overflowY: "auto",
-            border: "1px solid black",
-          }}
-        >
-          <span>Toggle tags to add or remove them:</span>
-          {/* render the children of this component (in this case the child is TagCardList) */}
-          {children}
+    <>
+      <div className="fixed inset-0 z-40 bg-black/60" />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="w-72 rounded-lg border bg-slate-100 p-3 shadow-lg">
+          <div className="mb-2">
+            <span>
+              Toggle tags for{" "}
+              <span className="font-semibold">{playlistTitle}</span>
+            </span>
+          </div>
+          <div className="max-h-64 space-y-2 overflow-y-auto">{children}</div>
+          <div className="mt-2 text-right">
+            <button
+              className="inline-flex items-center rounded-md border bg-white px-3 py-1 text-sm shadow-sm hover:bg-gray-50"
+              onClick={onClose}
+            >
+              Close
+            </button>
+          </div>
         </div>
-        <button onClick={onClose} style={{ float: "right" }}>
-          Close
-        </button>
       </div>
-    </div>
+    </>
   );
 };
+// ---- EDIT PLAYLIST TAGS MODAL ^^^ ----
 
 function PersonalPlaylistCard({
   personalPlaylist,
@@ -153,19 +121,19 @@ function PersonalPlaylistCard({
   onEditDescription,
   onTogglePublic,
 }) {
-  // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS BELOW----------------------------------------------------------------------------
-  const navigate = useNavigate(); // declare const navigate to use useNavigate for the "Add to this playlist" button
+  const navigate = useNavigate();
+
+  // ADD MUSIC navigation
   const handleClickAddTrackToPlaylist = () => {
-    // function to redirect to the "Explore all music" page - used inside onClick for the "Add to this playlist" button
     navigate("/", {
       state: {
         addToPlaylistId: personalPlaylist.id,
         addToPlaylistTitle: personalPlaylist.title,
       },
-    }); // pass in the selected playlist's ID using React Router State
+    });
   };
-  // ----"ADD TO THIS PLAYLIST BUTTON" FUNCTIONS^^^----------------------------------------------------------------------------
 
+  // Tags modal state
   const [showTagModal, setShowTagModal] = useState(false);
   const [allTags, setAllTags] = useState([]);
   const [activeTags, setActiveTags] = useState([]);
@@ -174,33 +142,26 @@ function PersonalPlaylistCard({
   const openEditPlaylistTagsModal = () => setShowTagModal(true);
   const closeEditPlaylistTagsModal = () => {
     setShowTagModal(false);
-    // reset allTags and activeTags on every modal close to avoid rendering stale empty arrays
     setAllTags([]);
     setActiveTags([]);
   };
 
   useEffect(() => {
     if (!showTagModal) return;
-
     setTagsLoading(true);
     const loadTags = async () => {
       try {
         const [{ data: allTagsRes }, { data: activeTagsRes }] =
           await Promise.all([
             axios.get(
-              `${
-                import.meta.env.VITE_BACKEND_API_BASE_URL
-              }/personalPlaylists/tags`,
-              { headers: { Authorization: `Bearer ${userToken}` } }
+              `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/tags`,
+              { headers: { Authorization: `Bearer ${userToken}` } },
             ),
             axios.get(
-              `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-                personalPlaylist.id
-              }/tags`,
-              { headers: { Authorization: `Bearer ${userToken}` } }
+              `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${personalPlaylist.id}/tags`,
+              { headers: { Authorization: `Bearer ${userToken}` } },
             ),
           ]);
-
         setAllTags(allTagsRes.tags || []);
         setActiveTags(activeTagsRes.activeTagsResult || []);
       } catch (err) {
@@ -209,159 +170,104 @@ function PersonalPlaylistCard({
         setTagsLoading(false);
       }
     };
-
     loadTags();
   }, [showTagModal, personalPlaylist.id, userToken]);
 
   const handleToggleTag = async (tagId) => {
     try {
-      // create const isActive. if isActive, delete the tag. else add it.
       const isActive = activeTags.some((tag) => tag.tag_id === tagId);
-      console.log("Tag Clicked! tag ID:", tagId);
-
       if (isActive) {
-        // remove the tag (send tagId in the req.body)
-        console.log("This tag was active. attempting to remove it...");
-
-        const deleteTagRes = await axios.delete(
-          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-            personalPlaylist.id
-          }/tags`,
+        await axios.delete(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${personalPlaylist.id}/tags`,
           {
             headers: { Authorization: `Bearer ${userToken}` },
             data: { tagId },
-          }
+          },
         );
-        console.log("[handleToggleTag] DELETE response:", deleteTagRes); // log response
-        setActiveTags((prev) => {
-          const activeTagsAfterDelete = prev.filter(
-            (tag) => tag.tag_id !== tagId
-          );
-          console.log("new active tags list:", activeTagsAfterDelete);
-          return activeTagsAfterDelete;
-        });
+        setActiveTags((prev) => prev.filter((t) => t.tag_id !== tagId));
       } else {
-        console.log("this tag was inactive. attempting to activate...");
-
-        const addTagRes = await axios.post(
-          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-            personalPlaylist.id
-          }/tags`,
+        await axios.post(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${personalPlaylist.id}/tags`,
           { tagId },
-          {
-            headers: { Authorization: `Bearer ${userToken}` },
-          }
+          { headers: { Authorization: `Bearer ${userToken}` } },
         );
-
-        setActiveTags((prev) => {
-          const activeTagsAfterAdd = [...prev, { tag_id: tagId }];
-          console.log("new active tags list:", activeTagsAfterAdd);
-          return activeTagsAfterAdd;
-        });
+        setActiveTags((prev) => [...prev, { tag_id: tagId }]);
       }
     } catch (err) {
-      console.error("Error deactivating tag from playlist:", err);
+      console.error("Error deactivating/activating tag from playlist:", err);
     }
   };
 
-  // ----EDIT PLAYLIST MODAL FUNCTIONS BELOW---------------------------------------------------------------------------------
-  const [showModal, setShowModal] = useState(false); // use useState hook to manage modal visibility
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // manage delete confirm modal
-
-  const openEditPlaylistModal = () => {
-    setShowModal(true);
-  }; // function to set modal visibility to "true" (show modal)
-
+  // Edit playlist modal
+  const [showModal, setShowModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const openEditPlaylistModal = () => setShowModal(true);
   const closeEditPlaylistModal = () => {
     setShowModal(false);
     setShowDeleteConfirm(false);
-  }; // function to set modal visibility to "false" (hide modal)
-  // ----EDIT PLAYLIST MODAL FUNCTIONS ^^^ -------------------------------------------------------------------------------------
+  };
 
-  // ---- EDIT PLAYLIST TITLE FORM FUNCTIONS BELOW --------------------------
+  // Edit title form
   const [showEditPlaylistTitleForm, setShowEditPlaylistTitleForm] =
-    useState(false); // the "edit playlist title" form starts off as hidden aka (false)
-
-  const handleEditTitleClick = () => {
-    setShowEditPlaylistTitleForm(!showEditPlaylistTitleForm);
-  }; // toggle edit title form
-
+    useState(false);
+  const handleEditTitleClick = () => setShowEditPlaylistTitleForm((s) => !s);
   const [editedPlaylistTitle, setEditedPlaylistTitle] = useState(
-    personalPlaylist.title
-  ); // store the newly edited playlist title
+    personalPlaylist.title,
+  );
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(editedPlaylistTitle);
-
     try {
       await axios.patch(
-        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-          personalPlaylist.id
-        }`,
-        { playlistTitle: editedPlaylistTitle }, // matches what server expects
-        { headers: { Authorization: `Bearer ${userToken}` } }
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${personalPlaylist.id}`,
+        { playlistTitle: editedPlaylistTitle },
+        { headers: { Authorization: `Bearer ${userToken}` } },
       );
-      onUpdateTitle(personalPlaylist.id, editedPlaylistTitle); // optimistic UI
+      onUpdateTitle(personalPlaylist.id, editedPlaylistTitle);
       closeEditPlaylistModal();
     } catch (err) {
       console.error("Error updating playlist title:", err);
     }
   };
-  // ---- EDIT PLAYLIST TITLE FORM FUNCTIONS ^^^ --------------------------
 
-  // ---- EVENT HANDLER: remove track from playlist button ------------------------------------------------------------------
+  // Remove track
   const handleClickRemoveTrack = async (trackId) => {
-    console.log(personalPlaylist.title);
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-          personalPlaylist.id
-        }/tracks/${trackId}`,
-        { headers: { Authorization: `Bearer ${userToken}` } }
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${personalPlaylist.id}/tracks/${trackId}`,
+        { headers: { Authorization: `Bearer ${userToken}` } },
       );
-      console.log("DELETE response:", res.data); // log response
-      console.log("Deleted track record:", res.data.deletedTrack);
-      onRemoveTrack(personalPlaylist.id, trackId); // optimistic UI
+      onRemoveTrack(personalPlaylist.id, trackId);
     } catch (err) {
       console.error("Error removing track from playlist:", err);
     }
   };
-  // ---- EVENT HANDLER ^^^ --------------------------------------------------------------------------------------------------
 
-  // ---- DELETE PLAYLIST FUNCTIONS BELOW ------------------
-  const handleClickDeletePlaylist = () => {
-    setShowDeleteConfirm(true); // show confirmation
-  };
-
+  // Delete playlist
+  const handleClickDeletePlaylist = () => setShowDeleteConfirm(true);
   const handleConfirmDelete = async () => {
     try {
       await axios.delete(
-        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-          personalPlaylist.id
-        }`,
-        { headers: { Authorization: `Bearer ${userToken}` } }
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${personalPlaylist.id}`,
+        { headers: { Authorization: `Bearer ${userToken}` } },
       );
-      onDeletePlaylist(personalPlaylist.id); // optimistic UI
+      onDeletePlaylist(personalPlaylist.id);
       closeEditPlaylistModal();
     } catch (err) {
       console.error("Error deleting playlist:", err);
     }
   };
-  // ---- DELETE PLAYLIST FUNCTIONS ^^^ ------------------
 
+  // Description
   const [editedDescription, setEditedDescription] = useState(
-    personalPlaylist.description || ""
-  ); // store the newly edited playlist description - defaulted to empty string ""
-
+    personalPlaylist.description || "",
+  );
   const handleSaveDescription = async () => {
     try {
-      const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${
-          personalPlaylist.id
-        }/description`,
-        { description: editedDescription }, // matches what server expects
-        { headers: { Authorization: `Bearer ${userToken}` } }
+      await axios.patch(
+        `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/${personalPlaylist.id}/description`,
+        { description: editedDescription },
+        { headers: { Authorization: `Bearer ${userToken}` } },
       );
       onEditDescription(personalPlaylist.id, editedDescription);
       setShowModal(false);
@@ -370,160 +276,192 @@ function PersonalPlaylistCard({
     }
   };
 
-  console.log(
-    `Card render for ${personalPlaylist.id}, is_public =`,
-    personalPlaylist.is_public
-  );
-
+  // Render
   return (
-    <div className="personal-playlist-card">
-      <h2>{personalPlaylist.title}</h2>
+    <div className="relative flex h-full flex-col rounded-lg border bg-white p-4 shadow-sm">
+      {/* Header */}
+      <div className="mb-3 text-center">
+        <h3 className="text-sm font-medium">{personalPlaylist.title}</h3>
+        {personalPlaylist.is_public && (
+          <p className="text-xs text-gray-500">
+            This Playlist is Publicly Viewable
+          </p>
+        )}
+      </div>
 
-      {/* render "This Playlist is Publicly Visible" when newValue of isPublic (from handleTogglePublic in Account.jsx ) = true */}
-      {personalPlaylist.is_public && <p>This Playlist is Publicly Viewable</p>}
-
-      {/* show 1st track cover. if 0 tracks, dont render image tag */}
+      {/* top-right publish switch (only render if playlist has tracks) */}
       {personalPlaylist.tracks.length > 0 && (
-        <img
-          src={personalPlaylist.cover_url}
-          alt={personalPlaylist.title}
-          style={{ width: 120, height: 120, objectFit: "cover" }}
-        />
+        <div className="absolute right-3 top-3 flex flex-col items-center space-y-1">
+          <ToggleSwitch
+            checked={!!personalPlaylist.is_public}
+            onChange={() => onTogglePublic(personalPlaylist.id)}
+            label={`Toggle public for ${personalPlaylist.title}`}
+          />
+          <span className="select-none whitespace-nowrap text-xs text-gray-600">
+            {personalPlaylist.is_public ? "Public" : "Private"}
+          </span>
+        </div>
       )}
 
-      {personalPlaylist.description && (
-        <p>{personalPlaylist.description}</p> // && shortcut to conditionally render playlist description. empty strings "" are falsey, so nothing renders
-      )}
+      {/* Middle: image + track list */}
+      <div className="flex-1 overflow-hidden">
+        {personalPlaylist.tracks.length > 0 && personalPlaylist.cover_url && (
+          <div className="mb-3 flex justify-center">
+            <img
+              src={personalPlaylist.cover_url}
+              alt={personalPlaylist.title}
+              className="h-28 w-28 rounded object-cover"
+            />
+          </div>
+        )}
 
-      <div>
-        {personalPlaylist.tracks &&
-          personalPlaylist.tracks.map((track) => (
-            <div key={track.track_id}>
+        <div className="max-h-48 space-y-2 overflow-y-auto px-1">
+          {personalPlaylist.tracks.map((track) => (
+            <div key={track.track_id} className="rounded border p-2 text-sm">
               <Link to={`/track/${track.track_id}`}>
-                <strong>{track.track_title}</strong> by {track.track_artist}
+                <span className="font-semibold">{track.track_title}</span>
+                <span className="text-gray-600"> by {track.track_artist}</span>
               </Link>
             </div>
           ))}
-      </div>
-      <div>
-        <button onClick={handleClickAddTrackToPlaylist}>Add music</button>
 
-        <button onClick={openEditPlaylistTagsModal}>Manage Tags</button>
-
-        <button onClick={openEditPlaylistModal}>Edit Playlist</button>
-
-        {/* if there are no tracks in the playlist, hide the publish button */}
-        {personalPlaylist.tracks.length ? (
-          <button onClick={() => onTogglePublic(personalPlaylist.id)}>
-            {personalPlaylist.is_public ? "Set to Private" : "Publish Playlist"}
-          </button>
-        ) : (
-          ""
-        )}
-
-        <EditPersonalPlaylistModal
-          isModalOpen={showModal}
-          onClose={closeEditPlaylistModal}
-        >
-          <div>
-            <h2>
-              Playlist Title: {personalPlaylist.title}
-              <button onClick={handleEditTitleClick}>
-                {showEditPlaylistTitleForm ? "Cancel" : "Edit Title"}
-              </button>
-            </h2>
-            {showEditPlaylistTitleForm && (
-              <form onSubmit={handleSubmit}>
-                <label>
-                  Playlist Title:
-                  <input
-                    type="text"
-                    value={editedPlaylistTitle}
-                    onChange={(e) => setEditedPlaylistTitle(e.target.value)}
-                  />
-                </label>
-                <button type="submit">Submit</button>
-              </form>
+          {/* show description inline under title if present and no tracks at top of list */}
+          {personalPlaylist.description &&
+            personalPlaylist.tracks.length === 0 && (
+              <div className="mb-2 text-center text-sm text-gray-700">
+                {personalPlaylist.description}
+              </div>
             )}
-
-            <h3>Playlist Description:</h3>
-            <textarea
-              rows={3}
-              style={{ width: "100%", marginBottom: "0.5rem" }}
-              value={editedDescription}
-              onChange={(e) => setEditedDescription(e.target.value)}
-            ></textarea>
-            <button onClick={handleSaveDescription}>Save Description</button>
-
-            {/* display track list here */}
-            <h3>Playlist Tracks:</h3>
-            <div style={{ textAlign: "left" }}>
-              {personalPlaylist.tracks.map((track) => (
-                <li key={track.track_id} className="track-non-link">
-                  {track.track_title} by {track.track_artist}
-                  <button
-                    onClick={() => handleClickRemoveTrack(track.track_id)}
-                  >
-                    remove
-                  </button>
-                </li>
-              ))}
-            </div>
-
-            {/* Confirmation nested modal */}
-            <ConfirmDeleteModal
-              isOpen={showDeleteConfirm}
-              onConfirm={handleConfirmDelete}
-              onCancel={() => setShowDeleteConfirm(false)}
-            />
-          </div>
-          <p>This is the modal content. add buttons later</p>
-          <button onClick={handleClickDeletePlaylist} style={{ color: "red" }}>
-            Delete Playlist
-          </button>
-        </EditPersonalPlaylistModal>
-
-        <EditPlaylistTagsModal
-          isTagModalOpen={showTagModal}
-          onClose={closeEditPlaylistTagsModal}
-        >
-          {tagsLoading ? (
-            <p>Loading tags...</p>
-          ) : (
-            <TagCardList
-              key={personalPlaylist.id}
-              allTags={allTags}
-              activeTags={activeTags}
-              onToggleTag={handleToggleTag}
-            />
-          )}
-        </EditPlaylistTagsModal>
+        </div>
       </div>
+
+      {/* Footer: action buttons (Add/Manage/Edit) */}
+      <div className="mt-4">
+        <div className="flex flex-wrap justify-center gap-2">
+          <button
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+            onClick={handleClickAddTrackToPlaylist}
+          >
+            Add music
+          </button>
+
+          <button
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+            onClick={openEditPlaylistTagsModal}
+          >
+            Manage Tags
+          </button>
+
+          <button
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+            onClick={openEditPlaylistModal}
+          >
+            Edit Playlist
+          </button>
+        </div>
+      </div>
+
+      {/* Tags modal */}
+      <EditPlaylistTagsModal
+        isTagModalOpen={showTagModal}
+        onClose={closeEditPlaylistTagsModal}
+        playlistTitle={personalPlaylist.title}
+      >
+        {tagsLoading ? (
+          <p>Loading tags...</p>
+        ) : (
+          <TagCardList
+            key={personalPlaylist.id}
+            allTags={allTags}
+            activeTags={activeTags}
+            onToggleTag={handleToggleTag}
+          />
+        )}
+      </EditPlaylistTagsModal>
+
+      {/* Edit playlist modal */}
+      <EditPersonalPlaylistModal
+        isModalOpen={showModal}
+        onClose={closeEditPlaylistModal}
+      >
+        <div>
+          <h2 className="mb-2">
+            Playlist Title: {personalPlaylist.title}
+            <button
+              className="ml-3 inline-flex items-center rounded-md border bg-white px-3 py-1 text-sm shadow-sm hover:bg-gray-50"
+              onClick={handleEditTitleClick}
+            >
+              {showEditPlaylistTitleForm ? "Cancel" : "Edit Title"}
+            </button>
+          </h2>
+
+          {showEditPlaylistTitleForm && (
+            <form onSubmit={handleSubmit} className="mb-3">
+              <label className="mb-2 block">
+                Playlist Title:
+                <input
+                  type="text"
+                  className="mt-1 block w-full rounded border px-2 py-1"
+                  value={editedPlaylistTitle}
+                  onChange={(e) => setEditedPlaylistTitle(e.target.value)}
+                />
+              </label>
+              <button type="submit" className="rounded border px-3 py-1">
+                Submit
+              </button>
+            </form>
+          )}
+
+          <h3 className="mt-2">Playlist Description:</h3>
+          <textarea
+            rows={3}
+            className="mb-2 block w-full rounded border px-2 py-1"
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+          />
+
+          <div className="flex gap-2">
+            <button
+              className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+              onClick={handleSaveDescription}
+            >
+              Save Description
+            </button>
+            <button
+              className="inline-flex items-center rounded-md border bg-red-50 px-3 py-2 text-sm shadow-sm hover:bg-red-100"
+              onClick={handleClickDeletePlaylist}
+            >
+              Delete Playlist
+            </button>
+          </div>
+
+          <h3 className="mt-4">
+            {personalPlaylist.tracks.length ? "Playlist Tracks:" : ""}
+          </h3>
+          <div style={{ textAlign: "left" }}>
+            {personalPlaylist.tracks.map((track) => (
+              <li key={track.track_id} className="track-non-link py-1">
+                {track.track_title} by {track.track_artist}
+                <button
+                  className="ml-3 text-sm text-red-600"
+                  onClick={() => handleClickRemoveTrack(track.track_id)}
+                >
+                  remove
+                </button>
+              </li>
+            ))}
+          </div>
+        </div>
+      </EditPersonalPlaylistModal>
+
+      {/* Confirm delete modal nested */}
+      <ConfirmDeleteModal
+        isOpen={showDeleteConfirm}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 }
 
 export default PersonalPlaylistCard;
-
-// import React from "react";
-// import { Link } from "react-router-dom";
-
-// function CategoryPlaylistCard({ playlist }) {
-//   console.log("Playlist:", playlist);
-//   return (
-//     <Link
-//       to="/playlist"
-//       state={{ playlist }}
-//       className="category-playlist-card"
-//     >
-//       <span>{playlist.title}</span>
-//       {/* Use playlist.picture_medium or playlist.picture if available */}
-//       <img
-//         src={playlist.picture_medium || playlist.picture}
-//         alt={playlist.title}
-//       />
-//     </Link>
-//   );
-// }
-
-// export default CategoryPlaylistCard;

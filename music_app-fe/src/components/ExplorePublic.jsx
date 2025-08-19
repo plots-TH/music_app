@@ -24,7 +24,7 @@ function ExplorePublic({ userToken, userId }) {
       .get(
         `${
           import.meta.env.VITE_BACKEND_API_BASE_URL
-        }/personalPlaylists/publicPlaylists`
+        }/personalPlaylists/publicPlaylists`,
       )
       .then((res) => {
         console.log("response from public playlist fetch request:", res.data);
@@ -49,13 +49,13 @@ function ExplorePublic({ userToken, userId }) {
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/tags`,
-          { headers: { Authorization: `Bearer ${userToken}` } }
+          { headers: { Authorization: `Bearer ${userToken}` } },
         );
 
         console.log("[ExplorePublic] fetched tags:", res.data.tags);
         setAllTags(res.data.tags);
       } catch (err) {
-        "[ExplorePublic useEffect] error fetching master tag list:", err;
+        ("[ExplorePublic useEffect] error fetching master tag list:", err);
       } finally {
         setTagsLoading(false);
       }
@@ -67,13 +67,13 @@ function ExplorePublic({ userToken, userId }) {
     setSelectedTags((prev) =>
       prev.includes(tagId)
         ? prev.filter((id) => id !== tagId)
-        : [...prev, tagId]
+        : [...prev, tagId],
     );
   };
 
   const filtered = selectedTags.length
     ? publicPlaylists.filter((pl) =>
-        selectedTags.every((id) => pl.tags.some((t) => t.tag_id === id))
+        selectedTags.every((id) => pl.tags.some((t) => t.tag_id === id)),
       )
     : publicPlaylists;
 
@@ -86,12 +86,12 @@ function ExplorePublic({ userToken, userId }) {
         {
           playlistId,
         },
-        { headers: { Authorization: `Bearer ${userToken}` } }
+        { headers: { Authorization: `Bearer ${userToken}` } },
       )
       .then((res) => {
         console.log(
           " Inside handleClonePlaylist: Playlist successfully cloned and added to collection:",
-          res.data
+          res.data,
         );
         // set cloneSuccess to true for 3 seconds - this will be used to conditionally render the success message in ExplorePublic.jsx or PublicPlaylistCard.jsx
         setJustClonedId(playlistId);
@@ -100,7 +100,7 @@ function ExplorePublic({ userToken, userId }) {
       .catch((err) => {
         console.error(
           "Inside handleClonePlaylist: Error cloning/adding playlist to collection:",
-          err
+          err,
         );
       });
   };
@@ -109,7 +109,6 @@ function ExplorePublic({ userToken, userId }) {
     <div>
       <h2>Explore Playlists Created by other Users:</h2>
 
-      <h3>Filter by tags</h3>
       <DropDownMenu>
         {tagsLoading ? (
           <p>Loading tags...</p>

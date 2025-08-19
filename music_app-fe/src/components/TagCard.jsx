@@ -2,29 +2,18 @@ import React from "react";
 
 const TagCard = ({ name, active, onClick }) => {
   return (
-    <span
-      className={`tag-card ${active ? "active-tag" : ""}`}
+    <button
+      type="button"
       onClick={onClick}
+      className={`inline-flex items-center rounded-full border px-3 py-1 text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+        active
+          ? "border-brand-600 bg-brand-600 aria-pressed text-white shadow-sm hover:-translate-y-0.5"
+          : "border-gray-300 bg-white text-gray-700 hover:-translate-y-0.5 hover:bg-gray-100"
+      }`}
     >
       {name}
-    </span>
+    </button>
   );
 };
 
 export default TagCard;
-
-// fetch all tags on mount
-// const [allTags, setAllTags] = useState([]);
-// useEffect(() => {
-//   const fetchAllTags = async () => {
-//     try {
-//       const { data } = await axios.get(`
-//             ${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/tags
-//             `);
-//       setAllTags(data);
-//     } catch (err) {
-//       console.error("Error Fetching tags", err);
-//     }
-//   };
-//   fetchAllTags();
-// }, []);
