@@ -283,7 +283,7 @@ function PersonalPlaylistCard({
       <div className="mb-3 text-center">
         <h3 className="text-sm font-medium">{personalPlaylist.title}</h3>
         {personalPlaylist.is_public && (
-          <p className="text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-500">
             This Playlist is Publicly Viewable
           </p>
         )}
@@ -303,15 +303,22 @@ function PersonalPlaylistCard({
         </div>
       )}
 
-      {/* Middle: image + track list */}
+      {/* Middle: image + description + track list */}
       <div className="flex-1 overflow-hidden">
         {personalPlaylist.tracks.length > 0 && personalPlaylist.cover_url && (
           <div className="mb-3 flex justify-center">
             <img
               src={personalPlaylist.cover_url}
               alt={personalPlaylist.title}
-              className="h-28 w-28 rounded object-cover"
+              className="mt-1 h-28 w-28 rounded object-cover ring-2 ring-orange-300 ring-offset-2"
             />
+          </div>
+        )}
+
+        {/* show description inline under title if exists */}
+        {personalPlaylist.description && (
+          <div className="mb-2 whitespace-pre-line break-words text-center text-sm text-gray-700">
+            {personalPlaylist.description}
           </div>
         )}
 
@@ -324,14 +331,6 @@ function PersonalPlaylistCard({
               </Link>
             </div>
           ))}
-
-          {/* show description inline under title if present and no tracks at top of list */}
-          {personalPlaylist.description &&
-            personalPlaylist.tracks.length === 0 && (
-              <div className="mb-2 text-center text-sm text-gray-700">
-                {personalPlaylist.description}
-              </div>
-            )}
         </div>
       </div>
 

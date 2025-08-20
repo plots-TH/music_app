@@ -259,12 +259,16 @@ function Account({ userToken }) {
       </div>
 
       {/* create a playlist button */}
-      <button
-        className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
-        onClick={handleCreatePlaylist}
-      >
-        Create New Playlist
-      </button>
+      <div className="m-3 flex justify-center">
+        {" "}
+        <button
+          className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+          onClick={handleCreatePlaylist}
+        >
+          Create New Playlist
+        </button>
+      </div>
+
       {loading && <p>Loading your playlists...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
