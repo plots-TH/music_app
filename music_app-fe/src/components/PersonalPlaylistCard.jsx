@@ -304,7 +304,7 @@ function PersonalPlaylistCard({
       )}
 
       {/* Middle: image + description + track list */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1">
         {personalPlaylist.tracks.length > 0 && personalPlaylist.cover_url && (
           <div className="mb-3 flex justify-center">
             <img
@@ -317,8 +317,10 @@ function PersonalPlaylistCard({
 
         {/* show description inline under title if exists */}
         {personalPlaylist.description && (
-          <div className="mb-2 whitespace-pre-line break-words text-center text-sm text-gray-700">
-            {personalPlaylist.description}
+          <div className="mb-3 flex justify-center">
+            <span className="block max-w-[22rem] whitespace-pre-wrap rounded border border-gray-200 bg-slate-100 px-3 py-1 text-center text-sm leading-normal text-gray-700 sm:max-w-sm">
+              {personalPlaylist.description}
+            </span>
           </div>
         )}
 
