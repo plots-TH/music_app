@@ -9,6 +9,11 @@ function Account({ userToken }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // state for tags
+  const [allTags, setAllTags] = useState([]);
+  const [tagsLoading, setTagsLoading] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
+
   // state variable for personalPlaylist searchbar (used in handlePersonalPlaylistSearch)
   const [searchInput, setSearchInput] = useState("");
 
@@ -22,6 +27,7 @@ function Account({ userToken }) {
         })
         .then((res) => {
           // Assume the response format is { personalPlaylists: [...] }
+          // EDIT THIS RESPONSE TO CONTAIN TAGS
           console.log("GET /personalPlaylists response:", res.data);
           setPersonalPlaylists(res.data.personalPlaylists);
           setDisplayedPlaylists(res.data.personalPlaylists);
@@ -40,6 +46,33 @@ function Account({ userToken }) {
   // On component mount or when userToken changes, fetch playlists
   useEffect(() => {
     fetchPlaylists();
+  }, [userToken]);
+
+  // fetch master tag list
+  useEffect(() => {
+    if (!userToken) {
+      return;
+    }
+
+    console.log("[Account.jsx useEffect] fetching master tag list...");
+    setTagsLoading(true);
+
+    const loadTags = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists/tags`,
+          { headers: { Authorization: `Bearer ${userToken}` } },
+        );
+
+        console.log("[Account.jsx] fetched tags-master-list:", res.data.tags);
+        setAllTags(res.data.tags);
+      } catch (err) {
+        ("[Account.jsx useEffect] error fetching master tag list:", err);
+      } finally {
+        setTagsLoading(false);
+      }
+    };
+    loadTags();
   }, [userToken]);
 
   // Handler for creating a new playlist

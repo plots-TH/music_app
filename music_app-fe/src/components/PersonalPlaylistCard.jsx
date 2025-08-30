@@ -324,14 +324,19 @@ function PersonalPlaylistCard({
           </div>
         )}
 
-        <div className="max-h-48 space-y-2 overflow-y-auto px-1">
+        <div className="max-h-48 space-y-2 overflow-y-auto border px-1">
           {personalPlaylist.tracks.map((track) => (
-            <div key={track.track_id} className="rounded border p-2 text-sm">
-              <Link to={`/track/${track.track_id}`}>
-                <span className="font-semibold">{track.track_title}</span>
-                <span className="text-gray-600"> by {track.track_artist}</span>
-              </Link>
-            </div>
+            <Link
+              key={track.track_id}
+              to={`/track/${track.track_id}`}
+              className="block rounded border p-2 text-center text-sm hover:bg-gray-50"
+              aria-label={`${track.track_title} by ${track.track_artist}`}
+            >
+              <span className="block font-semibold">{track.track_title}</span>
+              <span className="block text-gray-600">
+                by {track.track_artist}
+              </span>
+            </Link>
           ))}
         </div>
       </div>

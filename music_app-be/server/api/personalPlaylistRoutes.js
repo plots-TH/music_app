@@ -74,6 +74,7 @@ router.post("/clone", authenticate, async (req, res) => {
 });
 
 // GET /api/personalPlaylists
+// EDIT THIS AS WELL AS db.personalPlaylists.js to retrieve tags in the res.
 router.get("/", authenticate, async (req, res) => {
   console.log("GET /personalPlaylists user id:", req.user.id);
   const userId = req.user.id;
