@@ -28,7 +28,10 @@ function Account({ userToken }) {
         .then((res) => {
           // Assume the response format is { personalPlaylists: [...] }
           // EDIT THIS RESPONSE TO CONTAIN TAGS
-          console.log("GET /personalPlaylists response:", res.data);
+          console.log(
+            "[fetchPlaylists] GET /personalPlaylists response:",
+            res.data,
+          );
           setPersonalPlaylists(res.data.personalPlaylists);
           setDisplayedPlaylists(res.data.personalPlaylists);
           setLoading(false);
@@ -67,7 +70,7 @@ function Account({ userToken }) {
         console.log("[Account.jsx] fetched tags-master-list:", res.data.tags);
         setAllTags(res.data.tags);
       } catch (err) {
-        ("[Account.jsx useEffect] error fetching master tag list:", err);
+        console.error("[Account.jsx] error fetching master tag list:", err);
       } finally {
         setTagsLoading(false);
       }

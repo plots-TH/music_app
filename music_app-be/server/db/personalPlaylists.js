@@ -235,10 +235,14 @@ SELECT
   personal_playlist_tracks.track_title,
   personal_playlist_tracks.track_artist,
   personal_playlist_tracks.track_cover_url      AS track_cover_url,
-  personal_playlist_tracks.added_at
+  personal_playlist_tracks.added_at,
+  playlist_tags.tag_id,
+  tags.tag_name
 FROM personal_playlists
 LEFT JOIN personal_playlist_tracks 
   ON personal_playlists.id = personal_playlist_tracks.personal_playlist_id
+  LEFT JOIN playlist_tags ON personal_playlists.id = playlist_tags.playlist_id
+  LEFT JOIN tags ON playlist_tags.tag_id = tags.id
 WHERE personal_playlists.user_id = $1
 ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at DESC;
   `;
@@ -256,17 +260,34 @@ ORDER BY personal_playlists.created_at DESC, personal_playlist_tracks.added_at D
         cover_url: row.cover_url,
         is_public: row.is_public,
         tracks: [],
+        tags: [],
       };
     }
     if (row.track_id) {
-      grouped[row.id].tracks.push({
-        track_id: row.track_id,
-        track_title: row.track_title,
-        track_artist: row.track_artist,
-        added_at: row.added_at,
-        track_cover_url: row.track_cover_url,
-        is_public: row.is_public,
-      });
+      const trackExists = grouped[row.id].tracks.some(
+        (t) => t.track_id === row.track_id
+      );
+      if (!trackExists) {
+        grouped[row.id].tracks.push({
+          track_id: row.track_id,
+          track_title: row.track_title,
+          track_artist: row.track_artist,
+          added_at: row.added_at,
+          track_cover_url: row.track_cover_url,
+          is_public: row.is_public,
+        });
+      }
+    }
+    if (row.tag_id) {
+      const seen = grouped[row.id].tags.some(
+        (tag) => tag.tag_id === row.tag_id
+      );
+      if (!seen) {
+        grouped[row.id].tags.push({
+          tag_id: row.tag_id,
+          tag_name: row.tag_name,
+        });
+      }
     }
   });
 
