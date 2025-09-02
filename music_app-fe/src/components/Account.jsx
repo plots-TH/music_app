@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import PersonalPlaylistCardList from "./PersonalPlaylistCardList";
+import DropDownMenu from "./DropDownMenu";
+import TagCardList from "./TagCardList";
 
 // Route path="/account"
 function Account({ userToken }) {
   const [personalPlaylists, setPersonalPlaylists] = useState([]);
-  const [displayedPlaylists, setDisplayedPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -26,14 +27,12 @@ function Account({ userToken }) {
           headers: { Authorization: `Bearer ${userToken}` },
         })
         .then((res) => {
-          // Assume the response format is { personalPlaylists: [...] }
           // EDIT THIS RESPONSE TO CONTAIN TAGS
           console.log(
             "[fetchPlaylists] GET /personalPlaylists response:",
             res.data,
           );
           setPersonalPlaylists(res.data.personalPlaylists);
-          setDisplayedPlaylists(res.data.personalPlaylists);
           setLoading(false);
         })
         .catch((err) => {
@@ -108,14 +107,6 @@ function Account({ userToken }) {
           : playlist,
       ),
     );
-
-    setDisplayedPlaylists((prev) =>
-      prev.map((playlist) =>
-        playlist.id === playlistId
-          ? { ...playlist, title: newTitle }
-          : playlist,
-      ),
-    );
   };
 
   // this callback function will be passed down to personalPlaylistCard so children can update the list in-place optimistically, avoiding a page refresh
@@ -138,8 +129,8 @@ function Account({ userToken }) {
         };
       }),
     );
-    // fix setDisplayedPlaylists to rerender no cover image
-    setDisplayedPlaylists((prev) =>
+
+    setPersonalPlaylists((prev) =>
       prev.map((playlist) => {
         if (playlist.id !== playlistId) return playlist;
 
@@ -162,22 +153,6 @@ function Account({ userToken }) {
       // SET the personalPlaylists state variable to a new version that consists ONLY of playlists that do NOT match the playlist ID of the passed in parameter(playlistId)
       prev.filter((playlist) => playlist.id !== playlistId),
     );
-
-    setDisplayedPlaylists((prev) =>
-      prev.filter((playlist) => playlist.id !== playlistId),
-    );
-  };
-
-  // handler function "function expression" to filter displayed playlist titles based on the value within searchbar input field:
-  const handlePersonalPlaylistSearch = (event) => {
-    const input = event.target.value.toLowerCase();
-    setSearchInput(input);
-
-    const searchResults = personalPlaylists.filter((playlist) =>
-      playlist.title.toLowerCase().includes(input),
-    );
-
-    setDisplayedPlaylists(searchResults);
   };
 
   // handler to update a playlist's description in-place:
@@ -187,29 +162,7 @@ function Account({ userToken }) {
         playlist.id === playlistId ? { ...playlist, description } : playlist,
       ),
     );
-
-    setDisplayedPlaylists((prev) =>
-      prev.map((playlist) =>
-        playlist.id === playlistId ? { ...playlist, description } : playlist,
-      ),
-    );
   };
-
-  // // temporary useEffect on page mount just to see the console log value of personalPlaylist.is_public
-  // useEffect(() => {
-  //   console.log(
-  //     `[mount] playlist ${personalPlaylist.id} initial isPublic:`,
-  //     personalPlaylist.is_public
-  //   );
-  // }, []);
-
-  // // useEffect to log *after* the value of isPublic is changed (place isPublic in dependecy array to ensure this):
-  // useEffect(() => {
-  //   console.log(
-  //     `for playlist with ID: ${personalPlaylist.id}, isPublic value updated to:`,
-  //     isPublic
-  //   );
-  // }, [isPublic]);
 
   const handleTogglePublic = async (playlistId) => {
     console.log("toggle called for:", playlistId);
@@ -220,14 +173,6 @@ function Account({ userToken }) {
     console.log("new is_public value aka newValue will be:", newValue);
 
     setPersonalPlaylists((prev) =>
-      prev.map((playlist) =>
-        playlist.id === playlistId
-          ? { ...playlist, is_public: newValue }
-          : playlist,
-      ),
-    );
-
-    setDisplayedPlaylists((prev) =>
       prev.map((playlist) =>
         playlist.id === playlistId
           ? { ...playlist, is_public: newValue }
@@ -267,6 +212,40 @@ function Account({ userToken }) {
 
   const retrievedUsername = localStorage.getItem("username");
 
+  // handler function "function expression" to filter displayed playlist titles based on the value within searchbar input field:
+  const handlePersonalPlaylistSearch = (event) => {
+    const input = event.target.value.toLowerCase();
+    setSearchInput(input);
+  };
+
+  const handleToggleTagFilter = (tagId) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId],
+    );
+  };
+
+  // combine search input and tag filter so both can be used simultaneously
+  const filteredPlaylists = useMemo(() => {
+    let results = personalPlaylists;
+
+    // text search
+    const input = searchInput.trim().toLowerCase();
+    if (input) {
+      results = results.filter((pl) => pl.title.toLowerCase().includes(input));
+    }
+
+    // tag filter (match ALL selected)
+    if (selectedTags.length) {
+      results = results.filter((pl) =>
+        selectedTags.every((tagId) => pl.tags?.some((t) => t.tag_id === tagId)),
+      );
+    }
+
+    return results;
+  }, [personalPlaylists, searchInput, selectedTags]);
+
   return (
     <div>
       <h2 className="mb-4 text-center">
@@ -305,15 +284,27 @@ function Account({ userToken }) {
         </button>
       </div>
 
+      <DropDownMenu>
+        {tagsLoading ? (
+          <p>Loading tags...</p>
+        ) : (
+          <TagCardList
+            allTags={allTags}
+            activeTags={selectedTags.map((id) => ({ tag_id: id }))}
+            onToggleTag={handleToggleTagFilter}
+          />
+        )}
+      </DropDownMenu>
+
       {loading && <p>Loading your playlists...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {/* If 0 personal playlists exist, show "no playlists yet" message. If displayedPlaylists.length > 0, show them  */}
       {personalPlaylists.length === 0 ? (
         <p>You have not created any personal playlists yet.</p>
-      ) : displayedPlaylists.length > 0 ? (
+      ) : filteredPlaylists.length > 0 ? (
         <PersonalPlaylistCardList
-          personalPlaylists={displayedPlaylists}
+          personalPlaylists={filteredPlaylists}
           userToken={userToken}
           onUpdateTitle={handleUpdateTitle}
           onRemoveTrack={handleRemoveTrack}
@@ -322,7 +313,6 @@ function Account({ userToken }) {
           onTogglePublic={handleTogglePublic}
         />
       ) : (
-        // if they *have* playlists but none matched the current searchTerm
         <p>No playlists match “{searchInput}”.</p>
       )}
     </div>

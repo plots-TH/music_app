@@ -52,7 +52,7 @@ function ExplorePublic({ userToken, userId }) {
           { headers: { Authorization: `Bearer ${userToken}` } },
         );
 
-        console.log("[ExplorePublic] fetched tags:", res.data.tags);
+        console.log("[ExplorePublic] fetched master list tags:", res.data.tags);
         setAllTags(res.data.tags);
       } catch (err) {
         ("[ExplorePublic useEffect] error fetching master tag list:", err);
