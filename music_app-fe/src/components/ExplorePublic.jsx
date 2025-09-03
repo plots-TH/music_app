@@ -123,6 +123,10 @@ function ExplorePublic({ userToken, userId }) {
       });
   };
 
+  const clearTags = () => {
+    setSelectedTags([]);
+  };
+
   return (
     <div>
       <h2>Explore Playlists Created by other Users:</h2>
@@ -139,12 +143,21 @@ function ExplorePublic({ userToken, userId }) {
         )}
       </DropDownMenu>
       <div className="relative">
-        <button
-          onClick={toggleLikesFilter}
-          className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
-        >
-          Sort by Likes
-        </button>
+        {selectedTags.length > 0 ? (
+          <button
+            onClick={clearTags}
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+          >
+            Clear All Tags
+          </button>
+        ) : (
+          <button
+            onClick={toggleLikesFilter}
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+          >
+            Sort by Likes
+          </button>
+        )}
       </div>
 
       <PublicPlaylistCardList
