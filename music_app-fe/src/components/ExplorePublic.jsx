@@ -71,11 +71,29 @@ function ExplorePublic({ userToken, userId }) {
     );
   };
 
+  // Sort by likes button component:
+  const [likesFilter, setLikesFilter] = useState(false);
+  const toggleLikesFilter = () => {
+    setLikesFilter(!likesFilter);
+  };
+
+  useEffect(() => {
+    if (likesFilter === false) {
+      return;
+    } else if (likesFilter === true) {
+      console.log("likesFilter is true");
+    }
+  });
+
   const filtered = selectedTags.length
     ? publicPlaylists.filter((pl) =>
         selectedTags.every((id) => pl.tags.some((t) => t.tag_id === id)),
       )
-    : publicPlaylists;
+    : likesFilter === true
+      ? publicPlaylists
+          .filter((pl) => pl.total_likes > 0)
+          .sort((a, b) => b.total_likes - a.total_likes)
+      : publicPlaylists;
 
   const handleClonePlaylist = (playlistId) => {
     console.log("[ExplorePublic] ABOUT TO CLONE pl with ID:", { playlistId });
@@ -120,6 +138,14 @@ function ExplorePublic({ userToken, userId }) {
           />
         )}
       </DropDownMenu>
+      <div className="relative">
+        <button
+          onClick={toggleLikesFilter}
+          className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+        >
+          Sort by Likes
+        </button>
+      </div>
 
       <PublicPlaylistCardList
         publicPlaylists={filtered}

@@ -351,6 +351,8 @@ const updatePublicStatus = async (playlistId, isPublic) => {
   return rows[0];
 };
 
+// SQL requires a name for a derived table,
+// so the pre-aggregated likes subquery is named playlist_likes_agg
 const getPublicPlaylists = async () => {
   const SQL = `
   SELECT 
@@ -361,7 +363,7 @@ const getPublicPlaylists = async () => {
   personal_playlists.cover_url      AS cover_url,
   personal_playlists.is_public      AS is_public,
   users.username                    AS creator_username,
-  COUNT(playlist_likes.id) OVER (PARTITION BY personal_playlists.id) AS total_likes,
+  COALESCE(playlist_likes_agg.total_likes, 0) AS total_likes,
   personal_playlist_tracks.track_id,
   personal_playlist_tracks.track_title,
   personal_playlist_tracks.track_artist,
@@ -372,6 +374,12 @@ const getPublicPlaylists = async () => {
   FROM personal_playlists
   JOIN users
   ON personal_playlists.user_id = users.id
+  LEFT JOIN (
+      SELECT playlist_id, COUNT(*) AS total_likes
+      FROM playlist_likes
+      GROUP BY playlist_id
+    ) AS playlist_likes_agg
+      ON playlist_likes_agg.playlist_id = personal_playlists.id
   LEFT JOIN personal_playlist_tracks
   ON personal_playlists.id = personal_playlist_tracks.personal_playlist_id 
   LEFT JOIN playlist_likes ON personal_playlists.id = playlist_likes.playlist_id

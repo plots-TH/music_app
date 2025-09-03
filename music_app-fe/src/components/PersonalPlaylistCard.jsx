@@ -282,11 +282,6 @@ function PersonalPlaylistCard({
       {/* Header */}
       <div className="mb-3 text-center">
         <h3 className="text-sm font-medium">{personalPlaylist.title}</h3>
-        {personalPlaylist.is_public && (
-          <p className="mt-1 text-xs text-gray-500">
-            This Playlist is Publicly Viewable
-          </p>
-        )}
       </div>
 
       {/* top-right publish switch (only render if playlist has tracks) */}
