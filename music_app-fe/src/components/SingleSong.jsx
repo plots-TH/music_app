@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // Helper: Format duration (seconds to minutes:seconds)
@@ -81,6 +81,7 @@ function AddToPersonalPlaylistModal({
 
 // Route path="/track/:id"
 function SingleSong({ userToken }) {
+  const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
   const addToPlaylistId = location.state?.addToPlaylistId;
@@ -105,6 +106,7 @@ function SingleSong({ userToken }) {
         .then((res) => {
           setTrack(res.data.track);
           setLoading(false);
+          console.log("value of id:", id);
         })
         .catch((err) => {
           console.error("Error fetching full track data:", err);
@@ -113,6 +115,30 @@ function SingleSong({ userToken }) {
         });
     }
   }, [id]);
+
+  // useEffect(() => {
+  //   if (userToken && id) {
+  //     console.log("[SingleSong] user is logged in");
+  //   } else {
+  //     console.log("[SingleSong] No user Token!");
+  //   }
+  // }, []);
+
+  let addTrackToPPMessage;
+  if (userToken && addToPlaylistId) {
+    addTrackToPPMessage = `Add track directly to your “${addToPlaylistTitle}” playlist`;
+  } else if (userToken && !addToPlaylistId) {
+    addTrackToPPMessage = "Add track to a personal playlist";
+  }
+
+  // capture the track ID in state so when the user logs in, they can be redirected to the single song page view
+  const handleClickSignInToAddTrackToPlaylist = () => {
+    navigate("/login", {
+      state: {
+        trackId: id,
+      },
+    });
+  };
 
   // If show modal = true, fetch the list of personal playlists for the user
   useEffect(() => {
@@ -129,7 +155,7 @@ function SingleSong({ userToken }) {
         .catch((err) => {
           console.error("Error fetching personal playlists:", err);
           setError(
-            "Could not load personal playlists. Please try again later."
+            "Could not load personal playlists. Please try again later.",
           );
         })
         .finally(() => setLoadingPlaylists(false));
@@ -148,7 +174,7 @@ function SingleSong({ userToken }) {
           trackArtist: track.artist.name,
           trackCoverUrl: track.album.cover_medium,
         },
-        { headers: { Authorization: `Bearer ${userToken}` } }
+        { headers: { Authorization: `Bearer ${userToken}` } },
       );
       setShowModal(false);
     } catch (err) {
@@ -163,7 +189,7 @@ function SingleSong({ userToken }) {
         .post(
           `${import.meta.env.VITE_BACKEND_API_BASE_URL}/personalPlaylists`,
           { title },
-          { headers: { Authorization: `Bearer ${userToken}` } }
+          { headers: { Authorization: `Bearer ${userToken}` } },
         )
         .then((res) => {
           const newPlaylistId = res.data.personalPlaylist.id;
@@ -196,13 +222,13 @@ function SingleSong({ userToken }) {
       try {
         await handleAddToPlaylist(addToPlaylistId);
         setSuccessMessage(
-          `Track added to “${addToPlaylistTitle || "playlist"}”!`
+          `Track added to “${addToPlaylistTitle || "playlist"}”!`,
         );
         setTimeout(() => setSuccessMessage(""), 3000);
       } catch (err) {
         if (err.response?.status === 409) {
           setTrackExistsMessage(
-            `This track already belongs to “${addToPlaylistTitle}”.`
+            `This track already belongs to “${addToPlaylistTitle}”.`,
           );
           setTimeout(() => setTrackExistsMessage(""), 3000);
         } else {
@@ -270,9 +296,11 @@ function SingleSong({ userToken }) {
       )}
 
       <button onClick={handleAddClick}>
-        {addToPlaylistId
-          ? `Add track directly to your “${addToPlaylistTitle}” playlist`
-          : "Add track to a personal playlist"}
+        {/* if they are NOT logged in, ask them to log in first */}
+        {addTrackToPPMessage}
+      </button>
+      <button onClick={handleClickSignInToAddTrackToPlaylist}>
+        {!userToken ? `Sign-in to add this track to your own playlist` : ``}
       </button>
 
       {!addToPlaylistId && showModal && (

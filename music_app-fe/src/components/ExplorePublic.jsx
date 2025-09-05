@@ -153,7 +153,7 @@ function ExplorePublic({ userToken, userId }) {
         ) : (
           <button
             onClick={toggleLikesFilter}
-            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+            className={`inline-flex items-center rounded-md border ${likesFilter ? "bg-slate-600 text-white hover:bg-slate-500" : "bg-white hover:bg-gray-50"} px-3 py-2 text-sm font-medium shadow-sm`}
           >
             Sort by Likes
           </button>

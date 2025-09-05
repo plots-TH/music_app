@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 //In your Login.jsx file, update your handleSubmit to send the email and password to the login endpoint.
 //Route path="/login"
@@ -8,6 +8,21 @@ function Login({ setUserToken, userToken, setUserId, userId }) {
 
   // useNavigate lets us programmatically send the user to a different route with react router dom
   const navigate = useNavigate();
+
+  // use useLocation to read track ID if user was logged out but came from "add track to pp button"
+  const location = useLocation();
+  const trackId = location.state?.trackId;
+  // stash the trackId from state so it exists after login or page refresh
+  if (location.state?.trackId)
+    sessionStorage.setItem("postLoginTrackId", location.state.trackId);
+  // after successful login, retrieve stashed track Id
+  const stashedTrackId = sessionStorage.getItem("postLoginTrackId");
+
+  useEffect(() => {
+    if (trackId) {
+      console.log("Redirected with trackId:", trackId);
+    }
+  }, [trackId]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -42,8 +57,13 @@ function Login({ setUserToken, userToken, setUserId, userId }) {
 
   // wrap useNavigate logic in a useEffect so the logic doesnt run immediately during render
   useEffect(() => {
-    if (userToken && userId) {
-      navigate("/account"); // if the user is logged in, redirect to /account (don't allow a logged in user to access the "log in page")
+    if (!userToken || !userId) return;
+
+    if (stashedTrackId) {
+      navigate(`/track/${stashedTrackId}`, { replace: true });
+      sessionStorage.removeItem("postLoginTrackId");
+    } else {
+      navigate("/account", { replace: true });
     }
   }, [userToken, userId, navigate]);
 
