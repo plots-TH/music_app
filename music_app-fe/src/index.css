@@ -68,7 +68,8 @@
 .register-container {
   width: 50%;
   margin: 0 auto;
-  border: 1px solid black;
+  border: 1px solid rgb(153, 153, 153);
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   padding: 20px 0;

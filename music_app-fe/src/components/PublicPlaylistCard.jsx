@@ -97,62 +97,87 @@ function PublicPlaylistCard({
   };
 
   return (
-    <div className="personal-playlist-card">
-      <h2>{publicPlaylist.title}</h2>
-
-      {/* render the playlist creator's username */}
-      <div>
-        <p>playlist created by {publicPlaylist.creator}</p>
+    <div className="relative flex h-full flex-col rounded-lg border bg-white p-4 shadow-sm">
+      {/* Header */}
+      <div className="mb-3 text-center">
+        <h3 className="text-sm font-medium">{publicPlaylist.title}</h3>
+        <p className="text-xs text-gray-600">
+          by <span className="font-medium">{publicPlaylist.creator}</span>
+        </p>
       </div>
 
-      {publicPlaylist.description && <p>{publicPlaylist.description}</p>}
-
-      {/* show 1st track cover. if 0 tracks, dont render image tag */}
-      {publicPlaylist.tracks.length > 0 && (
-        <img
-          src={publicPlaylist.cover_url}
-          alt={publicPlaylist.title}
-          style={{ width: 120, height: 120, objectFit: "cover" }}
-        />
-      )}
-
-      {/* show "like" button and display total likes if any: */}
-      <div className="like-button">
+      {/* Top-right like pill */}
+      <div className="absolute right-3 top-3">
         <button
           onClick={handleToggleLike}
           aria-label={hasLiked ? "Unlike Playlist" : "Like this Playlist"}
-          className="like-button"
+          className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs shadow-sm ${
+            hasLiked ? "border-rose-200 bg-rose-50" : "bg-white"
+          }`}
+          title={hasLiked ? "Unlike" : "Like"}
         >
-          {hasLiked ? "♥" : "♡"}
+          <span>{likes || 0}</span>
+          <span className={hasLiked ? "text-rose-500" : "text-gray-500"}>
+            {hasLiked ? "♥" : "♡"}
+          </span>
         </button>
       </div>
-      {likes > 0 && <span className="playlist-likes">total likes:{likes}</span>}
 
-      {/* add ternary operator to conditionally hide this button if playlist belongs to user already. */}
-      <button
-        className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
-        onClick={() => onClonePlaylist(publicPlaylist.id, userToken)}
-      >
-        Copy & Add to your collection
-      </button>
+      {/* Middle: image + description + tracks */}
+      <div className="flex-1">
+        {publicPlaylist.tracks.length > 0 && publicPlaylist.cover_url && (
+          <div className="mb-3 flex justify-center">
+            <img
+              className="mt-1 h-28 w-28 rounded object-cover ring-2 ring-orange-300 ring-offset-2"
+              src={publicPlaylist.cover_url}
+              alt={publicPlaylist.title}
+            />
+          </div>
+        )}
 
-      {/* show success message only when Id's match */}
+        {/* Description bubble (matches Account cards) */}
+        {publicPlaylist.description && (
+          <div className="mb-3 flex justify-center">
+            <span className="block max-w-[22rem] whitespace-pre-wrap rounded border border-gray-200 bg-slate-100 px-3 py-1 text-center text-sm leading-normal text-gray-700 sm:max-w-sm">
+              {publicPlaylist.description}
+            </span>
+          </div>
+        )}
+
+        {/* Track list */}
+        <div className="max-h-48 space-y-2 overflow-y-auto border px-1">
+          {publicPlaylist.tracks.map((track) => (
+            <Link
+              key={track.track_id}
+              to={`/track/${track.track_id}`}
+              className="block rounded border p-2 text-center text-sm hover:bg-gray-50"
+              aria-label={`${track.track_title} by ${track.track_artist}`}
+            >
+              <span className="block font-semibold">{track.track_title}</span>
+              <span className="block text-gray-600">
+                by {track.track_artist}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer actions */}
+      <div className="mt-4 flex justify-center">
+        <button
+          className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+          onClick={() => onClonePlaylist(publicPlaylist.id, userToken)}
+        >
+          Copy &amp; Add to your collection
+        </button>
+      </div>
+
+      {/* Clone success message */}
       {publicPlaylist.id === justClonedId && (
-        <div className="clone-success-message">
-          <p>Playlist cloned successfully!</p>
+        <div className="mt-2 text-center text-sm text-green-600">
+          Playlist cloned successfully!
         </div>
       )}
-
-      <div>
-        {publicPlaylist.tracks &&
-          publicPlaylist.tracks.map((track) => (
-            <div key={track.track_id}>
-              <Link to={`/track/${track.track_id}`}>
-                <strong>{track.track_title}</strong> by {track.track_artist}
-              </Link>
-            </div>
-          ))}
-      </div>
     </div>
   );
 }

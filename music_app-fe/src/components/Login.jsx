@@ -67,6 +67,10 @@ function Login({ setUserToken, userToken, setUserId, userId }) {
     // then sets any new input selected (by name) to the value of whatever is typed
   };
 
+  const handleGuestClick = () => {
+    navigate("/");
+  };
+
   return (
     <div className="register-container">
       <h2>Login Here</h2>
@@ -81,11 +85,29 @@ function Login({ setUserToken, userToken, setUserId, userId }) {
           <input type="password" name="password" onChange={handleInput} />
         </label>
 
-        <button>Login</button>
-        <p>
-          Don't have an account? <Link to="/register">Register Now!</Link>
-        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          <button className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50">
+            Sign in
+          </button>
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-2">
+          <Link
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+            to="/register"
+          >
+            Create Account
+          </Link>
+        </div>
       </form>
+      <div className="flex flex-wrap justify-center gap-2">
+        <button
+          onClick={handleGuestClick}
+          className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+        >
+          Continue as a guest
+        </button>
+      </div>
     </div>
   );
 }

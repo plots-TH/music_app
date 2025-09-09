@@ -27,9 +27,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
-      <header className="border-b bg-white">
-        <div className="container flex h-14 items-center justify-between">
-          <h1 className="text-lg font-semibold">MUSIC APP</h1>
+      <header>
+        <div>
           <Navigations
             userToken={userToken}
             setUserToken={setUserToken}

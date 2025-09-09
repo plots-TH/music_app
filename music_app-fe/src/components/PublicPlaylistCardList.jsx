@@ -8,21 +8,18 @@ function PublicPlaylistCardList({
   userId,
   justClonedId,
 }) {
-  console.log(
-    "displayed public playlists - logging from inside card list:",
-    publicPlaylists,
-  );
   return (
-    <div className="category-playlist-card-list">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {publicPlaylists.map((publicPlaylist) => (
-        <PublicPlaylistCard
-          key={publicPlaylist.id}
-          publicPlaylist={publicPlaylist}
-          userToken={userToken}
-          userId={userId}
-          onClonePlaylist={onClonePlaylist}
-          justClonedId={justClonedId}
-        />
+        <div key={publicPlaylist.id} className="self-start">
+          <PublicPlaylistCard
+            publicPlaylist={publicPlaylist}
+            userToken={userToken}
+            userId={userId}
+            onClonePlaylist={onClonePlaylist}
+            justClonedId={justClonedId}
+          />
+        </div>
       ))}
     </div>
   );
