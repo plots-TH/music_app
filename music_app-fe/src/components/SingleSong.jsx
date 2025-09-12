@@ -11,10 +11,12 @@ function formatDuration(seconds) {
   return `${minutes}:${secs}`;
 }
 
-function AudioPreview({ previewUrl }) {
-  if (!previewUrl) return <p>No preview available</p>;
+// place className="" as a function parameter so context specific styles such as screen size styles can be applied in the return/render
+function AudioPreview({ previewUrl, className = "" }) {
+  if (!previewUrl)
+    return <p className="text-sm italic text-gray-600">No preview available</p>;
   return (
-    <audio controls>
+    <audio className={`max-w-full rounded-full shadow ${className}`} controls>
       <source src={previewUrl} type="audio/mpeg" />
       Your browser does not support this audio preview feature.
     </audio>
@@ -253,41 +255,64 @@ function SingleSong({ userToken }) {
     );
 
   return (
-    <div>
-      <h2>
+    <div className="mt-14 grid grid-cols-1 gap-4 border border-black md:grid-cols-[2fr_1fr]">
+      <h2 className="col-span-2 text-7xl">
         {track.title || track.track_title} by{" "}
         {track.artist?.name || "Unknown Artist"}
       </h2>
-      <p>Album: {track.album?.title || "Unknown Album"}</p>
-      <h3>Rank: {track.rank || "N/A"}</h3>
-      <h3>
-        Duration: {track.duration ? formatDuration(track.duration) : "N/A"}
-      </h3>
-      {track.album?.cover_medium && (
-        <img
-          src={track.album.cover_medium}
-          width={150}
-          alt={track.track_title}
-        />
-      )}
-      <br />
-      <AudioPreview previewUrl={track.preview} />
-      <br />
-      {track.link ? (
-        <a href={track.link} target="_blank" rel="noopener noreferrer">
-          Listen on Deezer
-        </a>
-      ) : (
-        <p>Link not available</p>
-      )}
-      <br />
-      {track.album?.link ? (
-        <a href={track.album.link} target="_blank" rel="noopener noreferrer">
-          Check out the album
-        </a>
-      ) : (
-        <span>Album link not available</span>
-      )}
+      <div className="bg-blue-200 p-4">
+        <div className="flex flex-col items-start gap-4 md:flex-row">
+          {track.album?.cover_medium && (
+            <img
+              className="mt-3 flex-none rounded-lg ring-2 ring-orange-300 ring-offset-2 md:w-[150px] lg:max-w-full"
+              src={track.album.cover_medium}
+              width={150}
+              alt="track image"
+            />
+          )}
+          <AudioPreview
+            className="md:mt-28 md:self-auto"
+            previewUrl={track.preview}
+          />
+        </div>
+        <div className="mt-2 rounded-lg border border-black">
+          <p className="">Album: {track.album?.title || "Unknown Album"}</p>
+          <h3>Rank: {track.rank || "N/A"}</h3>
+          <h3>
+            Duration: {track.duration ? formatDuration(track.duration) : "N/A"}
+          </h3>
+        </div>
+      </div>
+
+      <div className="bg-green-200 p-4">
+        <div className="border border-black">
+          {track.link ? (
+            <a
+              href={track.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary"
+            >
+              Listen on Deezer
+            </a>
+          ) : (
+            <p>Link not available</p>
+          )}
+          <br />
+          {track.album?.link ? (
+            <a
+              href={track.album.link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Check out the album
+            </a>
+          ) : (
+            <span>Album link not available</span>
+          )}
+        </div>
+      </div>
+
       <br />
 
       {successMessage && <div>{successMessage}</div>}

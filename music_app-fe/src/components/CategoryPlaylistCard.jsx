@@ -12,7 +12,7 @@ function CategoryPlaylistCard({
     "AddToPlaylistId:",
     addToPlaylistId,
     "AddToPlaylistTitle:",
-    addToPlaylistTitle
+    addToPlaylistTitle,
   );
   return (
     <Link
@@ -22,6 +22,7 @@ function CategoryPlaylistCard({
     >
       <span>{playlist.title}</span>
       {/* Use playlist.picture_medium or playlist.picture if available */}
+
       <img
         src={playlist.picture_medium || playlist.picture}
         alt={playlist.title}

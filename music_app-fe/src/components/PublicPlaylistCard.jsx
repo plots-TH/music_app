@@ -102,7 +102,8 @@ function PublicPlaylistCard({
       <div className="mb-3 text-center">
         <h3 className="text-sm font-medium">{publicPlaylist.title}</h3>
         <p className="text-xs text-gray-600">
-          by <span className="font-medium">{publicPlaylist.creator}</span>
+          Created by{" "}
+          <span className="font-medium">{publicPlaylist.creator}</span>
         </p>
       </div>
 
