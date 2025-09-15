@@ -26,7 +26,7 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-slate-700">
       <header>
         <div>
           <Navigations
@@ -38,7 +38,7 @@ function App() {
         </div>
       </header>
 
-      <main className="container py-6">
+      <main className="container py-6 dark:bg-slate-700">
         <Routes>
           <Route path="/" element={<Songs />} />
           <Route
