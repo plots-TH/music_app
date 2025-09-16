@@ -21,7 +21,7 @@ function AudioPreview({ previewUrl, className = "" }) {
     );
   return (
     <audio
-      className={`max-w-full rounded-full border bg-white text-slate-900 [color-scheme:light] dark:border-slate-700 dark:bg-neutral-800 dark:text-slate-100 dark:ring-slate-700 dark:[color-scheme:dark] md:w-72 ${className}`}
+      className={`max-w-full rounded-full border bg-white text-slate-900 [color-scheme:light] dark:border-slate-600 dark:bg-neutral-800 dark:text-slate-100 dark:ring-slate-700 dark:[color-scheme:dark] md:w-72 ${className}`}
       controls
     >
       <source src={previewUrl} type="audio/mpeg" />
@@ -53,7 +53,7 @@ function AddToPersonalPlaylistModal({
       }}
     >
       <div
-        className="modal w-[90%] max-w-[400px] rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-neutral-800"
+        className="modal w-[90%] max-w-[400px] rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-600 dark:bg-neutral-800"
         style={{
           background: "#fff",
           padding: "1rem",
@@ -306,12 +306,14 @@ function SingleSong({ userToken }) {
     );
 
   return (
-    <div className="min-h-screen rounded-lg bg-slate-50 px-4 py-8 text-slate-900 dark:bg-neutral-900 dark:text-slate-100 sm:px-6 lg:px-8">
+    <div className="min-h-screen rounded-lg border border-slate-200 bg-slate-50 px-4 py-8 text-slate-900 shadow-sm dark:border dark:border-slate-700 dark:bg-neutral-900 dark:text-slate-100 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-[2fr_1fr]">
-        <h2 className="col-span-full text-2xl font-bold leading-tight tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
+        <h2 className="col-span-full text-2xl font-bold leading-tight tracking-tight text-slate-800 dark:text-slate-200 sm:text-3xl md:text-4xl lg:text-5xl">
           {track.title || track.track_title}{" "}
-          <span className="text-slate-500 dark:text-slate-300">by</span>{" "}
-          {track.artist?.name || "Unknown Artist"}
+          <span className="text-slate-500 dark:text-slate-500">by</span>{" "}
+          <span className="text-slate-500 dark:text-slate-500">
+            {track.artist?.name || "Unknown Artist"}
+          </span>
         </h2>
 
         {/* LEFT: Main card with image + actions + audio + meta */}
@@ -320,7 +322,7 @@ function SingleSong({ userToken }) {
           <div className="flex flex-col items-start gap-4 md:flex-row">
             {track.album?.cover_medium && (
               <img
-                className="mt-1 w-36 flex-none self-center rounded-lg ring-1 ring-indigo-500/20 ring-offset-2 ring-offset-white dark:ring-indigo-400/20 dark:ring-offset-neutral-800 md:mt-0 md:w-[150px] md:self-start"
+                className="mt-1 w-36 flex-none self-center rounded-lg ring-1 ring-indigo-500/20 ring-offset-2 ring-offset-white dark:ring-slate-700 dark:ring-offset-neutral-800 md:mt-0 md:w-[150px] md:self-start"
                 src={track.album.cover_medium}
                 width={150}
                 alt="track image"
@@ -334,7 +336,7 @@ function SingleSong({ userToken }) {
               }
               {!userToken && (
                 <button
-                  className="inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100 dark:hover:bg-neutral-600"
+                  className="inline-flex max-w-sm items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100 dark:hover:bg-neutral-600"
                   onClick={handleClickSignInToAddTrackToPlaylist}
                 >
                   Sign-in to add this track to your own playlist
@@ -347,7 +349,7 @@ function SingleSong({ userToken }) {
             </div>
           </div>
 
-          {/* Meta details */}
+          {/* Track details */}
           <div className="mt-4 grid grid-cols-1 gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm dark:border-slate-700 dark:bg-neutral-900/50 sm:grid-cols-3">
             <p className="text-slate-700 dark:text-slate-200">
               <span className="font-semibold">Album:</span>{" "}
@@ -371,7 +373,7 @@ function SingleSong({ userToken }) {
                 href={track.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-slate-300 bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-500 dark:border dark:border-slate-600 dark:bg-purple-600 dark:hover:bg-purple-500"
               >
                 Listen on Deezer
                 <svg
@@ -401,7 +403,7 @@ function SingleSong({ userToken }) {
                 href={track.album.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100 dark:hover:bg-neutral-600"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-slate-300 bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-purple-500 dark:border-slate-600 dark:bg-purple-600 dark:text-slate-100 dark:hover:bg-purple-500"
               >
                 Check out the album
                 <svg
