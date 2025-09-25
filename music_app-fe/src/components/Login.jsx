@@ -78,58 +78,40 @@ function Login({ setUserToken, userToken, setUserId, userId }) {
       >
         {/* Email field: label above input, input fills the centered container */}
         <div>
-          <label
-            htmlFor="email"
-            className="mb-1 block text-center text-lg text-slate-800 dark:text-slate-200"
-          >
-            Email
+          <label>
+            {" "}
+            <input
+              id="email"
+              type="email"
+              name="email"
+              placeholder="Type your email"
+              onChange={handleInput}
+              className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100"
+              autoComplete="email"
+            />
           </label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            onChange={handleInput}
-            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100"
-            autoComplete="email"
-          />
         </div>
 
         {/* Password field */}
         <div>
-          <label
-            htmlFor="password"
-            className="mb-1 block text-center text-lg text-slate-800 dark:text-slate-200"
-          >
-            Password
+          <label>
+            {" "}
+            <input
+              id="password"
+              type="password"
+              name="password"
+              placeholder="Type your password"
+              onChange={handleInput}
+              className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100"
+              autoComplete="current-password"
+            />
           </label>
-          <input
-            id="password"
-            type="password"
-            name="password"
-            onChange={handleInput}
-            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100"
-            autoComplete="current-password"
-          />
         </div>
 
         {/* Actions */}
         <div className="pt-2">
-          <button className="mx-auto inline-flex w-full items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100 dark:hover:bg-neutral-600">
-            Sign in
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-              />
-            </svg>
+          <button className="mx-auto mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100 dark:hover:bg-neutral-600">
+            LOGIN
           </button>
         </div>
 
@@ -169,7 +151,7 @@ function Login({ setUserToken, userToken, setUserId, userId }) {
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="size-6"
+            class="size-5"
           >
             <path
               stroke-linecap="round"
@@ -183,6 +165,7 @@ function Login({ setUserToken, userToken, setUserId, userId }) {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
+            class="size-5"
             className="h-5 w-5"
           >
             <path
