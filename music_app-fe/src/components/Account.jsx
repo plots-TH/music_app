@@ -250,8 +250,13 @@ function Account({ userToken }) {
     <div>
       <h2 className="mb-4 text-center">
         {retrievedUsername ? (
-          <span>
-            Welcome {<span className="font-semibold">{retrievedUsername}</span>}
+          <span className="dark:text-slate-100">
+            Welcome{" "}
+            {
+              <span className="font-semibold text-yellow-600 dark:text-yellow-600">
+                {retrievedUsername}
+              </span>
+            }
             ! View and manage your playlists below.
           </span>
         ) : (
@@ -267,7 +272,7 @@ function Account({ userToken }) {
               onChange={handlePersonalPlaylistSearch}
               placeholder="Search your playlists..."
               aria-label="Search your playlists"
-              className="w-full max-w-xs rounded-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full max-w-xs rounded-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-500 dark:bg-neutral-700 dark:text-slate-100"
             />
           </div>
         )}
@@ -277,7 +282,7 @@ function Account({ userToken }) {
       <div className="m-3 flex justify-center">
         {" "}
         <button
-          className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+          className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100 dark:hover:bg-neutral-600"
           onClick={handleCreatePlaylist}
         >
           Create New Playlist

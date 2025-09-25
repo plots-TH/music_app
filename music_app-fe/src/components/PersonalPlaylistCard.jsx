@@ -278,21 +278,24 @@ function PersonalPlaylistCard({
 
   // Render
   return (
-    <div className="relative flex h-full flex-col rounded-lg border bg-white p-4 shadow-sm">
+    <div className="relative flex h-full flex-col rounded-lg border bg-white p-4 shadow-sm dark:border-gray-500 dark:bg-gray-700">
       {/* Header */}
       <div className="mb-3 text-center">
-        <h3 className="text-sm font-medium">{personalPlaylist.title}</h3>
+        <h3 className="text-xl font-extrabold dark:text-gray-200">
+          {personalPlaylist.title}
+        </h3>
       </div>
 
       {/* top-right publish switch (only render if playlist has tracks) */}
       {personalPlaylist.tracks.length > 0 && (
-        <div className="absolute right-3 top-3 flex flex-col items-center space-y-1">
+        // fix publish toggle switch positioning at each breakpoint so it doesnt block pl title
+        <div className="absolute right-3 flex flex-col items-center space-y-1">
           <ToggleSwitch
             checked={!!personalPlaylist.is_public}
             onChange={() => onTogglePublic(personalPlaylist.id)}
             label={`Toggle public for ${personalPlaylist.title}`}
           />
-          <span className="select-none whitespace-nowrap text-xs text-gray-600">
+          <span className="select-none whitespace-nowrap text-xs text-gray-600 dark:text-gray-200">
             {personalPlaylist.is_public ? "Public" : "Private"}
           </span>
         </div>
@@ -313,26 +316,35 @@ function PersonalPlaylistCard({
         {/* show description inline under title if exists */}
         {personalPlaylist.description && (
           <div className="mb-3 flex justify-center">
-            <span className="block max-w-[22rem] whitespace-pre-wrap rounded border border-gray-200 bg-slate-100 px-3 py-1 text-center text-sm leading-normal text-gray-700 sm:max-w-sm">
+            <span className="block max-w-[22rem] whitespace-pre-wrap break-words rounded border border-gray-200 bg-slate-100 px-3 py-1 text-center text-sm leading-normal text-gray-700 [overflow-wrap:anywhere] dark:border-gray-400 dark:bg-gray-800 dark:text-gray-400 sm:max-w-sm">
               {personalPlaylist.description}
             </span>
           </div>
         )}
 
-        <div className="max-h-48 space-y-2 overflow-y-auto border px-1">
-          {personalPlaylist.tracks.map((track) => (
-            <Link
-              key={track.track_id}
-              to={`/track/${track.track_id}`}
-              className="block rounded border p-2 text-center text-sm hover:bg-gray-50"
-              aria-label={`${track.track_title} by ${track.track_artist}`}
-            >
-              <span className="block font-semibold">{track.track_title}</span>
-              <span className="block text-gray-600">
-                by {track.track_artist}
-              </span>
-            </Link>
-          ))}
+        {/* list of track links */}
+        <div className="max-h-48 space-y-2 overflow-y-auto rounded border p-2 dark:border-gray-500 dark:bg-gray-800">
+          {personalPlaylist.tracks.length ? (
+            personalPlaylist.tracks.map((track) => (
+              <Link
+                key={track.track_id}
+                to={`/track/${track.track_id}`}
+                className="block rounded border p-2 text-center text-sm hover:bg-gray-50 dark:border-slate-500 dark:bg-gray-600 dark:hover:bg-gray-500"
+                aria-label={`${track.track_title} by ${track.track_artist}`}
+              >
+                <span className="block font-semibold dark:text-slate-300">
+                  {track.track_title}
+                </span>
+                <span className="block text-gray-600 dark:text-slate-300">
+                  by {track.track_artist}
+                </span>
+              </Link>
+            ))
+          ) : (
+            <span className="block text-center text-sm text-gray-500">
+              Add music to this playlist!
+            </span>
+          )}
         </div>
       </div>
 
@@ -340,21 +352,21 @@ function PersonalPlaylistCard({
       <div className="mt-4">
         <div className="flex flex-wrap justify-center gap-2">
           <button
-            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50 dark:bg-gray-400 dark:hover:bg-gray-300"
             onClick={handleClickAddTrackToPlaylist}
           >
             Add music
           </button>
 
           <button
-            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50 dark:bg-gray-400 dark:hover:bg-gray-300"
             onClick={openEditPlaylistTagsModal}
           >
             Manage Tags
           </button>
 
           <button
-            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50 dark:bg-gray-400 dark:hover:bg-gray-300"
             onClick={openEditPlaylistModal}
           >
             Edit Playlist

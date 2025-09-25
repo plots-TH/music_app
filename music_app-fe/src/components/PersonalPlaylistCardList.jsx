@@ -11,7 +11,7 @@ function PersonalPlaylistCardList({
   onTogglePublic,
 }) {
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-6 rounded-lg border p-5 dark:border-slate-700 dark:bg-neutral-900 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {personalPlaylists.map((personalPlaylist) => (
         <div key={personalPlaylist.id} className="self-start">
           <PersonalPlaylistCard

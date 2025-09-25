@@ -7,7 +7,7 @@ const TagCard = ({ name, active, onClick }) => {
       onClick={onClick}
       className={`inline-flex items-center rounded-full border px-3 py-1 text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
         active
-          ? "border-brand-600 bg-brand-600 aria-pressed text-white shadow-sm hover:-translate-y-0.5"
+          ? "aria-pressed border-brand-600 bg-brand-600 text-white shadow-sm hover:-translate-y-0.5"
           : "border-gray-300 bg-white text-gray-700 hover:-translate-y-0.5 hover:bg-gray-100"
       }`}
     >
