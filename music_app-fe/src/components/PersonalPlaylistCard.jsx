@@ -289,7 +289,7 @@ function PersonalPlaylistCard({
       {/* top-right publish switch (only render if playlist has tracks) */}
       {personalPlaylist.tracks.length > 0 && (
         // fix publish toggle switch positioning at each breakpoint so it doesnt block pl title
-        <div className="absolute right-3 flex flex-col items-center space-y-1">
+        <div className="mb-2 flex flex-col items-center space-y-1">
           <ToggleSwitch
             checked={!!personalPlaylist.is_public}
             onChange={() => onTogglePublic(personalPlaylist.id)}

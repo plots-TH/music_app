@@ -282,7 +282,7 @@ function Account({ userToken }) {
       <div className="m-3 flex justify-center">
         {" "}
         <button
-          className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100 dark:hover:bg-neutral-600"
+          className="text-md inline-flex items-center rounded-md border bg-white px-3 py-2 font-medium shadow-sm hover:bg-gray-50 dark:border-slate-600 dark:bg-yellow-600 dark:text-slate-100 dark:hover:bg-amber-500"
           onClick={handleCreatePlaylist}
         >
           Create New Playlist
