@@ -95,13 +95,16 @@ function PublicPlaylistCard({
       console.error("Error Toggling Like:", err);
     }
   };
+  const emptyHeart = "♡ ";
 
   return (
-    <div className="relative flex h-full flex-col rounded-lg border bg-white p-4 shadow-sm">
+    <div className="relative flex h-full flex-col rounded-lg border bg-white p-4 shadow-sm dark:border-gray-500 dark:bg-gray-700">
       {/* Header */}
       <div className="mb-3 text-center">
-        <h3 className="text-sm font-medium">{publicPlaylist.title}</h3>
-        <p className="text-xs text-gray-600">
+        <h3 className="mt-6 text-xl font-extrabold dark:text-gray-200">
+          {publicPlaylist.title}
+        </h3>
+        <p className="text-xs text-gray-600 dark:text-gray-400">
           Created by{" "}
           <span className="font-medium">{publicPlaylist.creator}</span>
         </p>
@@ -112,8 +115,10 @@ function PublicPlaylistCard({
         <button
           onClick={handleToggleLike}
           aria-label={hasLiked ? "Unlike Playlist" : "Like this Playlist"}
-          className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs shadow-sm ${
-            hasLiked ? "border-rose-200 bg-rose-50" : "bg-white"
+          className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs shadow-sm dark:bg-gray-600 ${
+            hasLiked
+              ? "border-rose-200 bg-rose-50 dark:border-rose-200 dark:bg-rose-50"
+              : "bg-white dark:border-gray-400"
           }`}
           title={hasLiked ? "Unlike" : "Like"}
         >
@@ -139,34 +144,47 @@ function PublicPlaylistCard({
         {/* Description bubble (matches Account cards) */}
         {publicPlaylist.description && (
           <div className="mb-3 flex justify-center">
-            <span className="block max-w-[22rem] whitespace-pre-wrap rounded border border-gray-200 bg-slate-100 px-3 py-1 text-center text-sm leading-normal text-gray-700 sm:max-w-sm">
+            <span className="block max-w-[22rem] whitespace-pre-wrap break-words rounded border border-gray-200 bg-slate-100 px-3 py-1 text-center text-sm leading-normal text-gray-700 [overflow-wrap:anywhere] dark:border-gray-400 dark:bg-gray-800 dark:text-gray-400 sm:max-w-sm">
               {publicPlaylist.description}
             </span>
           </div>
         )}
 
         {/* Track list */}
-        <div className="max-h-48 space-y-2 overflow-y-auto border px-1">
-          {publicPlaylist.tracks.map((track) => (
-            <Link
-              key={track.track_id}
-              to={`/track/${track.track_id}`}
-              className="block rounded border p-2 text-center text-sm hover:bg-gray-50"
-              aria-label={`${track.track_title} by ${track.track_artist}`}
-            >
-              <span className="block font-semibold">{track.track_title}</span>
-              <span className="block text-gray-600">
-                by {track.track_artist}
+        <div>
+          {publicPlaylist.tracks.length > 0 ? (
+            <div className="max-h-48 space-y-2 overflow-y-auto rounded-lg border p-2 dark:border-gray-500 dark:bg-gray-800">
+              {publicPlaylist.tracks.map((track) => (
+                <Link
+                  key={track.track_id}
+                  to={`/track/${track.track_id}`}
+                  className="block rounded border p-2 text-center text-sm hover:bg-gray-50 dark:bg-gray-600 dark:hover:bg-gray-500"
+                  aria-label={`${track.track_title} by ${track.track_artist}`}
+                >
+                  <span className="block font-semibold">
+                    {track.track_title}
+                  </span>
+                  <span className="block text-gray-600">
+                    by {track.track_artist}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center rounded-lg border p-2 dark:border-gray-500 dark:bg-gray-800">
+              {" "}
+              <span className="text-center text-slate-600 dark:text-slate-500">
+                0 tracks added
               </span>
-            </Link>
-          ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Footer actions */}
       <div className="mt-4 flex justify-center">
         <button
-          className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+          className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-gray-50 dark:bg-gray-400 dark:hover:bg-gray-300"
           onClick={() => onClonePlaylist(publicPlaylist.id, userToken)}
         >
           Copy &amp; Add to your collection

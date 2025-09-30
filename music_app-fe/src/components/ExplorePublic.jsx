@@ -129,7 +129,9 @@ function ExplorePublic({ userToken, userId }) {
 
   return (
     <div>
-      <h2>Explore Playlists Created by other Users:</h2>
+      <h2 className="mb-14 mt-10 text-center text-4xl dark:text-slate-200">
+        Explore Community-Created Playlists
+      </h2>
 
       <DropDownMenu>
         {tagsLoading ? (
@@ -142,7 +144,7 @@ function ExplorePublic({ userToken, userId }) {
           />
         )}
       </DropDownMenu>
-      <div className="relative">
+      <div className="relative inline-block w-full align-middle sm:w-auto">
         {selectedTags.length > 0 ? (
           <button
             onClick={clearTags}
@@ -153,7 +155,7 @@ function ExplorePublic({ userToken, userId }) {
         ) : (
           <button
             onClick={toggleLikesFilter}
-            className={`inline-flex items-center rounded-md border ${likesFilter ? "bg-slate-600 text-white hover:bg-slate-500" : "bg-white hover:bg-gray-50"} px-3 py-2 text-sm font-medium shadow-sm`}
+            className={`mt-4 inline-flex items-center rounded-md border ${likesFilter ? "bg-slate-600 text-white hover:bg-slate-500" : "bg-white hover:bg-gray-50"} px-3 py-2 text-sm font-medium shadow-sm dark:border-gray-500 dark:bg-gray-700 dark:text-slate-100 dark:hover:bg-gray-600`}
           >
             Sort by Likes
           </button>
