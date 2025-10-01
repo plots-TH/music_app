@@ -306,7 +306,7 @@ function SingleSong({ userToken }) {
     );
 
   return (
-    <div className="min-h-screen rounded-lg border border-slate-200 bg-slate-50 px-4 py-8 text-slate-900 shadow-sm dark:border dark:border-slate-700 dark:bg-neutral-900 dark:text-slate-100 sm:px-6 lg:px-8">
+    <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-8 text-slate-900 shadow-sm dark:border dark:border-slate-700 dark:bg-neutral-900 dark:text-slate-100 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-[2fr_1fr]">
         <h2 className="col-span-full text-2xl font-bold leading-tight tracking-tight text-slate-800 dark:text-slate-200 sm:text-3xl md:text-4xl lg:text-5xl">
           {track.title || track.track_title}{" "}
