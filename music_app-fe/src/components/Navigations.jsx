@@ -52,7 +52,7 @@ function Navigations({ userToken, setUserToken }) {
   );
 
   const baseLink =
-    "inline-flex items-center rounded-md px-3 py-2 text-sm font-medium transition";
+    "inline-flex items-center rounded-md px-3 py-2 md:text-md lg:text-lg font-medium transition";
   const inactive =
     "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 dark:text-gray-200 dark:hover:text-indigo-300 dark:hover:bg-indigo-900/30";
   const active =
@@ -80,8 +80,8 @@ function Navigations({ userToken, setUserToken }) {
               <g
                 stroke="currentColor"
                 strokeWidth="5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
                 {/* <!-- Vinyl disc --> */}
                 <circle cx="166" cy="256" r="144" />

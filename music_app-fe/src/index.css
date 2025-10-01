@@ -18,11 +18,6 @@
   }
 }
 
-.song-category-page {
-  width: 90%;
-  margin: 0 auto;
-}
-
 /* Common card-list style (tracks, categories, playlists) */
 .track-list,
 .category-card-list,

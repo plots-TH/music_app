@@ -11,18 +11,21 @@ import { useLocation } from "react-router-dom"; // needed to pass the selected p
 //Route path="/"
 function Songs() {
   const [songCategories, setSongCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const { state } = useLocation();
   const addToPlaylistId = state?.addToPlaylistId;
   const addToPlaylistTitle = state?.addToPlaylistTitle;
 
   useEffect(() => {
+    setLoading(true);
     // Using Deezer's endpoint to fetch genres (which we'll use as categories)
     axios
       .get(`${import.meta.env.VITE_BACKEND_API_BASE_URL}/deezer/genre`)
       .then((res) => {
         // Deezer returns an object with a "data" property that holds the genres
         setSongCategories(res.data.data);
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching genres:", err);
@@ -30,15 +33,21 @@ function Songs() {
   }, []); // empty dependency array so this is only called on component mount
 
   return (
-    <div className="song-category-page">
-      <p className="mb-4 mt-10 text-center text-4xl font-medium dark:text-slate-200">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <p className="mb-6 mt-10 text-center text-3xl font-semibold text-slate-800 dark:text-slate-200 sm:text-4xl">
         Select a category to begin exploring playlists!
       </p>
-      <CategoryCardList
-        categories={songCategories}
-        addToPlaylistId={addToPlaylistId}
-        addToPlaylistTitle={addToPlaylistTitle}
-      />
+
+      {/* Outer card container to match Account page look & colors */}
+      <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-neutral-900 sm:p-6">
+        {/* Category list renders inside; keep component API the same */}
+        <CategoryCardList
+          categories={songCategories}
+          addToPlaylistId={addToPlaylistId}
+          addToPlaylistTitle={addToPlaylistTitle}
+          loading={loading}
+        />
+      </div>
     </div>
   );
 }

@@ -7,42 +7,68 @@ import axios from "axios";
 function CategoryPlaylist() {
   const { id } = useParams();
   const { state } = useLocation(); // ← grab the router state once
-  const categoryName = state?.name || `category ID: ${id}`; // fallback to id if name is not provided
+  const [categoryName, setCategoryName] = useState(state?.name || null); // resolve to a real name
   const addToPlaylistId = state?.addToPlaylistId; // ← and get your playlistId
   const addToPlaylistTitle = state?.addToPlaylistTitle;
 
   const [playlists, setPlaylists] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // If name wasn't passed in router state, fetch it from the genre list by id.
   useEffect(() => {
-    // Using our backend proxy endpoint to fetch playlists from Deezer.
-    // The backend proxy should be set up to call Deezer's API and return the data.
+    if (categoryName) return; // already have it
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_API_BASE_URL}/deezer/genre`)
+      .then((res) => {
+        const list = res.data?.data || [];
+        const match = list.find((g) => String(g.id) === String(id));
+        setCategoryName(match?.name || `Genre ${id}`);
+      })
+      .catch(() => setCategoryName(`Genre ${id}`));
+  }, [categoryName, id]);
+
+  // Once we have a categoryName, search playlists for it.
+  useEffect(() => {
+    if (!categoryName) return;
+    setLoading(true);
     axios
       .get(
         `${
           import.meta.env.VITE_BACKEND_API_BASE_URL
-        }/deezer/search/playlist?q=${encodeURIComponent(categoryName)}`
+        }/deezer/search/playlist?q=${encodeURIComponent(categoryName)}`,
       )
       .then((res) => {
-        // Deezer returns an object with playlists in res.data.data
-        if (res.data && res.data.data) {
-          setPlaylists(res.data.data);
-        } else {
-          console.error("No playlists data found in response:", res.data);
-        }
+        setPlaylists(res.data?.data || []);
       })
       .catch((err) => {
         console.error("Error fetching playlists", err);
-      });
+        setPlaylists([]);
+      })
+      .finally(() => setLoading(false));
   }, [categoryName]);
 
   return (
-    <div className="category-playlists-page">
-      <h2>Playlists for: {categoryName}</h2>
-      <CategoryPlaylistCardList
-        playlists={playlists}
-        addToPlaylistId={addToPlaylistId}
-        addToPlaylistTitle={addToPlaylistTitle}
-      />
+    <div className="mx-auto max-w-6xl px-4 py-6">
+      <h2 className="mb-6 text-center text-xl font-semibold text-slate-800 dark:text-slate-200 sm:text-2xl">
+        Playlists for: {categoryName || `category ID: ${id}`}
+      </h2>
+      <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-neutral-900 sm:p-6">
+        {loading ? (
+          <p className="text-center text-slate-600 dark:text-slate-300">
+            Loading playlists…
+          </p>
+        ) : playlists.length > 0 ? (
+          <CategoryPlaylistCardList
+            playlists={playlists}
+            addToPlaylistId={addToPlaylistId}
+            addToPlaylistTitle={addToPlaylistTitle}
+          />
+        ) : (
+          <p className="text-center text-slate-600 dark:text-slate-300">
+            No playlists found for “{categoryName}”.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

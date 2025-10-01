@@ -322,7 +322,7 @@ function SingleSong({ userToken }) {
           <div className="flex flex-col items-start gap-4 md:flex-row">
             {track.album?.cover_medium && (
               <img
-                className="mt-1 w-36 flex-none self-center rounded-lg ring-1 ring-indigo-500/20 ring-offset-2 ring-offset-white dark:ring-slate-700 dark:ring-offset-neutral-800 md:mt-0 md:w-[150px] md:self-start"
+                className="mt-1 w-36 flex-none self-center rounded-lg ring-1 ring-indigo-500/20 ring-offset-2 ring-offset-white dark:ring-gray-500 dark:ring-offset-neutral-800 md:mt-0 md:w-[150px] md:self-start"
                 src={track.album.cover_medium}
                 width={150}
                 alt="track image"
