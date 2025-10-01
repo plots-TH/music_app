@@ -153,7 +153,7 @@ function PublicPlaylistCard({
         {/* Track list */}
         <div>
           {publicPlaylist.tracks.length > 0 ? (
-            <div className="max-h-48 space-y-2 overflow-y-auto rounded-lg border p-2 dark:border-gray-500 dark:bg-gray-800">
+            <div className="scrollbar-thin scrollbar-thumb-indigo-500/60 scrollbar-track-slate-100 dark:scrollbar-track-gray-400 dark:scrollbar-thumb-gray-600 hover:scrollbar-thumb-indigo-500 dark:hover:scrollbar-thumb-slate-400 max-h-48 space-y-2 overflow-y-auto rounded-lg border p-2 dark:border-gray-500 dark:bg-gray-800">
               {publicPlaylist.tracks.map((track) => (
                 <Link
                   key={track.track_id}

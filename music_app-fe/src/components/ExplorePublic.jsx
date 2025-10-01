@@ -129,7 +129,7 @@ function ExplorePublic({ userToken, userId }) {
 
   return (
     <div>
-      <h2 className="mb-14 mt-10 text-center text-4xl dark:text-slate-200">
+      <h2 className="mb-16 mt-10 text-center text-4xl dark:text-slate-200">
         Explore Community-Created Playlists
       </h2>
 

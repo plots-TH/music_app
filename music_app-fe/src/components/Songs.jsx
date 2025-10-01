@@ -31,7 +31,7 @@ function Songs() {
 
   return (
     <div className="song-category-page">
-      <p className="mb-4 text-center font-medium">
+      <p className="mb-4 mt-10 text-center text-4xl font-medium dark:text-slate-200">
         Select a category to begin exploring playlists!
       </p>
       <CategoryCardList

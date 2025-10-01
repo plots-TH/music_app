@@ -65,9 +65,37 @@ function Navigations({ userToken, setUserToken }) {
           {/* Brand / Home */}
           <Link
             to="/"
-            className="text-base font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+            className="inline-flex items-center text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+            aria-label="Catalog - Home"
           >
-            Music App
+            <span className="text-2xl">Catalog</span>
+            {/* Paste the SVG here */}
+            <svg
+              width="150"
+              height="150"
+              viewBox="0 0 512 512"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g
+                stroke="currentColor"
+                strokeWidth="5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                {/* <!-- Vinyl disc --> */}
+                <circle cx="166" cy="256" r="144" />
+                {/* <!-- Center hole / label --> */}
+                <circle cx="166" cy="256" r="20" />
+
+                {/* <!-- Album fan: increased radial offset so gap ~= 18px --> */}
+                <path d="M302.01 168 H460 L442 186 H312.10 A162 162 0 0 0 302.01 168" />
+                <path d="M319.43 204 H460 L442 222 H324.39 A162 162 0 0 0 319.43 204" />
+                <path d="M327.21 240 H460 L442 258 H327.99 A162 162 0 0 0 327.21 240" />
+                <path d="M326.76 276 H460 L442 294 H323.48 A162 162 0 0 0 326.76 276" />
+                <path d="M318.01 312 H460 L442 330 H310.11 A162 162 0 0 0 318.01 312" />
+              </g>
+            </svg>
           </Link>
 
           {/* Primary links */}
