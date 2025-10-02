@@ -193,7 +193,7 @@ function SingleSong({ userToken }) {
     addTrackToPPMessage = (
       <button
         onClick={handleAddClick}
-        className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100 dark:hover:bg-neutral-600"
+        className="inline-flex max-w-72 items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-neutral-700 dark:text-slate-100 dark:hover:bg-neutral-600"
       >
         Add track to a personal playlist
       </button>
@@ -331,6 +331,10 @@ function SingleSong({ userToken }) {
 
             {/* RIGHT COLUMN: button(s) directly above audio */}
             <div className="flex w-full flex-col gap-3 md:mt-12">
+              <AudioPreview
+                previewUrl={track.preview}
+                className="origin-left"
+              />
               {
                 addTrackToPPMessage /* already a <button> with onClick & styles */
               }
@@ -342,10 +346,6 @@ function SingleSong({ userToken }) {
                   Sign-in to add this track to your own playlist
                 </button>
               )}
-              <AudioPreview
-                previewUrl={track.preview}
-                className="origin-left"
-              />
             </div>
           </div>
 
