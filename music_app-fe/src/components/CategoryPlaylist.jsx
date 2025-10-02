@@ -49,10 +49,10 @@ function CategoryPlaylist() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      <h2 className="mb-6 text-center text-xl font-semibold text-slate-800 dark:text-slate-200 sm:text-2xl">
+      <h2 className="mb-6 mt-10 text-center text-3xl font-semibold text-slate-700 dark:text-slate-200 sm:text-4xl">
         Playlists for: {categoryName || `category ID: ${id}`}
       </h2>
-      <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-neutral-900 sm:p-6">
+      <div className="rounded-lg border border-slate-200 bg-slate-100 p-4 shadow-sm dark:border-slate-700 dark:bg-neutral-900 sm:p-6">
         {loading ? (
           <p className="text-center text-slate-600 dark:text-slate-300">
             Loading playlists…

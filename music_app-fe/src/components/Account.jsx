@@ -250,10 +250,10 @@ function Account({ userToken }) {
     <div>
       <h2 className="mb-4 text-center">
         {retrievedUsername ? (
-          <span className="dark:text-slate-100">
+          <span className="mb-6 mt-10 text-center font-semibold text-slate-700 dark:text-slate-200 sm:text-2xl">
             Welcome{" "}
             {
-              <span className="font-semibold text-yellow-600 dark:text-yellow-600">
+              <span className="font-semibold text-indigo-700 dark:text-yellow-600">
                 {retrievedUsername}
               </span>
             }
@@ -282,7 +282,7 @@ function Account({ userToken }) {
       <div className="m-3 flex justify-center">
         {" "}
         <button
-          className="text-md inline-flex items-center rounded-md border bg-white px-3 py-2 font-medium shadow-sm hover:bg-gray-50 dark:border-slate-600 dark:bg-yellow-600 dark:text-slate-100 dark:hover:bg-amber-500"
+          className="text-md inline-flex items-center rounded-md border bg-white px-3 py-2 font-medium shadow-sm hover:bg-gray-50 hover:shadow-md dark:border-slate-600 dark:bg-yellow-600 dark:text-slate-100 dark:hover:bg-amber-500"
           onClick={handleCreatePlaylist}
         >
           Create New Playlist

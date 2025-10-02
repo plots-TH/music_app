@@ -59,13 +59,13 @@ function Navigations({ userToken, setUserToken }) {
     "text-indigo-700 bg-indigo-50 ring-1 ring-indigo-200 hover:bg-indigo-100 dark:text-indigo-300 dark:bg-indigo-900/40 dark:ring-indigo-700/50 dark:hover:bg-indigo-900/50";
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-neutral-900/90">
+    <nav className="sticky top-0 z-40 border-b border-gray-200 bg-slate-100 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-neutral-900/90">
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex flex-wrap items-center justify-between gap-3 py-3">
           {/* Brand / Home */}
           <Link
             to="/"
-            className="inline-flex items-center text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+            className="inline-flex items-center text-indigo-600 hover:text-indigo-400 dark:text-indigo-400 dark:hover:text-indigo-300"
             aria-label="Catalog - Home"
           >
             <span className="text-2xl">Catalog</span>

@@ -323,13 +323,13 @@ function PersonalPlaylistCard({
         )}
 
         {/* list of track links */}
-        <div className="max-h-48 space-y-2 overflow-y-auto rounded border p-2 dark:border-gray-500 dark:bg-gray-800">
+        <div className="max-h-48 space-y-2 overflow-y-auto rounded-lg border bg-slate-100 p-2 scrollbar-thin scrollbar-track-slate-100 hover:scrollbar-thumb-indigo-500 dark:border-gray-500 dark:bg-gray-800 dark:scrollbar-track-gray-400 dark:scrollbar-thumb-gray-600 dark:hover:scrollbar-thumb-slate-400">
           {personalPlaylist.tracks.length ? (
             personalPlaylist.tracks.map((track) => (
               <Link
                 key={track.track_id}
                 to={`/track/${track.track_id}`}
-                className="block rounded border p-2 text-center text-sm hover:bg-gray-50 dark:border-slate-500 dark:bg-gray-600 dark:hover:bg-gray-500"
+                className="block rounded border bg-white p-2 text-center text-sm hover:bg-gray-50 dark:border-slate-500 dark:bg-gray-600 dark:hover:bg-gray-500"
                 aria-label={`${track.track_title} by ${track.track_artist}`}
               >
                 <span className="block font-semibold dark:text-slate-300">
@@ -352,21 +352,21 @@ function PersonalPlaylistCard({
       <div className="mt-4">
         <div className="flex flex-wrap justify-center gap-2">
           <button
-            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50 dark:bg-gray-400 dark:hover:bg-gray-300"
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50 hover:shadow-md dark:bg-gray-400 dark:hover:bg-gray-300"
             onClick={handleClickAddTrackToPlaylist}
           >
             Add music
           </button>
 
           <button
-            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50 dark:bg-gray-400 dark:hover:bg-gray-300"
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50 hover:shadow-md dark:bg-gray-400 dark:hover:bg-gray-300"
             onClick={openEditPlaylistTagsModal}
           >
             Manage Tags
           </button>
 
           <button
-            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50 dark:bg-gray-400 dark:hover:bg-gray-300"
+            className="inline-flex items-center rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50 hover:shadow-md dark:bg-gray-400 dark:hover:bg-gray-300"
             onClick={openEditPlaylistModal}
           >
             Edit Playlist

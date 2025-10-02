@@ -13,7 +13,7 @@ function DropDownMenu({ children }) {
   return (
     <div className="relative inline-block w-full align-middle sm:w-auto">
       <button
-        className="mx-auto mr-2 mt-4 inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 shadow-sm hover:bg-slate-50 dark:border-gray-500 dark:bg-gray-700 dark:text-slate-100 dark:hover:bg-gray-600"
+        className="mx-auto mr-2 mt-4 inline-flex items-center justify-center gap-2 rounded-md border bg-white px-3 py-2 text-sm font-medium text-slate-900 shadow-sm hover:bg-slate-50 hover:shadow-md dark:border-gray-500 dark:bg-gray-700 dark:text-slate-100 dark:hover:bg-gray-600"
         onClick={toggleDropDown}
       >
         Filter by Tags

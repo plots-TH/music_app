@@ -9,7 +9,7 @@ function PublicPlaylistCardList({
   justClonedId,
 }) {
   return (
-    <div className="mt-2 grid grid-cols-1 gap-6 rounded-lg border border-black p-5 dark:border-slate-700 dark:bg-neutral-900 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div className="mt-2 grid grid-cols-1 gap-6 rounded-lg border border-slate-200 bg-slate-100 p-5 dark:border-slate-700 dark:bg-neutral-900 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {publicPlaylists.map((publicPlaylist) => (
         <div key={publicPlaylist.id} className="self-start">
           <PublicPlaylistCard

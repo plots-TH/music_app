@@ -33,13 +33,13 @@ function Songs() {
   }, []); // empty dependency array so this is only called on component mount
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-      <p className="mb-6 mt-10 text-center text-3xl font-semibold text-slate-800 dark:text-slate-200 sm:text-4xl">
+    <div className="mx-auto max-w-6xl sm:px-6 lg:px-8">
+      <p className="mb-6 mt-10 text-center text-3xl font-semibold text-slate-700 dark:text-slate-200 sm:text-4xl">
         Select a category to begin exploring playlists!
       </p>
 
       {/* Outer card container to match Account page look & colors */}
-      <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-neutral-900 sm:p-6">
+      <div className="rounded-lg border border-slate-200 bg-slate-100 p-4 shadow-sm dark:border-slate-700 dark:bg-neutral-900 sm:p-6">
         {/* Category list renders inside; keep component API the same */}
         <CategoryCardList
           categories={songCategories}
